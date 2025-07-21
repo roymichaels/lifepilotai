@@ -1,7 +1,6 @@
 const express = require('express');
 const UserService = require('../services/userService.js');
 const { requireUser } = require('./middleware/auth.js');
-const User = require('../models/User.js');
 const { generateAccessToken, generateRefreshToken } = require('../utils/auth.js');
 const jwt = require('jsonwebtoken');
 
@@ -21,9 +20,9 @@ router.post('/login', async (req, res) => {
     const accessToken = generateAccessToken(user);
     const refreshToken = generateRefreshToken(user);
 
-    user.refreshToken = refreshToken;
-    await user.save();
-    return res.json({...user.toObject(), accessToken, refreshToken});
+    const updated = await UserService.update(user.id, { refreshToken });
+    const { password, ...publicUser } = updated;
+    return res.json({ ...publicUser, accessToken, refreshToken });
   } else {
     return sendError('Email or password is incorrect');
 
@@ -46,10 +45,9 @@ router.post('/register', async (req, res, next) => {
 router.post('/logout', async (req, res) => {
   const { email } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await UserService.getByEmail(email);
   if (user) {
-    user.refreshToken = null;
-    await user.save();
+    await UserService.update(user.id, { refreshToken: null });
   }
 
   res.status(200).json({ message: 'User logged out successfully.' });
@@ -67,10 +65,10 @@ router.post('/refresh', async (req, res) => {
 
   try {
     // Verify the refresh token
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
 
     // Find the user
-    const user = await UserService.get(decoded.sub);
+    const user = await UserService.get(decoded.userId);
 
     if (!user) {
       return res.status(403).json({
@@ -91,8 +89,7 @@ router.post('/refresh', async (req, res) => {
     const newRefreshToken = generateRefreshToken(user);
 
     // Update user's refresh token in database
-    user.refreshToken = newRefreshToken;
-    await user.save();
+    await UserService.update(user.id, { refreshToken: newRefreshToken });
 
     // Return new tokens
     return res.status(200).json({

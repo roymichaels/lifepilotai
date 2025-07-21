@@ -7,13 +7,13 @@ const router = express.Router();
 // GET /api/users/profile - Get user profile data
 router.get('/profile', requireUser, async (req, res) => {
   try {
-    console.log(`[User Routes] Fetching profile for user ID: ${req.user._id}`);
-    console.log(`[User Routes] User object:`, JSON.stringify(req.user.toObject ? req.user.toObject() : req.user, null, 2));
-    
-    const user = await UserService.get(req.user._id);
+    console.log(`[User Routes] Fetching profile for user ID: ${req.user.id}`);
+    console.log(`[User Routes] User object:`, JSON.stringify(req.user, null, 2));
+
+    const user = await UserService.get(req.user.id);
     
     if (!user) {
-      console.error(`[User Routes] User not found with ID: ${req.user._id}`);
+      console.error(`[User Routes] User not found with ID: ${req.user.id}`);
       return res.status(404).json({ 
         success: false, 
         message: 'User not found' 
@@ -21,7 +21,7 @@ router.get('/profile', requireUser, async (req, res) => {
     }
 
     const profileData = {
-      id: user._id,
+      id: user.id,
       email: user.email,
       name: user.name || 'Commander',
       level: user.level,

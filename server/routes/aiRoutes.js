@@ -7,7 +7,7 @@ const router = express.Router();
 // POST /api/ai/chat - Send a chat message to AI
 router.post('/chat', requireUser, async (req, res) => {
   try {
-    console.log('[AI Routes] Chat request received from user:', req.user._id);
+    console.log('[AI Routes] Chat request received from user:', req.user.id);
     console.log('[AI Routes] Request body:', JSON.stringify(req.body, null, 2));
 
     const { message, context } = req.body;
@@ -57,7 +57,7 @@ router.post('/chat', requireUser, async (req, res) => {
 // POST /api/ai/onboarding - Process onboarding responses
 router.post('/onboarding', requireUser, async (req, res) => {
   try {
-    console.log('[AI Routes] Onboarding request received from user:', req.user._id);
+    console.log('[AI Routes] Onboarding request received from user:', req.user.id);
     console.log('[AI Routes] Request body:', JSON.stringify(req.body, null, 2));
 
     const { responses } = req.body;

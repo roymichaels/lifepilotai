@@ -46,3 +46,5 @@ Create the following products and prices in your Stripe dashboard:
 Add the following environment variables to your `.env` files:
 
 #### Frontend (.env)
+## Local Database
+This project now uses a local SQLite database initialized from `server/db/schema.sql`. The database file `lifepilot.db` is created automatically in the `server` folder on first start.

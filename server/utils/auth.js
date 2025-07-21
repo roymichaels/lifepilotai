@@ -11,7 +11,7 @@ function generateAccessToken(user) {
   }
 
   const payload = {
-    userId: user._id,
+    userId: user.id,
     email: user.email,
   };
 
@@ -31,7 +31,7 @@ function generateRefreshToken(user) {
   }
 
   const payload = {
-    userId: user._id,
+    userId: user.id,
     email: user.email,
   };
 

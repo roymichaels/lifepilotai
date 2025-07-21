@@ -3,24 +3,18 @@ require("dotenv").config();
 
 // Log environment variables to debug
 console.log('[Server] Environment variables loaded');
-console.log('[Server] DATABASE_URL exists:', !!process.env.DATABASE_URL);
 console.log('[Server] JWT_SECRET exists:', !!process.env.JWT_SECRET);
 console.log('[Server] JWT_REFRESH_SECRET exists:', !!process.env.JWT_REFRESH_SECRET);
 console.log('[Server] OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
 
-const mongoose = require("mongoose");
 const express = require("express");
 const basicRoutes = require("./routes/index");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const aiRoutes = require("./routes/aiRoutes");
-const { connectDB } = require("./config/database");
+require("./config/database");
 const cors = require("cors");
 
-if (!process.env.DATABASE_URL) {
-  console.error("Error: DATABASE_URL variables in .env missing.");
-  process.exit(-1);
-}
 
 if (!process.env.JWT_SECRET) {
   console.error("Error: JWT_SECRET variable in .env missing.");
@@ -43,8 +37,6 @@ app.use(cors({}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Database connection
-connectDB();
 
 app.on("error", (error) => {
   console.error(`Server error: ${error.message}`);
