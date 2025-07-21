@@ -62,7 +62,7 @@ const requireUser = async (req, res, next) => {
     }
 
     console.log('[Auth Middleware] User authenticated successfully:', user.email);
-    console.log('[Auth Middleware] User object keys:', Object.keys(user.toObject ? user.toObject() : user));
+    console.log('[Auth Middleware] User object keys:', Object.keys(user));
     req.user = user;
     next();
 

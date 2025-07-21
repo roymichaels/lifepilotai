@@ -1,0 +1,47 @@
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    name TEXT DEFAULT '',
+    level INTEGER DEFAULT 1,
+    xp INTEGER DEFAULT 0,
+    unlocked_skills TEXT DEFAULT '[]',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_login_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_active INTEGER DEFAULT 1,
+    refresh_token TEXT
+);
+
+CREATE TABLE IF NOT EXISTS goals (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    description TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    status TEXT
+);
+
+CREATE TABLE IF NOT EXISTS notes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    content TEXT,
+    tags TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS checklists (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    completed INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS checklist_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    checklist_id INTEGER,
+    text TEXT,
+    done INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS widgets (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    type TEXT,
+    config_json TEXT
+);
