@@ -10,8 +10,6 @@ console.log('[Server] OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
 
 const mongoose = require("mongoose");
 const express = require("express");
-const session = require("express-session");
-const MongoStore = require('connect-mongo');
 const basicRoutes = require("./routes/index");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
