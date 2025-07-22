@@ -81,7 +81,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     console.log('Widget action:', action, data);
 
     switch (action) {
-      case 'toggle':
+      case 'toggle': {
         // Handle task completion toggle
         const updatedWidgets = activeWidgets.map(widget => {
           if (widget.type === 'list') {
@@ -96,6 +96,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         });
         await updateProject(activeProject.id, { widgets: updatedWidgets });
         break;
+      }
       case 'view-goals':
         // This will be handled by the parent component to open modals
         break;

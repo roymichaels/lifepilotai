@@ -41,7 +41,7 @@ export function HolographicSphere3D({
 
   // Animation loop - using refs to avoid re-renders
   useEffect(() => {
-    let startTime = Date.now();
+    const startTime = Date.now();
 
     const animate = () => {
       try {
