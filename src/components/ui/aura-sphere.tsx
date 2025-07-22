@@ -1,4 +1,4 @@
-// client/src/components/ui/holographic-sphere-3d.tsx
+// src/components/ui/aura-sphere.tsx
 
 import { useRef, useEffect, useState, useCallback } from 'react'
 
