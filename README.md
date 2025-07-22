@@ -44,12 +44,19 @@ Create the following products and prices in your Stripe dashboard:
 ### 2. Environment Variables
 
 Copy the provided `.env.example` file to `.env` in the project root and fill in the values.
-Frontend variables must be prefixed with `VITE_` so Vite can expose them to the client.
+Frontend variables must be prefixed with `VITE_` so Vite can expose them to the client. The
+Firebase values are required for authentication to work correctly.
 
 #### Frontend
 - `VITE_API_BASE_URL` – base URL of the remote API
 - `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
 - `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
+- `VITE_FIREBASE_API_KEY` – Firebase project API key
+- `VITE_FIREBASE_AUTH_DOMAIN` – Firebase auth domain
+- `VITE_FIREBASE_PROJECT_ID` – Firebase project ID
+- `VITE_FIREBASE_STORAGE_BUCKET` – Firebase storage bucket URL
+- `VITE_FIREBASE_MESSAGING_SENDER_ID` – Firebase messaging sender ID
+- `VITE_FIREBASE_APP_ID` – Firebase app ID
 
 ### 3. Running the App
 Install dependencies with `npm install` (or `yarn`). Start the development server using:
