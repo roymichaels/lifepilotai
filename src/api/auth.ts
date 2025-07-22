@@ -1,17 +1,16 @@
-import api from './api';
+import { supabase } from '../lib/supabase';
 
 // Description: Login user functionality
 // Endpoint: POST /auth/login
 // Request: { email: string, password: string }
 // Response: { accessToken: string, refreshToken: string }
 export const login = async (email: string, password: string) => {
-  try {
-    const response = await api.post('/auth/login', { email, password });
-    return response.data;
-  } catch (error) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
     console.error('Login error:', error);
-    throw new Error(error?.response?.data?.message || error.message);
+    throw new Error(error.message);
   }
+  return data;
 };
 
 // Description: Register user functionality
@@ -19,12 +18,12 @@ export const login = async (email: string, password: string) => {
 // Request: { email: string, password: string }
 // Response: { email: string }
 export const register = async (email: string, password: string) => {
-  try {
-    const response = await api.post('/auth/register', {email, password});
-    return response.data;
-  } catch (error) {
-    throw new Error(error?.response?.data?.message || error.message);
+  const { data, error } = await supabase.auth.signUp({ email, password });
+  if (error) {
+    console.error('Register error:', error);
+    throw new Error(error.message);
   }
+  return data;
 };
 
 // Description: Logout
@@ -32,9 +31,10 @@ export const register = async (email: string, password: string) => {
 // Request: {}
 // Response: { success: boolean, message: string }
 export const logout = async () => {
-  try {
-    return await api.post('/auth/logout');
-  } catch (error) {
-    throw new Error(error?.response?.data?.message || error.message);
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error('Logout error:', error);
+    throw new Error(error.message);
   }
+  return { success: true };
 };

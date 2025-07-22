@@ -36,7 +36,7 @@ export function Register() {
       await registerUser(data.email, data.password);
       toast({
         title: "Success",
-        description: "Account created successfully",
+        description: "Check your email for a verification link",
       })
       navigate("/login")
     } catch (error) {

@@ -34,14 +34,19 @@ export function Login() {
     try {
       setLoading(true)
       console.log("Login - Starting login process");
-      await login(data.email, data.password);
-      console.log("Login - Login successful, about to navigate to /dashboard");
+      const { session } = await login(data.email, data.password);
+      if (!session) {
+        toast({
+          title: "Check your email",
+          description: "Please verify your account before logging in.",
+        })
+        return;
+      }
       toast({
         title: "Success",
         description: "Logged in successfully",
       })
       navigate("/dashboard")
-      console.log("Login - Navigation to /dashboard completed");
     } catch (error) {
       console.error("Login error:", error.message)
       toast({

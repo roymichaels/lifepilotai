@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { login as apiLogin, register as apiRegister } from "../api/auth";
+import { login as apiLogin, register as apiRegister, logout as apiLogout } from "../api/auth";
+import { supabase } from "../lib/supabase";
 
 type User = {
   id: string;
@@ -15,55 +16,43 @@ type User = {
 type AuthContextType = {
   isAuthenticated: boolean;
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<{ session: any; user: any } | void>;
   register: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   setUser: (user: User | null) => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    const hasToken = !!localStorage.getItem("accessToken");
-    console.log("AuthProvider - Initial authentication state:", hasToken);
-    return hasToken;
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    console.log("AuthContext - User state changed:", user);
-  }, [user]);
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setIsAuthenticated(!!session);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      setIsAuthenticated(!!session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   const login = async (email: string, password: string) => {
     try {
-      console.log("AuthContext - Starting login process");
-      const response = await apiLogin(email, password);
-      console.log("AuthContext - Login API response:", response);
-
-      if (response?.accessToken) {
-        localStorage.setItem("accessToken", response.accessToken);
-        if (response.refreshToken) {
-          localStorage.setItem("refreshToken", response.refreshToken);
-        }
-        
-        // Set user data if provided in login response
-        if (response.user) {
-          console.log("AuthContext - Setting user data from login response:", response.user);
-          setUser(response.user);
-        }
-        
-        setIsAuthenticated(true);
-        console.log("AuthContext - Login successful, authentication state set to true");
-      } else {
-        console.log("AuthContext - Login failed - no access token received");
-        throw new Error('Login failed - no access token received');
-      }
+      const { session, user } = await apiLogin(email, password);
+      setUser(user as unknown as User | null);
+      setIsAuthenticated(!!session);
+      return { session, user };
     } catch (error) {
       console.error("AuthContext - Login error:", error);
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("accessToken");
       setIsAuthenticated(false);
       setUser(null);
       throw new Error(error?.message || 'Login failed');
@@ -72,27 +61,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (email: string, password: string) => {
     try {
-      console.log("AuthContext - Starting registration process");
-      const response = await apiRegister(email, password);
-      console.log("AuthContext - Registration successful");
-      // Registration successful - user needs to login separately
+      await apiRegister(email, password);
     } catch (error) {
       console.error("AuthContext - Registration error:", error);
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("accessToken");
       setIsAuthenticated(false);
       setUser(null);
       throw new Error(error?.message || 'Registration failed');
     }
   };
 
-  const logout = () => {
-    console.log("AuthContext - Logging out user");
-    localStorage.removeItem("refreshToken");
-    localStorage.removeItem("accessToken");
+  const logout = async () => {
+    await apiLogout();
     setIsAuthenticated(false);
     setUser(null);
-    window.location.reload();
   };
 
   return (
