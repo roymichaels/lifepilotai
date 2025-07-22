@@ -6,18 +6,37 @@ export interface ChatMessage {
   timestamp: string;
 }
 
+export interface ChatHistoryEntry {
+  id: string;
+  sender: 'user' | 'aura';
+  content: string;
+  timestamp?: string;
+}
+
 // API response types for chat endpoints
 export interface ChatApiResponse {
   success: boolean;
   response: string;
-  context?: any;
+  context?: ChatContext;
 }
 
 // Chat context for maintaining conversation state
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [key: string]: JsonValue };
+
+export interface ChatContextMetadata {
+  [key: string]: JsonValue;
+}
+
 export interface ChatContext {
   projectId?: string;
   conversationId?: string;
-  metadata?: Record<string, any>;
+  metadata?: ChatContextMetadata;
 }
 
 // Chat request payload
