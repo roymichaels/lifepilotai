@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Send, Mic, MicOff, ChevronDown, ChevronUp } from 'lucide-react';
 import { ChatMessage } from './ChatMessage';
 import { useChatContext } from '@/contexts/ChatContext';
-import { AuraMemoryService } from './AuraLayout';
+import { AuraMemoryService } from '@/services/AuraMemoryService';
 
 interface BottomChatSectionProps {
   isExpanded: boolean;

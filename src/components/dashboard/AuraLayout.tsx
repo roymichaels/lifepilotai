@@ -26,40 +26,8 @@ import { Crown, Zap, Target, Heart, Sparkles, Plus } from 'lucide-react';
 import { useCharacter } from '@/hooks/useCharacter';
 import { SkillTree } from '@/components/rpg/SkillTree';
 import { useNavigate } from 'react-router-dom';
-
-export class AuraMemoryService {
-  private static readonly STORAGE_KEY = 'aura_conversation';
-
-  /** add one message (user or aura) to end of the log */
-  static addMessage(message: { sender: 'user' | 'aura'; text: string; timestamp?: string }) {
-    const convo = this.getConversation();
-    convo.push({
-      ...message,
-      timestamp: message.timestamp ?? new Date().toISOString()
-    });
-    this.saveConversation(convo);
-  }
-
-  /** get full array of all messages */
-  static getConversation(): Array<{ sender: string; text: string; timestamp: string }> {
-    try {
-      const raw = localStorage.getItem(this.STORAGE_KEY);
-      return raw ? JSON.parse(raw) : [];
-    } catch {
-      return [];
-    }
-  }
-
-  /** overwrite entire conversation */
-  private static saveConversation(convo: any[]) {
-    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(convo));
-  }
-
-  /** completely wipe memory */
-  static clearConversation() {
-    localStorage.removeItem(this.STORAGE_KEY);
-  }
-}
+import { AuraMemoryService } from '@/services/AuraMemoryService';
+import { useElectricSync } from '@/hooks/useElectricSync';
 
 const jobIcons = {
   'Strategist': Crown,
@@ -90,6 +58,7 @@ function AuraLayoutContent() {
   const { projects, activeProject, isLoading: projectsLoading } = useProjectStorage();
   const isMobile = useMobile();
   const navigate = useNavigate();
+  useElectricSync();
 
   // Auto-open plan modal if no active project - wait for loading to complete
   useEffect(() => {
