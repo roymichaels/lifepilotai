@@ -3,3 +3,5 @@ dist/
 .env
 lifepilot.db
 *.log
+yarn.lock
+.yarn/*
