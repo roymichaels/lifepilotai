@@ -14,6 +14,8 @@ interface ChatContextType {
   sendMessage: (content: string) => Promise<void>;
   setAuraState: (state: AuraState) => void;
   handleWidgetAction: (action: string, data?: any) => void;
+  proactiveTips: string[];
+  refreshProactiveTips: () => Promise<void>;
 }
 
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
@@ -22,15 +24,24 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [auraState, setAuraState] = useState<AuraState>('idle');
   const { activeProject, updateProject } = useProjectStorage();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [proactiveTips, setProactiveTips] = useState<string[]>([]);
 
   const activeWidgets = activeProject?.widgets || [];
 
   useEffect(() => {
     if (activeProject) {
       AuraMemoryService.getConversation(activeProject.id).then(setMessages);
+      AuraMemoryService.getProactiveTips(activeProject.id).then(tips =>
+        setProactiveTips(tips.map(t => t.tip))
+      );
+      AuraMemoryService.startTipScheduler(activeProject.id);
     } else {
       setMessages([]);
+      setProactiveTips([]);
     }
+    return () => {
+      if (activeProject) AuraMemoryService.stopTipScheduler(activeProject.id);
+    };
   }, [activeProject]);
 
   const sendMessage = useCallback(async (content: string): Promise<string> => {
@@ -75,6 +86,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [activeProject, activeWidgets, updateProject]);
 
+  const refreshProactiveTips = useCallback(async () => {
+    if (!activeProject) return;
+    const tips = await AuraMemoryService.getProactiveTips(activeProject.id);
+    setProactiveTips(tips.map(t => t.tip));
+  }, [activeProject]);
+
   const handleWidgetAction = useCallback(async (action: string, data?: any) => {
     if (!activeProject) return;
 
@@ -111,7 +128,9 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       auraState,
       sendMessage,
       setAuraState,
-      handleWidgetAction
+      handleWidgetAction,
+      proactiveTips,
+      refreshProactiveTips
     }}>
       {children}
     </ChatContext.Provider>

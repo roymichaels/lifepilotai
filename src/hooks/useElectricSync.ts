@@ -15,6 +15,13 @@ interface SummaryRow {
   createdAt: string
 }
 
+interface TipRow {
+  id: string
+  projectId: string
+  tip: string
+  createdAt: string
+}
+
 /**
  * Hook that syncs local ElectricSQL tables with the backend when the browser
  * comes online using the official client utilities.
@@ -24,6 +31,7 @@ export function useElectricSync() {
     let projectStream: ShapeStream<Project> | null = null
     let messageStream: ShapeStream<MessageRow> | null = null
     let summaryStream: ShapeStream<SummaryRow> | null = null
+    let tipStream: ShapeStream<TipRow> | null = null
 
     const startProjects = async () => {
       if (!navigator.onLine) return
@@ -133,10 +141,47 @@ export function useElectricSync() {
       }
     }
 
+    const startTips = async () => {
+      if (!navigator.onLine) return
+      if (tipStream?.isConnected()) return
+
+      try {
+        tipStream = new ShapeStream<TipRow>({
+          url: `${import.meta.env.VITE_ELECTRIC_URL}/v1/shape`,
+          params: { table: 'tips', replica: 'full' },
+          subscribe: true,
+          onError: async err => {
+            console.error('[electric] tip sync error', err)
+            tipStream?.unsubscribeAll()
+            tipStream = null
+            if (navigator.onLine) setTimeout(startTips, 5000)
+          }
+        })
+
+        tipStream.subscribe(async messages => {
+          for (const msg of messages) {
+            if (isChangeMessage<TipRow>(msg)) {
+              const { operation } = msg.headers
+              const row = msg.value as TipRow
+              if (operation === 'insert' || operation === 'update') {
+                await electric.tips.put(row)
+              } else if (operation === 'delete') {
+                await electric.tips.delete(row.id)
+              }
+            }
+          }
+        })
+      } catch (err) {
+        console.error('[electric] failed to start tip sync', err)
+        if (navigator.onLine) setTimeout(startTips, 5000)
+      }
+    }
+
     const startAll = () => {
       startProjects()
       startMessages()
       startSummaries()
+      startTips()
     }
 
     window.addEventListener('online', startAll)
@@ -147,6 +192,7 @@ export function useElectricSync() {
       projectStream?.unsubscribeAll()
       messageStream?.unsubscribeAll()
       summaryStream?.unsubscribeAll()
+      tipStream?.unsubscribeAll()
     }
   }, [])
 }
