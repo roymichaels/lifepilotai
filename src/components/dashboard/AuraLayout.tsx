@@ -286,9 +286,7 @@ function AuraLayoutContent() {
         {/* Widget Grid - Full Width - only show if we have an active project */}
         {activeProject && (
           <main className="px-4 py-4" style={{ paddingBottom: '72px' }}>
-            <div className="grid gap-4 grid-cols-3 md:grid-cols-4 lg:grid-cols-5 max-w-7xl mx-auto">
-              <LiveDashboard onWidgetClick={openWidgetModal} />
-            </div>
+            <LiveDashboard onWidgetClick={openWidgetModal} />
 
             <FloatingAuraSphere
               onActivate={() => setIsChatExpanded(true)}

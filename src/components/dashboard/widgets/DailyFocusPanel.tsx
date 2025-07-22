@@ -30,6 +30,8 @@ export function DailyFocusPanel(props: any) {
     priority: task.priority
   })) || [];
 
+  const remaining = checklistItems.filter((c) => !c.completed).length;
+
   return (
     <motion.div {...props} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 h-64">
       <div className="flex items-center space-x-2 mb-4">
@@ -43,6 +45,10 @@ export function DailyFocusPanel(props: any) {
         showPriority={true}
         maxHeight="max-h-40"
       />
+
+      <div className="mt-4 text-xs text-white/70 text-center">
+        {remaining} task{remaining !== 1 ? 's' : ''} remaining
+      </div>
     </motion.div>
   );
 }

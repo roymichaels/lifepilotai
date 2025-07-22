@@ -28,6 +28,13 @@ export function MoodTracker(props: any) {
 
   const currentMood = moodData?.[moodData.length - 1]?.mood || 3;
   const MoodIcon = moodIcons[currentMood as keyof typeof moodIcons];
+  const avgMood =
+    moodData && moodData.length
+      ? (
+          moodData.reduce((sum: number, d: any) => sum + d.mood, 0) /
+          moodData.length
+        ).toFixed(1)
+      : '3';
 
   return (
     <motion.div {...props} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 h-64">
@@ -72,6 +79,8 @@ export function MoodTracker(props: any) {
           />
         </LineChart>
       </ResponsiveContainer>
+
+      <div className="mt-2 text-xs text-white/70 text-center">Avg mood: {avgMood}</div>
     </motion.div>
   );
 }

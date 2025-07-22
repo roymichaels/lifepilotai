@@ -3,8 +3,14 @@ import { motion } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 import { useGoalsData } from '@/api/dashboard';
 import { Target, TrendingUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-export function GoalProgressCards(props: any) {
+interface GoalProgressCardsProps {
+  onViewAll?: () => void;
+  className?: string;
+}
+
+export function GoalProgressCards({ onViewAll, className = '', ...props }: GoalProgressCardsProps & any) {
   const { data: goalsData, isLoading } = useGoalsData();
 
   if (isLoading) {
@@ -23,7 +29,10 @@ export function GoalProgressCards(props: any) {
   }
 
   return (
-    <motion.div {...props} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 h-64 overflow-y-auto">
+    <motion.div
+      {...props}
+      className={`bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 h-64 overflow-y-auto ${className}`}
+    >
       <div className="flex items-center space-x-2 mb-4">
         <Target className="w-5 h-5 text-blue-400" />
         <h3 className="text-lg font-semibold text-white">Goal Progress</h3>
@@ -44,6 +53,14 @@ export function GoalProgressCards(props: any) {
           </div>
         ))}
       </div>
+
+      {onViewAll && (
+        <div className="mt-4">
+          <Button size="sm" variant="secondary" className="w-full" onClick={onViewAll}>
+            View All
+          </Button>
+        </div>
+      )}
     </motion.div>
   );
 }

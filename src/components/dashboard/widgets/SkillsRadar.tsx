@@ -20,8 +20,8 @@ export function SkillsRadar(props: any) {
   return (
     <motion.div {...props} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 h-64">
       <h3 className="text-lg font-semibold text-white mb-4">Skills Radar</h3>
-      
-      <ResponsiveContainer width="100%" height="100%">
+
+      <ResponsiveContainer width="100%" height="70%">
         <RadarChart data={skillsData}>
           <PolarGrid stroke="rgba(255,255,255,0.2)" />
           <PolarAngleAxis dataKey="skill" tick={{ fill: 'white', fontSize: 12 }} />
@@ -49,6 +49,17 @@ export function SkillsRadar(props: any) {
           />
         </RadarChart>
       </ResponsiveContainer>
+
+      <div className="mt-2 flex justify-center space-x-4 text-xs text-white/80">
+        <div className="flex items-center space-x-1">
+          <span className="w-2 h-2 bg-blue-500 inline-block" />
+          <span>Current</span>
+        </div>
+        <div className="flex items-center space-x-1">
+          <span className="w-2 h-2 bg-green-500 inline-block" />
+          <span>Target</span>
+        </div>
+      </div>
     </motion.div>
   );
 }
