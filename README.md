@@ -58,6 +58,11 @@ Firebase values are required for authentication to work correctly.
 - `VITE_FIREBASE_MESSAGING_SENDER_ID` – Firebase messaging sender ID
 - `VITE_FIREBASE_APP_ID` – Firebase app ID
 
+Obtain API keys from their respective provider dashboards. After creating a
+Firebase project, open **Project Settings > General** and add a new Web app to
+view the configuration snippet. Use those values to replace the placeholders in
+`.env`.
+
 ### 3. Running the App
 Install dependencies with `npm install` (or `yarn`). Start the development server using:
 
