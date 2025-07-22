@@ -31,7 +31,7 @@ export interface Board {
 }
 
 // Description: Get boards for a project
-// Endpoint: GET /api/boards
+// Endpoint: GET /boards
 // Request: { projectId?: string, type?: string }
 // Response: { boards: Board[] }
 export const getBoards = async (projectId?: string, type?: string) => {
@@ -180,14 +180,14 @@ export const getBoards = async (projectId?: string, type?: string) => {
 
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.get('/api/boards', { params: { projectId, type } });
+  //   return await api.get('/boards', { params: { projectId, type } });
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }
 };
 
 // Description: Move a card between columns
-// Endpoint: POST /api/boards/move-card
+// Endpoint: POST /boards/move-card
 // Request: { cardId: string, fromColumnId: string, toColumnId: string, boardId: string }
 // Response: { success: boolean }
 export const moveCard = async (cardId: string, fromColumnId: string, toColumnId: string, boardId: string) => {
@@ -200,14 +200,14 @@ export const moveCard = async (cardId: string, fromColumnId: string, toColumnId:
 
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.post('/api/boards/move-card', { cardId, fromColumnId, toColumnId, boardId });
+  //   return await api.post('/boards/move-card', { cardId, fromColumnId, toColumnId, boardId });
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }
 };
 
 // Description: Add a new card to a column
-// Endpoint: POST /api/boards/add-card
+// Endpoint: POST /boards/add-card
 // Request: { columnId: string, boardId: string, card: Partial<BoardCard> }
 // Response: { card: BoardCard }
 export const addCard = async (columnId: string, boardId: string, card: Partial<BoardCard>) => {
@@ -231,14 +231,14 @@ export const addCard = async (columnId: string, boardId: string, card: Partial<B
 
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.post('/api/boards/add-card', { columnId, boardId, card });
+  //   return await api.post('/boards/add-card', { columnId, boardId, card });
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }
 };
 
 // Description: Update a card
-// Endpoint: PUT /api/boards/update-card
+// Endpoint: PUT /boards/update-card
 // Request: { cardId: string, updates: Partial<BoardCard> }
 // Response: { card: BoardCard }
 export const updateCard = async (cardId: string, updates: Partial<BoardCard>) => {
@@ -257,14 +257,14 @@ export const updateCard = async (cardId: string, updates: Partial<BoardCard>) =>
 
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.put('/api/boards/update-card', { cardId, updates });
+  //   return await api.put('/boards/update-card', { cardId, updates });
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }
 };
 
 // Description: Get board templates
-// Endpoint: GET /api/boards/templates
+// Endpoint: GET /boards/templates
 // Request: {}
 // Response: { templates: BoardTemplate[] }
 export const getBoardTemplates = async () => {
@@ -321,7 +321,7 @@ export const getBoardTemplates = async () => {
 
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.get('/api/boards/templates');
+  //   return await api.get('/boards/templates');
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }

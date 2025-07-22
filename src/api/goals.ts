@@ -1,7 +1,7 @@
 import api from './api';
 
 // Description: Get user goals
-// Endpoint: GET /api/goals
+// Endpoint: GET /goals
 // Request: {}
 // Response: { goals: Array<{ _id: string, title: string, progress: number, category: string, status: string }> }
 export const getGoals = async () => {
@@ -44,7 +44,7 @@ export const getGoals = async () => {
   });
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.get('/api/goals');
+  //   return await api.get('/goals');
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }

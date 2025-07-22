@@ -47,30 +47,15 @@ Copy the provided `.env.example` file to `.env` in the project root and fill in 
 Frontend variables must be prefixed with `VITE_` so Vite can expose them to the client.
 
 #### Frontend
+- `VITE_API_BASE_URL` – base URL of the remote API
 - `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
 - `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
 
-#### Backend
-- `JWT_SECRET` – secret for signing access tokens
-- `JWT_REFRESH_SECRET` – secret for refresh tokens
-- `OPENAI_API_KEY` – server side OpenAI key
-- `PORT` – port for the Express API (default: `3000`)
-
-### 3. Local Database
-This project now uses a local SQLite database initialized from `backend/schema.sql`.
-The database file `lifepilot.db` is created automatically in the project root on first start.
-
-### 4. Single App Structure
-LifePilotAI combines the React frontend and Express backend in one repository.
-The React app lives in the `src/` directory and the API lives in `backend/`.
-Shared utilities reside in `src/lib/`, and the SQLite schema lives in `backend/schema.sql`.
-
-### 5. Running the App
-Install dependencies with `npm install` (or `yarn`). Start both the frontend and
-backend together in development mode using:
+### 3. Running the App
+Install dependencies with `npm install` (or `yarn`). Start the development server using:
 
 ```bash
 npm run dev
 ```
-This command launches the Vite dev server and the Express API concurrently.
+This command starts the Vite dev server.
 

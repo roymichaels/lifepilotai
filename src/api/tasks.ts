@@ -1,7 +1,7 @@
 import api from './api';
 
 // Description: Get user tasks
-// Endpoint: GET /api/tasks
+// Endpoint: GET /tasks
 // Request: {}
 // Response: { tasks: Array<{ _id: string, title: string, completed: boolean, category: string, estimatedTime: number }> }
 export const getTasks = async () => {
@@ -51,7 +51,7 @@ export const getTasks = async () => {
   });
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.get('/api/tasks');
+  //   return await api.get('/tasks');
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }

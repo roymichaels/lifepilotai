@@ -1,7 +1,7 @@
 import api from './api';
 
 // Description: Get user achievements
-// Endpoint: GET /api/achievements
+// Endpoint: GET /achievements
 // Request: {}
 // Response: { achievements: Array<{ _id: string, title: string, description: string, icon: string }> }
 export const getAchievements = async () => {
@@ -34,14 +34,14 @@ export const getAchievements = async () => {
   });
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.get('/api/achievements');
+  //   return await api.get('/achievements');
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }
 };
 
 // Description: Get user rewards
-// Endpoint: GET /api/rewards
+// Endpoint: GET /rewards
 // Request: {}
 // Response: { rewards: Array<{ _id: string, title: string, description: string, unlocked: boolean }> }
 export const getRewards = async () => {
@@ -68,7 +68,7 @@ export const getRewards = async () => {
   });
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.get('/api/rewards');
+  //   return await api.get('/rewards');
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }

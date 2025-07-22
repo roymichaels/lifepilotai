@@ -2,7 +2,7 @@ import api from './api';
 import { Subscription, UsageStats } from '@/types/subscription';
 
 // Description: Get current user subscription
-// Endpoint: GET /api/subscription
+// Endpoint: GET /subscription
 // Request: {}
 // Response: { subscription: Subscription | null, usage: UsageStats }
 export const getSubscription = async () => {
@@ -33,14 +33,14 @@ export const getSubscription = async () => {
 
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.get('/api/subscription');
+  //   return await api.get('/subscription');
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }
 };
 
 // Description: Create Stripe checkout session
-// Endpoint: POST /api/subscription/checkout
+// Endpoint: POST /subscription/checkout
 // Request: { priceId: string, billingCycle: 'monthly' | 'yearly' }
 // Response: { sessionId: string, url: string }
 export const createCheckoutSession = async (priceId: string, billingCycle: 'monthly' | 'yearly') => {
@@ -56,14 +56,14 @@ export const createCheckoutSession = async (priceId: string, billingCycle: 'mont
 
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.post('/api/subscription/checkout', { priceId, billingCycle });
+  //   return await api.post('/subscription/checkout', { priceId, billingCycle });
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }
 };
 
 // Description: Cancel subscription
-// Endpoint: POST /api/subscription/cancel
+// Endpoint: POST /subscription/cancel
 // Request: { cancelAtPeriodEnd: boolean }
 // Response: { success: boolean, subscription: Subscription }
 export const cancelSubscription = async (cancelAtPeriodEnd: boolean = true) => {
@@ -90,14 +90,14 @@ export const cancelSubscription = async (cancelAtPeriodEnd: boolean = true) => {
 
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.post('/api/subscription/cancel', { cancelAtPeriodEnd });
+  //   return await api.post('/subscription/cancel', { cancelAtPeriodEnd });
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }
 };
 
 // Description: Update subscription plan
-// Endpoint: POST /api/subscription/update
+// Endpoint: POST /subscription/update
 // Request: { priceId: string, billingCycle: 'monthly' | 'yearly' }
 // Response: { success: boolean, subscription: Subscription }
 export const updateSubscription = async (priceId: string, billingCycle: 'monthly' | 'yearly') => {
@@ -124,7 +124,7 @@ export const updateSubscription = async (priceId: string, billingCycle: 'monthly
 
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.post('/api/subscription/update', { priceId, billingCycle });
+  //   return await api.post('/subscription/update', { priceId, billingCycle });
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }

@@ -12,7 +12,7 @@ export interface Milestone {
 }
 
 // Description: Get roadmap milestones
-// Endpoint: GET /api/roadmap
+// Endpoint: GET /roadmap
 // Request: {}
 // Response: { milestones: Milestone[] }
 export const getRoadmap = async () => {
@@ -77,7 +77,7 @@ export const getRoadmap = async () => {
   });
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.get('/api/roadmap');
+  //   return await api.get('/roadmap');
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }

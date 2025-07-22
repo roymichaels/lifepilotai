@@ -1,7 +1,7 @@
 import api from './api';
 
 // Description: Send a chat message to Aura AI
-// Endpoint: POST /api/ai/chat
+// Endpoint: POST /ai/chat
 // Request: { message: string, context?: any }
 // Response: { success: boolean, response: string, context?: any }
 export const sendChatMessage = async (message: string, context?: any) => {
@@ -9,8 +9,8 @@ export const sendChatMessage = async (message: string, context?: any) => {
   console.log('sendChatMessage - Context:', context);
 
   try {
-    console.log('sendChatMessage - Making API request to /api/ai/chat');
-    const response = await api.post('/api/ai/chat', { message, context });
+    console.log('sendChatMessage - Making API request to /ai/chat');
+    const response = await api.post('/ai/chat', { message, context });
     console.log('sendChatMessage - API response received:', response.data);
     console.log('sendChatMessage - Response structure:', JSON.stringify(response.data, null, 2));
     console.log('sendChatMessage - Response.response field:', response.data.response);
