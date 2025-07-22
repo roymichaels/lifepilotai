@@ -1,5 +1,9 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { login as apiLogin, register as apiRegister } from "../api/auth";
+import {
+  login as apiLogin,
+  register as apiRegister,
+  logout as apiLogout,
+} from "../api/auth";
 
 type User = {
   id: string;
@@ -44,10 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (response?.accessToken) {
         localStorage.setItem("accessToken", response.accessToken);
-        if (response.refreshToken) {
-          localStorage.setItem("refreshToken", response.refreshToken);
-        }
-        
+
         // Set user data if provided in login response
         if (response.user) {
           console.log("AuthContext - Setting user data from login response:", response.user);
@@ -62,7 +63,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error("AuthContext - Login error:", error);
-      localStorage.removeItem("refreshToken");
       localStorage.removeItem("accessToken");
       setIsAuthenticated(false);
       setUser(null);
@@ -78,7 +78,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Registration successful - user needs to login separately
     } catch (error) {
       console.error("AuthContext - Registration error:", error);
-      localStorage.removeItem("refreshToken");
       localStorage.removeItem("accessToken");
       setIsAuthenticated(false);
       setUser(null);
@@ -86,9 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
     console.log("AuthContext - Logging out user");
-    localStorage.removeItem("refreshToken");
+    await apiLogout();
     localStorage.removeItem("accessToken");
     setIsAuthenticated(false);
     setUser(null);

@@ -21,6 +21,7 @@ import { useAuth } from "@/contexts/AuthContext"
 type RegisterForm = {
   email: string
   password: string
+  confirmPassword: string
 }
 
 export function Register() {
@@ -33,6 +34,14 @@ export function Register() {
   const onSubmit = async (data: RegisterForm) => {
     try {
       setLoading(true)
+      if (data.password !== data.confirmPassword) {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Passwords do not match",
+        })
+        return
+      }
       await registerUser(data.email, data.password);
       toast({
         title: "Success",
@@ -76,6 +85,15 @@ export function Register() {
                 type="password"
                 placeholder="Choose a password"
                 {...register("password", { required: true })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <Input
+                id="confirmPassword"
+                type="password"
+                placeholder="Confirm your password"
+                {...register("confirmPassword", { required: true })}
               />
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
