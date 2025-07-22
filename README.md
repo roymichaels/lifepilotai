@@ -43,8 +43,8 @@ Create the following products and prices in your Stripe dashboard:
 
 ### 2. Environment Variables
 
-Add the following variables to an `.env` file in the project root. Frontend variables
-must be prefixed with `VITE_` so Vite can expose them to the client.
+Copy the provided `.env.example` file to `.env` in the project root and fill in the values.
+Frontend variables must be prefixed with `VITE_` so Vite can expose them to the client.
 
 #### Frontend
 - `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
