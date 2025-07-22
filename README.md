@@ -59,3 +59,17 @@ npm run dev
 ```
 This command starts the Vite dev server.
 
+## Brain prompt configuration
+
+The prompts and behaviour used by Aura are defined under `src/brain/`.  Each
+file represents a layer of the AI:
+
+- `cognition.ts` – base system prompt and context
+- `behavior.ts` – communication style
+- `filters.ts` – message filters applied before sending
+- `skills.ts` – available helper skills
+
+These are combined in `Brain.ts` and imported by the chat API.  To tweak Aura's
+responses, edit the objects in these files.  No other code changes are needed as
+all chat functions read the configuration from `Brain.ts`.
+
