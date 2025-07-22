@@ -8,6 +8,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Send, Sparkles, Mic, MicOff } from 'lucide-react';
 import { useChatContext } from '@/contexts/ChatContext';
 import { useProjectStorage } from '@/hooks/useProjectStorage';
+
+function useOptionalChatContext() {
+  try {
+    return useChatContext();
+  } catch {
+    return null;
+  }
+}
 import { Project, ProjectTemplate } from '@/types/project';
 
 interface PlanStep {
@@ -109,14 +117,7 @@ export function UnifiedPlanChatModal({ isOpen, onClose, onComplete, planType }: 
   const [isProcessing, setIsProcessing] = useState(false);
   const [chatHistory, setChatHistory] = useState<Array<{id: string, sender: 'user' | 'aura', content: string}>>([]);
 
-  // Try to use ChatContext if available, but don't fail if it's not
-  let chatContext;
-  try {
-    chatContext = useChatContext();
-  } catch (error) {
-    // ChatContext not available, we'll work without it
-    chatContext = null;
-  }
+  const chatContext = useOptionalChatContext();
 
   const { createProject } = useProjectStorage();
 
