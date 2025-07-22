@@ -3,6 +3,11 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
+// Suppress console.log statements in production builds
+if (import.meta.env.PROD) {
+  console.log = () => {};
+}
+
 console.log('[Main] Starting React application...');
 console.log('[Main] Environment variables:', {
   NODE_ENV: import.meta.env.NODE_ENV,
