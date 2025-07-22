@@ -1,27 +1,58 @@
 import { useEffect } from 'react'
-import axios from 'axios'
+import { ShapeStream, isChangeMessage } from '@electric-sql/client'
 import { electric } from '@/lib/electric'
+import type { Project } from '@/types/project'
 
 /**
- * Hook that syncs local ElectricSQL tables with the backend when the
- * browser comes online. This is a very small placeholder implementation
- * that posts the current project table to `/api/sync/projects`.
+ * Hook that syncs local ElectricSQL tables with the backend when the browser
+ * comes online using the official client utilities.
  */
 export function useElectricSync() {
   useEffect(() => {
-    const sync = async () => {
+    let stream: ShapeStream<Project> | null = null
+
+    const startSync = async () => {
       if (!navigator.onLine) return
+
+      if (stream?.isConnected()) return
+
       try {
-        const projects = await electric.projects.toArray()
-        await axios.post('/api/sync/projects', { projects })
-        console.debug('[electric] synced projects to server')
+        stream = new ShapeStream<Project>({
+          url: `${import.meta.env.VITE_ELECTRIC_URL}/v1/shape`,
+          params: { table: 'projects', replica: 'full' },
+          subscribe: true,
+          onError: async err => {
+            console.error('[electric] sync error', err)
+            stream?.unsubscribeAll()
+            stream = null
+            if (navigator.onLine) setTimeout(startSync, 5000)
+          }
+        })
+
+        stream.subscribe(async messages => {
+          for (const msg of messages) {
+            if (isChangeMessage<Project>(msg)) {
+              const { operation } = msg.headers
+              const row = msg.value as Project
+              if (operation === 'insert' || operation === 'update') {
+                await electric.projects.put(row)
+              } else if (operation === 'delete') {
+                await electric.projects.delete(row.id)
+              }
+            }
+          }
+        })
       } catch (err) {
-        console.error('[electric] sync failed', err)
+        console.error('[electric] failed to start sync', err)
+        if (navigator.onLine) setTimeout(startSync, 5000)
       }
     }
 
-    window.addEventListener('online', sync)
-    sync()
-    return () => window.removeEventListener('online', sync)
+    window.addEventListener('online', startSync)
+    startSync()
+    return () => {
+      window.removeEventListener('online', startSync)
+      stream?.unsubscribeAll()
+    }
   }, [])
 }
