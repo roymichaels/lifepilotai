@@ -1,15 +1,14 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Message } from '@/components/dashboard/ChatMessage';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import type { ChatMessage } from '@/types/chat';
 import { sendChatMessage } from '@/api/chat';
 import { generateWidgets } from '@/api/widgets';
-import { useCharacter } from '@/hooks/useCharacter';
 import { useProjectStorage } from '@/hooks/useProjectStorage';
 import { AuraMemoryService } from '@/services/AuraMemoryService';
 
 type AuraState = 'idle' | 'listening' | 'thinking' | 'speaking';
 
 interface ChatContextType {
-  messages: Message[];
+  messages: ChatMessage[];
   activeWidgets: any[];
   auraState: AuraState;
   sendMessage: (content: string) => Promise<void>;
@@ -22,39 +21,41 @@ const ChatContext = createContext<ChatContextType | undefined>(undefined);
 export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [auraState, setAuraState] = useState<AuraState>('idle');
   const { activeProject, updateProject } = useProjectStorage();
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
-  // Get project-specific data
-  const messages = activeProject?.chatHistory || [];
   const activeWidgets = activeProject?.widgets || [];
+
+  useEffect(() => {
+    if (activeProject) {
+      AuraMemoryService.getConversation(activeProject.id).then(setMessages);
+    } else {
+      setMessages([]);
+    }
+  }, [activeProject]);
 
   const sendMessage = useCallback(async (content: string): Promise<string> => {
     if (!activeProject) return '';
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content,
+    const userMessage: ChatMessage = {
       sender: 'user',
-      timestamp: new Date()
+      text: content,
+      timestamp: new Date().toISOString()
     };
-
-    const updatedMessages = [...messages, userMessage];
-    await updateProject(activeProject.id, { chatHistory: updatedMessages });
+    await AuraMemoryService.addMessage(activeProject.id, userMessage);
+    setMessages(await AuraMemoryService.getConversation(activeProject.id));
     setAuraState('thinking');
 
     try {
       console.log('Sending message to Aura:', content);
       const response = await sendChatMessage(content);
 
-      const auraMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        content: response.message,
+      const auraMessage: ChatMessage = {
         sender: 'aura',
-        timestamp: new Date()
+        text: response.message,
+        timestamp: new Date().toISOString()
       };
-
-      const finalMessages = [...updatedMessages, auraMessage];
-      await updateProject(activeProject.id, { chatHistory: finalMessages });
-      AuraMemoryService.persistSummary(activeProject.id);
+      await AuraMemoryService.addMessage(activeProject.id, auraMessage);
+      setMessages(await AuraMemoryService.getConversation(activeProject.id));
 
       // Generate new widgets based on the conversation context
       const widgetResponse = await generateWidgets(content, activeWidgets.map(w => w.id));
@@ -72,7 +73,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       setAuraState('idle');
       return '';
     }
-  }, [activeProject, messages, activeWidgets, updateProject]);
+  }, [activeProject, activeWidgets, updateProject]);
 
   const handleWidgetAction = useCallback(async (action: string, data?: any) => {
     if (!activeProject) return;
