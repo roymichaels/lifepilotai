@@ -47,6 +47,7 @@ Copy the provided `.env.example` file to `.env` in the project root and fill in 
 Frontend variables must be prefixed with `VITE_` so Vite can expose them to the client. The
 Firebase values are required for authentication to work correctly.
 
+
 #### Frontend
 - `VITE_API_BASE_URL` – base URL of the remote API
 - `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
@@ -58,7 +59,15 @@ Firebase values are required for authentication to work correctly.
 - `VITE_FIREBASE_MESSAGING_SENDER_ID` – Firebase messaging sender ID
 - `VITE_FIREBASE_APP_ID` – Firebase app ID
 
-### 3. Running the App
+### 3. Firebase Console Setup
+1. Open the [Firebase console](https://console.firebase.google.com/) and navigate to **Authentication → Sign‑in method**.
+   Enable **Email/Password** or any other providers your app uses.
+2. Under **Authentication → Settings**, add your development and production
+   domains to the **Authorized domains** list (include `localhost` for local testing).
+3. Copy the Firebase project credentials into your `.env` file using the variable
+   names shown above.
+
+### 4. Running the App
 Install dependencies with `npm install` (or `yarn`). Start the development server using:
 
 ```bash
