@@ -1,3 +1,6 @@
+import type { ChatHistoryEntry } from './chat';
+import type { Widget } from './widget';
+
 export interface Project {
   id: string;
   name: string;
@@ -18,8 +21,8 @@ export interface Project {
     jobPerk: string;
   };
   milestones: ProjectMilestone[];
-  widgets: any[];
-  chatHistory: any[];
+  widgets: Widget[];
+  chatHistory: ChatHistoryEntry[];
 }
 
 export interface ProjectMilestone {

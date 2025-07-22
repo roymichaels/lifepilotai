@@ -4,7 +4,9 @@ import brain from '@/brain/Brain';
  * Send a chat message directly to OpenAI using the configured brain prompts.
  * Returns the assistant's reply wrapped in an object with a `message` field.
  */
-export const sendChatMessage = async (message: string, context?: any) => {
+import type { ChatContext } from '@/types/chat';
+
+export const sendChatMessage = async (message: string, context?: ChatContext) => {
   console.log('sendChatMessage - Called with message:', message);
   console.log('sendChatMessage - Context:', context);
 
