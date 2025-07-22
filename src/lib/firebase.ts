@@ -11,15 +11,23 @@ const {
   VITE_FIREBASE_APP_ID,
 } = import.meta.env;
 
-// Ensure all required variables are present
-if (
-  !VITE_FIREBASE_API_KEY ||
-  !VITE_FIREBASE_AUTH_DOMAIN ||
-  !VITE_FIREBASE_PROJECT_ID ||
-  !VITE_FIREBASE_APP_ID
-) {
+// Ensure all required variables are present and report any that are missing
+const firebaseVars = {
+  VITE_FIREBASE_API_KEY,
+  VITE_FIREBASE_AUTH_DOMAIN,
+  VITE_FIREBASE_PROJECT_ID,
+  VITE_FIREBASE_STORAGE_BUCKET,
+  VITE_FIREBASE_MESSAGING_SENDER_ID,
+  VITE_FIREBASE_APP_ID,
+};
+
+const missingKeys = Object.entries(firebaseVars)
+  .filter(([, value]) => !value)
+  .map(([key]) => key);
+
+if (missingKeys.length > 0) {
   throw new Error(
-    'Missing Firebase configuration. Please check your .env file.'
+    `Missing Firebase configuration keys: ${missingKeys.join(', ')}. Please check your .env file.`
   );
 }
 
