@@ -9,7 +9,6 @@ import { useNavigate } from 'react-router-dom';
 import { useMobile } from '@/hooks/useMobile';
 import { useProjectStorage } from '@/hooks/useProjectStorage';
 import { ProfileModal } from './modals/ProfileModal';
-import { SettingsModal } from './modals/SettingsModal';
 
 interface DashboardHeaderProps {
   onMenuToggle?: () => void;
@@ -22,7 +21,6 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
   const { activeProject } = useProjectStorage();
   const [rippleSettings, setRippleSettings] = useState<{ x: number; y: number; show: boolean }>({ x: 0, y: 0, show: false });
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -98,16 +96,23 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
                   <DropdownMenuSeparator className="bg-gray-700" />
                 </>
               )}
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="hover:bg-gray-800 cursor-pointer"
                 onClick={() => setShowProfileModal(true)}
               >
                 <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 className="hover:bg-gray-800 cursor-pointer"
-                onClick={() => setShowSettingsModal(true)}
+                onClick={() => navigate('/onboarding')}
+              >
+                <Crown className="mr-2 h-4 w-4" />
+                <span>Onboarding</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="hover:bg-gray-800 cursor-pointer"
+                onClick={() => navigate('/settings')}
               >
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
@@ -128,11 +133,6 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
         onClose={() => setShowProfileModal(false)} 
       />
 
-      {/* Settings Modal */}
-      <SettingsModal 
-        isOpen={showSettingsModal} 
-        onClose={() => setShowSettingsModal(false)} 
-      />
     </>
   );
 }

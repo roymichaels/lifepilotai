@@ -269,3 +269,41 @@ export const generateWidgets = async (context: string, activeWidgets: string[] =
   //   throw new Error(error?.response?.data?.error || error.message);
   // }
 };
+
+// Description: Update widgets with new data based on chat context
+// Endpoint: POST /widgets/update
+// Request: { context: string, widgets: WidgetData[] }
+// Response: { widgets: WidgetData[] }
+export const updateWidgets = async (context: string, widgets: any[]) => {
+  return new Promise<{ widgets: any[] }>((resolve) => {
+    setTimeout(() => {
+      const lower = context.toLowerCase();
+      const updated = widgets.map((w) => {
+        if (w.id === 'goals-progress' && lower.includes('goal')) {
+          return {
+            ...w,
+            data: w.data.map((g: any) => ({
+              ...g,
+              progress: Math.min(100, g.progress + 5)
+            }))
+          };
+        }
+        if (w.id === 'habit-streaks' && lower.includes('habit')) {
+          return {
+            ...w,
+            data: w.data.map((h: any) => ({
+              ...h,
+              streak: h.streak + 1
+            }))
+          };
+        }
+        if (w.id === 'mood-tracker' && lower.includes('mood')) {
+          const mood = Math.max(1, Math.min(5, Math.round(Math.random() * 5)));
+          return { ...w, data: [...w.data.slice(1), { date: 'Today', mood }] };
+        }
+        return w;
+      });
+      resolve({ widgets: updated });
+    }, 300);
+  });
+};

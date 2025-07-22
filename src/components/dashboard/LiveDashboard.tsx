@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useChatContext } from '@/contexts/ChatContext';
 import { UniversalWidget } from './widgets/UniversalWidget';
@@ -8,8 +8,29 @@ interface LiveDashboardProps {
   onWidgetClick?: (widget: any) => void;
 }
 
+function useResponsiveColumns() {
+  const getColumns = () => {
+    if (typeof window === 'undefined') return 1;
+    const width = window.innerWidth;
+    if (width < 640) return 1;
+    if (width < 1024) return 2;
+    return 3;
+  };
+
+  const [columns, setColumns] = useState(getColumns());
+
+  useEffect(() => {
+    const handleResize = () => setColumns(getColumns());
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return columns;
+}
+
 export function LiveDashboard({ onWidgetClick }: LiveDashboardProps) {
   const { activeWidgets, handleWidgetAction } = useChatContext();
+  const columns = useResponsiveColumns();
 
   if (activeWidgets.length === 0) {
     // Show empty state with placeholder widgets
@@ -23,7 +44,10 @@ export function LiveDashboard({ onWidgetClick }: LiveDashboardProps) {
   }
 
   return (
-    <>
+    <div
+      className="grid gap-4"
+      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
+    >
       {activeWidgets.map((widget, index) => (
         <motion.div
           key={widget.id}
@@ -44,6 +68,6 @@ export function LiveDashboard({ onWidgetClick }: LiveDashboardProps) {
       {Array.from({ length: Math.max(0, 9 - activeWidgets.length) }).map((_, index) => (
         <EmptyWidget key={`empty-${index}`} index={activeWidgets.length + index} />
       ))}
-    </>
+    </div>
   );
 }

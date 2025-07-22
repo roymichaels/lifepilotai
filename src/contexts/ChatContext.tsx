@@ -27,8 +27,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const messages = activeProject?.chatHistory || [];
   const activeWidgets = activeProject?.widgets || [];
 
-  const sendMessage = useCallback(async (content: string) => {
-    if (!activeProject) return;
+  const sendMessage = useCallback(async (content: string): Promise<string> => {
+    if (!activeProject) return '';
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -66,9 +66,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
 
       setAuraState('speaking');
       setTimeout(() => setAuraState('idle'), 2000);
+      return response.message;
     } catch (error) {
       console.error('Error sending message:', error);
       setAuraState('idle');
+      return '';
     }
   }, [activeProject, messages, activeWidgets, updateProject]);
 
