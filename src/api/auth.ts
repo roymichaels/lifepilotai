@@ -1,40 +1,40 @@
-import api from './api';
+import { auth } from '@/lib/firebase';
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+} from 'firebase/auth';
 
-// Description: Login user functionality
-// Endpoint: POST /auth/login
-// Request: { email: string, password: string }
-// Response: { accessToken: string, refreshToken: string }
 export const login = async (email: string, password: string) => {
   try {
-    const response = await api.post('/auth/login', { email, password });
-    return response.data;
-  } catch (error) {
+    const credential = await signInWithEmailAndPassword(auth, email, password);
+    const accessToken = await credential.user.getIdToken();
+    return {
+      accessToken,
+      user: {
+        id: credential.user.uid,
+        email: credential.user.email ?? '',
+      },
+    };
+  } catch (error: any) {
     console.error('Login error:', error);
-    throw new Error(error?.response?.data?.message || error.message);
+    throw new Error(error?.message || 'Login failed');
   }
 };
 
-// Description: Register user functionality
-// Endpoint: POST /auth/register
-// Request: { email: string, password: string }
-// Response: { email: string }
 export const register = async (email: string, password: string) => {
   try {
-    const response = await api.post('/auth/register', {email, password});
-    return response.data;
-  } catch (error) {
-    throw new Error(error?.response?.data?.message || error.message);
+    const credential = await createUserWithEmailAndPassword(auth, email, password);
+    return { email: credential.user.email ?? '' };
+  } catch (error: any) {
+    throw new Error(error?.message || 'Registration failed');
   }
 };
 
-// Description: Logout
-// Endpoint: POST /auth/logout
-// Request: {}
-// Response: { success: boolean, message: string }
 export const logout = async () => {
   try {
-    return await api.post('/auth/logout');
-  } catch (error) {
-    throw new Error(error?.response?.data?.message || error.message);
+    await signOut(auth);
+  } catch (error: any) {
+    throw new Error(error?.message || 'Logout failed');
   }
 };
