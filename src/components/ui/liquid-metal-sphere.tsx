@@ -1,5 +1,8 @@
-import React, { useRef, useMemo, Suspense } from 'react';
+import React, { useRef, Suspense } from 'react';
 import { motion } from 'framer-motion';
+import * as THREE from 'three';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Environment } from '@react-three/drei';
 
 interface LiquidMetalSphereProps {
   isActive?: boolean;
@@ -148,8 +151,55 @@ const FallbackSphere = ({
   );
 };
 
+const MetalSphere = ({
+  isActive = false,
+  isSpeaking = false,
+  isPulsing = false,
+  size = 1,
+}: LiquidMetalSphereProps) => {
+  const meshRef = useRef<THREE.Mesh>(null!);
+  const start = useRef(performance.now());
+
+  useFrame(() => {
+    if (!meshRef.current) return;
+    if (isActive) {
+      meshRef.current.rotation.y += 0.01;
+    }
+    const t = (performance.now() - start.current) / 1000;
+    const base = size;
+    const scale = isSpeaking
+      ? base * (1 + 0.05 * Math.sin(t * 4))
+      : isPulsing
+        ? base * (1 + 0.03 * Math.sin(t * 2))
+        : base;
+    meshRef.current.scale.set(scale, scale, scale);
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[1, 64, 64]} />
+      <meshPhysicalMaterial color="#ffffff" metalness={1} roughness={0.1} />
+    </mesh>
+  );
+};
+
+function MetalSphereCanvas(props: LiquidMetalSphereProps) {
+  return (
+    <Canvas className={props.className} camera={{ position: [0, 0, 3] }}>
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[2, 2, 2]} intensity={1} />
+      <Suspense fallback={null}>
+        <MetalSphere {...props} />
+        <Environment preset="sunset" />
+      </Suspense>
+    </Canvas>
+  );
+}
+
 export function LiquidMetalSphere(props: LiquidMetalSphereProps) {
-  // For now, always use the fallback sphere to avoid Three.js issues
-  // TODO: Implement proper Three.js sphere when dependencies are stable
-  return <FallbackSphere {...props} />;
+  return (
+    <Suspense fallback={<FallbackSphere {...props} />}> 
+      <MetalSphereCanvas {...props} />
+    </Suspense>
+  );
 }
