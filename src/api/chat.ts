@@ -1,25 +1,61 @@
-import api from './api';
 import brain from '@/brain/Brain';
 
-// Description: Send a chat message to Aura AI
-// Endpoint: POST /ai/chat
-// Request: { message: string, context?: any }
-// Response: { success: boolean, response: string, context?: any }
+/**
+ * Send a chat message directly to OpenAI using the configured brain prompts.
+ * Returns the assistant's reply wrapped in an object with a `message` field.
+ */
 export const sendChatMessage = async (message: string, context?: any) => {
   console.log('sendChatMessage - Called with message:', message);
   console.log('sendChatMessage - Context:', context);
+
   // Apply configured filters to the outgoing message
   const filteredMessage = brain.filters.reduce((msg, filter) => filter(msg), message);
   console.log('sendChatMessage - Using brain configuration:', brain);
 
   try {
-    console.log('sendChatMessage - Making API request to /ai/chat');
-    const response = await api.post('/ai/chat', { message: filteredMessage, context });
-    console.log('sendChatMessage - API response received:', response.data);
-    console.log('sendChatMessage - Response structure:', JSON.stringify(response.data, null, 2));
-    console.log('sendChatMessage - Response.response field:', response.data.response);
-    console.log('sendChatMessage - Response.success field:', response.data.success);
-    return response.data;
+    console.log('sendChatMessage - Preparing OpenAI request');
+
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error('Missing OpenAI API key');
+    }
+
+    const systemMessages = [
+      { role: 'system', content: brain.cognition.systemPrompt }
+    ];
+
+    if (brain.behavior.style) {
+      systemMessages.push({ role: 'system', content: `Communication style: ${brain.behavior.style}` });
+    }
+
+    if (brain.cognition.contextPrompt) {
+      systemMessages.push({ role: 'system', content: brain.cognition.contextPrompt });
+    }
+
+    const body = {
+      model: 'gpt-3.5-turbo',
+      messages: [
+        ...systemMessages,
+        { role: 'user', content: filteredMessage }
+      ]
+    };
+
+    console.log('sendChatMessage - Making request to OpenAI');
+
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(body)
+    });
+
+    const data = await res.json();
+    console.log('sendChatMessage - OpenAI response:', JSON.stringify(data, null, 2));
+
+    const reply = data.choices?.[0]?.message?.content?.trim() ?? '';
+    return { message: reply };
   } catch (error: any) {
     console.error('sendChatMessage - API error:', error);
     throw new Error(error?.response?.data?.message || error.message);
