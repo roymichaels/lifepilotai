@@ -12,7 +12,7 @@ const basicRoutes = require("./routes/index");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const aiRoutes = require("./routes/aiRoutes");
-require("./config/database");
+require("./db");
 const cors = require("cors");
 
 

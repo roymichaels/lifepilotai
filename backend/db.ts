@@ -1,11 +1,11 @@
-const fs = require('fs');
-const path = require('path');
-const Database = require('better-sqlite3');
+import fs from 'fs';
+import path from 'path';
+import Database from 'better-sqlite3';
 
 const dbPath = path.join(__dirname, '..', 'lifepilot.db');
-const schemaPath = path.join(__dirname, '../db/schema.sql');
+const schemaPath = path.join(__dirname, 'schema.sql');
 
-const initialize = () => {
+export const initialize = (): Database.Database => {
   const firstRun = !fs.existsSync(dbPath);
   const db = new Database(dbPath);
   if (firstRun) {
@@ -15,4 +15,5 @@ const initialize = () => {
   return db;
 };
 
-module.exports = initialize();
+const db = initialize();
+export default db;
