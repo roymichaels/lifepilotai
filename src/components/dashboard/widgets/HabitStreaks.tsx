@@ -2,8 +2,13 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useHabitsData } from '@/api/dashboard';
 import { Flame, Calendar, CheckCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-export function HabitStreaks(props: any) {
+interface HabitStreaksProps {
+  onAddHabit?: () => void;
+  className?: string;
+}
+export function HabitStreaks({ onAddHabit, className = '', ...props }: HabitStreaksProps & any) {
   const { data: habitsData, isLoading } = useHabitsData();
 
   if (isLoading) {
@@ -22,7 +27,10 @@ export function HabitStreaks(props: any) {
   }
 
   return (
-    <motion.div {...props} className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 h-64 overflow-y-auto">
+    <motion.div
+      {...props}
+      className={`bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 h-64 overflow-y-auto ${className}`}
+    >
       <div className="flex items-center space-x-2 mb-4">
         <Flame className="w-5 h-5 text-orange-400" />
         <h3 className="text-lg font-semibold text-white">Habit Streaks</h3>
@@ -69,6 +77,14 @@ export function HabitStreaks(props: any) {
           </motion.div>
         ))}
       </div>
+
+      {onAddHabit && (
+        <div className="mt-4">
+          <Button size="sm" variant="secondary" className="w-full" onClick={onAddHabit}>
+            Add Habit
+          </Button>
+        </div>
+      )}
     </motion.div>
   );
 }
