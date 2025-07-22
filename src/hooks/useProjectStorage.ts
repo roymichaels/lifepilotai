@@ -1,101 +1,98 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Project } from '@/types/project';
+import { useState, useEffect, useCallback } from 'react'
+import { Project } from '@/types/project'
+import { electric } from '@/lib/electric'
 
+/**
+ * Stores projects in the local ElectricSQL database. On first load any
+ * projects found in localStorage will be migrated into the database.
+ */
 export function useProjectStorage() {
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [projects, setProjects] = useState<Project[]>([])
+  const [activeProjectId, setActiveProjectId] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
 
-  // Load projects from localStorage on mount
+  // initial load + migration
   useEffect(() => {
-    try {
-      const storedProjects = localStorage.getItem('lifepilot_projects');
-      const storedActiveId = localStorage.getItem('lifepilot_active_project');
-      
-      if (storedProjects) {
-        const parsedProjects = JSON.parse(storedProjects);
-        setProjects(parsedProjects);
+    const init = async () => {
+      let all = await electric.projects.toArray()
+      if (all.length === 0) {
+        const stored = localStorage.getItem('lifepilot_projects')
+        if (stored) {
+          try {
+            const parsed: Project[] = JSON.parse(stored)
+            await electric.projects.bulkAdd(parsed)
+            all = parsed
+            localStorage.removeItem('lifepilot_projects')
+          } catch (e) {
+            console.error('Project migration failed', e)
+          }
+        }
       }
-      
-      if (storedActiveId) {
-        setActiveProjectId(storedActiveId);
+
+      const active = await electric.settings.get('activeProjectId')
+      if (!active && localStorage.getItem('lifepilot_active_project')) {
+        const id = localStorage.getItem('lifepilot_active_project') as string
+        await electric.settings.put({ key: 'activeProjectId', value: id })
+        localStorage.removeItem('lifepilot_active_project')
+        setActiveProjectId(id)
+      } else {
+        setActiveProjectId(active?.value ?? null)
       }
-    } catch (error) {
-      console.error('Error loading projects:', error);
-    } finally {
-      setIsLoading(false);
+
+      setProjects(all)
+      setIsLoading(false)
     }
-  }, []);
 
-  // Save projects to localStorage whenever they change
-  useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem('lifepilot_projects', JSON.stringify(projects));
+    init()
+  }, [])
+
+  // helper to reload
+  const reload = useCallback(async () => {
+    const all = await electric.projects.toArray()
+    setProjects(all)
+  }, [])
+
+  const createProject = useCallback(async (projectData: Partial<Project>) => {
+    const newProject: Project = {
+      ...projectData,
+      id: crypto.randomUUID(),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    } as Project
+    await electric.projects.add(newProject)
+    await electric.settings.put({ key: 'activeProjectId', value: newProject.id })
+    setActiveProjectId(newProject.id)
+    reload()
+    return newProject
+  }, [reload])
+
+  const updateProject = useCallback(async (projectId: string, updates: Partial<Project>) => {
+    const existing = await electric.projects.get(projectId)
+    if (existing) {
+      await electric.projects.put({ ...existing, ...updates, updatedAt: new Date() })
+      reload()
     }
-  }, [projects, isLoading]);
+  }, [reload])
 
-  // Save active project ID
-  useEffect(() => {
-    if (activeProjectId) {
-      localStorage.setItem('lifepilot_active_project', activeProjectId);
-    }
-  }, [activeProjectId]);
-
-  const createProject = useCallback((projectData: Partial<Project>) => {
-    console.log("useProjectStorage - createProject called with:", projectData);
-    
-    try {
-      const newProject: Project = {
-        ...projectData,
-        id: crypto.randomUUID(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
-      
-      console.log("useProjectStorage - Created new project:", newProject);
-      
-      const updatedProjects = [...projects, newProject];
-      setProjects(updatedProjects);
-      setActiveProjectId(newProject.id);
-      
-      console.log("useProjectStorage - Updated projects list, new active project:", newProject.name);
-      
-      // Save to localStorage
-      localStorage.setItem('lifepilot_projects', JSON.stringify(updatedProjects));
-      localStorage.setItem('lifepilot_active_project', newProject.id);
-      
-      console.log("useProjectStorage - Saved to localStorage");
-      
-      return newProject;
-    } catch (error) {
-      console.error("useProjectStorage - Error creating project:", error);
-      throw error;
-    }
-  }, [projects]);
-
-  const updateProject = useCallback((projectId: string, updates: Partial<Project>) => {
-    setProjects(prev => prev.map(project => 
-      project.id === projectId 
-        ? { ...project, ...updates, updatedAt: new Date() }
-        : project
-    ));
-  }, []);
-
-  const deleteProject = useCallback((projectId: string) => {
-    setProjects(prev => prev.filter(project => project.id !== projectId));
+  const deleteProject = useCallback(async (projectId: string) => {
+    await electric.projects.delete(projectId)
+    const remaining = await electric.projects.toArray()
     if (activeProjectId === projectId) {
-      const remainingProjects = projects.filter(p => p.id !== projectId);
-      setActiveProjectId(remainingProjects.length > 0 ? remainingProjects[0].id : null);
+      const first = remaining[0]?.id ?? null
+      setActiveProjectId(first)
+      if (first) await electric.settings.put({ key: 'activeProjectId', value: first })
     }
-  }, [activeProjectId, projects]);
+    setProjects(remaining)
+  }, [activeProjectId])
+
+  const switchProject = useCallback(async (projectId: string) => {
+    await electric.settings.put({ key: 'activeProjectId', value: projectId })
+    setActiveProjectId(projectId)
+  }, [])
 
   const getActiveProject = useCallback(() => {
-    return projects.find(project => project.id === activeProjectId) || null;
-  }, [projects, activeProjectId]);
-
-  const switchProject = useCallback((projectId: string) => {
-    setActiveProjectId(projectId);
-  }, []);
+    return projects.find(p => p.id === activeProjectId) || null
+  }, [projects, activeProjectId])
 
   return {
     projects,
@@ -105,6 +102,6 @@ export function useProjectStorage() {
     createProject,
     updateProject,
     deleteProject,
-    switchProject,
-  };
+    switchProject
+  }
 }

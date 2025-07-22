@@ -4,6 +4,7 @@ import { sendChatMessage } from '@/api/chat';
 import { generateWidgets } from '@/api/widgets';
 import { useCharacter } from '@/hooks/useCharacter';
 import { useProjectStorage } from '@/hooks/useProjectStorage';
+import { AuraMemoryService } from '@/services/AuraMemoryService';
 
 type AuraState = 'idle' | 'listening' | 'thinking' | 'speaking';
 
@@ -37,7 +38,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     };
 
     const updatedMessages = [...messages, userMessage];
-    updateProject(activeProject.id, { chatHistory: updatedMessages });
+    await updateProject(activeProject.id, { chatHistory: updatedMessages });
     setAuraState('thinking');
 
     try {
@@ -52,14 +53,15 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       };
 
       const finalMessages = [...updatedMessages, auraMessage];
-      updateProject(activeProject.id, { chatHistory: finalMessages });
+      await updateProject(activeProject.id, { chatHistory: finalMessages });
+      AuraMemoryService.persistSummary(activeProject.id);
 
       // Generate new widgets based on the conversation context
       const widgetResponse = await generateWidgets(content, activeWidgets.map(w => w.id));
 
       if (widgetResponse.widgets && widgetResponse.widgets.length > 0) {
         const updatedWidgets = [...activeWidgets, ...widgetResponse.widgets];
-        updateProject(activeProject.id, { widgets: updatedWidgets });
+        await updateProject(activeProject.id, { widgets: updatedWidgets });
       }
 
       setAuraState('speaking');
@@ -72,7 +74,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     }
   }, [activeProject, messages, activeWidgets, updateProject]);
 
-  const handleWidgetAction = useCallback((action: string, data?: any) => {
+  const handleWidgetAction = useCallback(async (action: string, data?: any) => {
     if (!activeProject) return;
 
     console.log('Widget action:', action, data);
@@ -91,7 +93,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           }
           return widget;
         });
-        updateProject(activeProject.id, { widgets: updatedWidgets });
+        await updateProject(activeProject.id, { widgets: updatedWidgets });
         break;
       case 'view-goals':
         // This will be handled by the parent component to open modals
