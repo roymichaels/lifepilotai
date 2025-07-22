@@ -57,13 +57,13 @@ must be prefixed with `VITE_` so Vite can expose them to the client.
 - `PORT` – port for the Express API (default: `3000`)
 
 ### 3. Local Database
-This project now uses a local SQLite database initialized from `src/lib/schema.sql`.
-The database file `lifepilot.db` is created automatically in the `src/lib` folder on first start.
+This project now uses a local SQLite database initialized from `backend/schema.sql`.
+The database file `lifepilot.db` is created automatically in the project root on first start.
 
 ### 4. Single App Structure
 LifePilotAI combines the React frontend and Express backend in one repository.
 The React app lives in the `src/` directory and the API lives in `backend/`.
-Shared utilities, including the SQLite schema, reside in `src/lib/`.
+Shared utilities reside in `src/lib/`, and the SQLite schema lives in `backend/schema.sql`.
 
 ### 5. Running the App
 Install dependencies with `npm install` (or `yarn`). Start both the frontend and
