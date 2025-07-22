@@ -1,14 +1,7 @@
 import api from './api';
 
-// Description: Get widget configuration and data based on chat context
-// Endpoint: POST /widgets/generate
-// Request: { context: string, activeWidgets: string[] }
-// Response: { widgets: Array<WidgetData> }
-export const generateWidgets = async (context: string, activeWidgets: string[] = []) => {
-  // Mocking the response with dynamic widget generation
-  return new Promise<{ widgets: any[] }>((resolve) => {
-    setTimeout(() => {
-      const availableWidgets = [
+// A static set of widgets used when OpenAI is unavailable
+const fallbackWidgets = [
         {
           id: 'goals-progress',
           type: 'progress',
@@ -193,81 +186,117 @@ export const generateWidgets = async (context: string, activeWidgets: string[] =
         }
       ];
 
-      // Filter widgets based on context keywords
-      let selectedWidgets = [];
+export const generateWidgets = async (
+  context: string,
+  activeWidgets: string[] = []
+) => {
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 
-      if (context.toLowerCase().includes('goal')) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'goals-progress'));
+  if (apiKey) {
+    try {
+      const body = {
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are Aura, an assistant that suggests dashboard widgets based on the user\'s context. Return JSON with a `widgets` array.'
+          },
+          { role: 'user', content: context }
+        ]
+      };
+
+      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`
+        },
+        body: JSON.stringify(body)
+      });
+
+      const data = await res.json();
+      const content = data.choices?.[0]?.message?.content?.trim() || '';
+
+      try {
+        const parsed = JSON.parse(content);
+        const widgets = Array.isArray(parsed.widgets) ? parsed.widgets : [];
+        const filtered = widgets.filter((w: any) => !activeWidgets.includes(w.id));
+        return { widgets: filtered };
+      } catch (err) {
+        console.error('generateWidgets: failed to parse AI response', err);
       }
-      if (context.toLowerCase().includes('skill')) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'skills-radar'));
+    } catch (err) {
+      console.error('generateWidgets: OpenAI request failed', err);
+    }
+  }
+
+  // Keyword fallback
+  return new Promise<{ widgets: any[] }>((resolve) => {
+    setTimeout(() => {
+      const availableWidgets = fallbackWidgets;
+
+      let selectedWidgets: any[] = [];
+
+      const lower = context.toLowerCase();
+      if (lower.includes('goal')) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'goals-progress'));
       }
-      if (context.toLowerCase().includes('value')) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'values-wheel'));
+      if (lower.includes('skill')) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'skills-radar'));
       }
-      if (context.toLowerCase().includes('focus') || context.toLowerCase().includes('today')) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'daily-focus'));
+      if (lower.includes('value')) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'values-wheel'));
       }
-      if (context.toLowerCase().includes('mood') || context.toLowerCase().includes('feel')) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'mood-tracker'));
+      if (lower.includes('focus') || lower.includes('today')) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'daily-focus'));
       }
-      if (context.toLowerCase().includes('habit')) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'habit-streaks'));
+      if (lower.includes('mood') || lower.includes('feel')) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'mood-tracker'));
       }
-      if (context.toLowerCase().includes('performance') || context.toLowerCase().includes('week')) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'weekly-stats'));
+      if (lower.includes('habit')) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'habit-streaks'));
       }
-      if (context.toLowerCase().includes('time') || context.toLowerCase().includes('productivity')) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'focus-time'));
+      if (lower.includes('performance') || lower.includes('week')) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'weekly-stats'));
       }
-      if (context.toLowerCase().includes('analytics') || context.toLowerCase().includes('dashboard') || context.toLowerCase().includes('metrics')) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'analytics-dashboard'));
+      if (lower.includes('time') || lower.includes('productivity')) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'focus-time'));
+      }
+      if (lower.includes('analytics') || lower.includes('dashboard') || lower.includes('metrics')) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'analytics-dashboard'));
+      }
+      if (lower.includes('project') || lower.includes('task') || lower.includes('manage')) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'project-manager'));
+      }
+      if (lower.includes('board') || lower.includes('kanban')) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'project-board'));
+      }
+      if (lower.includes('habit') && (lower.includes('board') || lower.includes('track'))) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'habit-board'));
+      }
+      if (lower.includes('skill') && (lower.includes('board') || lower.includes('roadmap'))) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'skill-board'));
+      }
+      if (lower.includes('mood') && lower.includes('board')) {
+        selectedWidgets.push(availableWidgets.find((w) => w.id === 'mood-board'));
       }
 
-      // Project Manager specific keywords
-      if (context.toLowerCase().includes('project') || context.toLowerCase().includes('task') || context.toLowerCase().includes('manage')) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'project-manager'));
-      }
-
-      // Board-specific keywords
-      if (context.toLowerCase().includes('board') || context.toLowerCase().includes('kanban')) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'project-board'));
-      }
-      if (context.toLowerCase().includes('habit') && (context.toLowerCase().includes('board') || context.toLowerCase().includes('track'))) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'habit-board'));
-      }
-      if (context.toLowerCase().includes('skill') && (context.toLowerCase().includes('board') || context.toLowerCase().includes('roadmap'))) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'skill-board'));
-      }
-      if (context.toLowerCase().includes('mood') && context.toLowerCase().includes('board')) {
-        selectedWidgets.push(availableWidgets.find(w => w.id === 'mood-board'));
-      }
-
-      // If no specific widgets matched, return the default set with Analytics Dashboard
       if (selectedWidgets.length === 0) {
         selectedWidgets = [
-          availableWidgets.find(w => w.id === 'goals-progress'),
-          availableWidgets.find(w => w.id === 'daily-focus'),
-          availableWidgets.find(w => w.id === 'analytics-dashboard')
+          availableWidgets.find((w) => w.id === 'goals-progress'),
+          availableWidgets.find((w) => w.id === 'daily-focus'),
+          availableWidgets.find((w) => w.id === 'analytics-dashboard')
         ];
       }
 
-      // Remove any undefined widgets and ensure we don't duplicate
-      selectedWidgets = selectedWidgets.filter(Boolean).filter(widget =>
-        !activeWidgets.includes(widget.id)
-      );
+      selectedWidgets = selectedWidgets
+        .filter(Boolean)
+        .filter((widget) => !activeWidgets.includes(widget.id));
 
       resolve({ widgets: selectedWidgets });
     }, 800);
   });
-
-  // Uncomment the below lines to make an actual API call
-  // try {
-  //   const response = await api.post('/widgets/generate', { context, activeWidgets });
-  //   return response.data;
-  // } catch (error) {
-  //   throw new Error(error?.response?.data?.error || error.message);
-  // }
 };
 
 // Description: Update widgets with new data based on chat context
