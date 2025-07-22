@@ -9,6 +9,8 @@ import { LandingPage } from "./pages/LandingPage"
 import { PricingPage } from "./components/subscription/PricingPage"
 import { SubscriptionManager } from "./components/subscription/SubscriptionManager"
 import { ProtectedRoute } from "./components/ProtectedRoute"
+import { Onboarding } from "./pages/Onboarding"
+import { SettingsPage } from "./pages/Settings"
 
 function App() {
   console.log("App component is rendering");
@@ -52,6 +54,18 @@ function App() {
             (() => {
               console.log("Rendering SubscriptionManager for route /subscription");
               return <ProtectedRoute> <SubscriptionManager /> </ProtectedRoute>;
+            })()
+          } />
+          <Route path="/onboarding" element={
+            (() => {
+              console.log("Rendering Onboarding for route /onboarding");
+              return <ProtectedRoute> <Onboarding /> </ProtectedRoute>;
+            })()
+          } />
+          <Route path="/settings" element={
+            (() => {
+              console.log("Rendering SettingsPage for route /settings");
+              return <ProtectedRoute> <SettingsPage /> </ProtectedRoute>;
             })()
           } />
         </Routes>

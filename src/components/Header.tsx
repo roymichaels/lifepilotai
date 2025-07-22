@@ -17,6 +17,12 @@ export function Header() {
       <div className="flex h-16 items-center justify-between px-6">
         <div className="text-xl font-bold" onClick={navigate("/")}>Home</div>
         <div className="flex items-center gap-4">
+          <Button variant="ghost" onClick={() => navigate('/onboarding')}>
+            Onboarding
+          </Button>
+          <Button variant="ghost" onClick={() => navigate('/settings')}>
+            Settings
+          </Button>
           <ThemeToggle />
           <Button variant="ghost" size="icon" onClick={handleLogout}>
             <LogOut className="h-5 w-5" />
