@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react'
-import api from '@/api/api'
 
 export function useTextToSpeech() {
   const [isSpeaking, setIsSpeaking] = useState(false)
@@ -7,9 +6,21 @@ export function useTextToSpeech() {
   const speak = useCallback(async (text: string) => {
     if (!text) return
     try {
-      if (import.meta.env.VITE_ELEVENLABS_API_KEY) {
-        const response = await api.post('/ai/tts', { text }, { responseType: 'blob' })
-        const url = URL.createObjectURL(response.data)
+      const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY
+
+      if (apiKey) {
+        const voiceId = '21m00Tcm4TlvDq8ikWAM'
+        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'xi-api-key': apiKey
+          },
+          body: JSON.stringify({ text })
+        })
+
+        const blob = await response.blob()
+        const url = URL.createObjectURL(blob)
         const audio = new Audio(url)
         setIsSpeaking(true)
         audio.onended = () => {
