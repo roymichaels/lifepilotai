@@ -12,6 +12,7 @@ export function FloatingAuraSphere({ onActivate }: FloatingAuraSphereProps) {
   const controls = useAnimation();
   const { auraState } = useChatContext();
   const [isHovered, setIsHovered] = useState(false);
+  const isActive = auraState === 'listening' || auraState === 'speaking';
   
   // Use smooth position animation
   const { x, y } = useSpherePosition();
@@ -132,7 +133,7 @@ export function FloatingAuraSphere({ onActivate }: FloatingAuraSphereProps) {
         className="absolute inset-0 rounded-full"
         animate={{
           scale: isHovered ? [1, 1.3, 1] : [1, 1.1, 1],
-          opacity: [0.3, 0.6, 0.3]
+          opacity: isActive ? [0.5, 0.9, 0.5] : [0.3, 0.6, 0.3]
         }}
         transition={{
           duration: 2,
@@ -155,8 +156,8 @@ export function FloatingAuraSphere({ onActivate }: FloatingAuraSphereProps) {
         style={{
           background: getSphereColor(),
           boxShadow: `
-            0 0 20px rgba(139, 92, 246, 0.4),
-            0 0 40px rgba(139, 92, 246, 0.2),
+            0 0 ${isActive ? 30 : 20}px rgba(139, 92, 246, 0.4),
+            0 0 ${isActive ? 60 : 40}px rgba(139, 92, 246, 0.2),
             inset 0 2px 4px rgba(255, 255, 255, 0.3)
           `
         }}

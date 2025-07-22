@@ -6,6 +6,8 @@ import { Send, Mic, MicOff, ChevronDown, ChevronUp } from 'lucide-react';
 import { ChatMessage } from './ChatMessage';
 import { useChatContext } from '@/contexts/ChatContext';
 import { AuraMemoryService } from './AuraLayout';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
 interface BottomChatSectionProps {
   isExpanded: boolean;
@@ -14,11 +16,12 @@ interface BottomChatSectionProps {
 
 export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionProps) {
   const [inputValue, setInputValue] = useState('');
-  const [isListening, setIsListening] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, sendMessage, auraState, setAuraState } = useChatContext();
+  const { startRecording, stopRecording, transcript, setTranscript, isRecording } = useVoiceInput();
+  const { speak, isSpeaking } = useTextToSpeech();
 
   // Load conversation history from AuraMemoryService
   const [conversationHistory, setConversationHistory] = useState<Array<{ sender: string; text: string; timestamp: string }>>([]);
@@ -37,10 +40,11 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
     scrollToBottom();
   }, [conversationHistory]);
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
+  const handleSendMessage = async (text?: string) => {
+    const messageToSend = (text ?? inputValue).trim();
+    if (!messageToSend) return;
 
-    const userMessage = inputValue.trim();
+    const userMessage = messageToSend;
     console.log("BottomChatSection - Sending message:", userMessage);
     setInputValue('');
 
@@ -75,6 +79,7 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
       setConversationHistory(finalHistory);
 
       setAuraState('speaking');
+      speak(response);
       setTimeout(() => setAuraState('idle'), 2000);
     } catch (error) {
       console.error('Error sending message:', error);
@@ -89,9 +94,30 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
   };
 
   const toggleVoiceInput = () => {
-    setIsListening(!isListening);
-    setAuraState(isListening ? 'idle' : 'listening');
+    if (isRecording) {
+      stopRecording();
+      setAuraState('idle');
+    } else {
+      setTranscript('');
+      startRecording();
+      setAuraState('listening');
+    }
   };
+
+  useEffect(() => {
+    if (!isRecording && transcript) {
+      handleSendMessage(transcript);
+      setTranscript('');
+    }
+  }, [isRecording, transcript]);
+
+  useEffect(() => {
+    if (isSpeaking) {
+      setAuraState('speaking');
+    } else if (auraState === 'speaking') {
+      setAuraState('idle');
+    }
+  }, [isSpeaking]);
 
   // Get recent messages for display (last 10)
   const recentMessages = conversationHistory.slice(-10);
@@ -181,11 +207,14 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
               variant="ghost"
               size="icon"
               className={`text-white hover:bg-white/10 ${
-                isListening ? 'bg-red-500/20 text-red-400' : ''
+                isRecording ? 'bg-red-500/20 text-red-400' : ''
               }`}
             >
-              {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+              {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
             </Button>
+            {isRecording && (
+              <span className="text-xs text-red-400">Listening...</span>
+            )}
             <Button
               onClick={handleSendMessage}
               disabled={!inputValue.trim()}
