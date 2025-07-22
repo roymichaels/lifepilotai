@@ -43,8 +43,34 @@ Create the following products and prices in your Stripe dashboard:
 
 ### 2. Environment Variables
 
-Add the following environment variables to your `.env` files:
+Add the following variables to an `.env` file in the project root. Frontend variables
+must be prefixed with `VITE_` so Vite can expose them to the client.
 
-#### Frontend (.env)
-## Local Database
-This project now uses a local SQLite database initialized from `server/db/schema.sql`. The database file `lifepilot.db` is created automatically in the `server` folder on first start.
+#### Frontend
+- `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
+- `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
+
+#### Backend
+- `JWT_SECRET` – secret for signing access tokens
+- `JWT_REFRESH_SECRET` – secret for refresh tokens
+- `OPENAI_API_KEY` – server side OpenAI key
+- `PORT` – port for the Express API (default: `3000`)
+
+### 3. Local Database
+This project now uses a local SQLite database initialized from `src/lib/schema.sql`.
+The database file `lifepilot.db` is created automatically in the `src/lib` folder on first start.
+
+### 4. Single App Structure
+LifePilotAI combines the React frontend and Express backend in one repository.
+The React app lives in the `src/` directory and the API lives in `backend/`.
+Shared utilities, including the SQLite schema, reside in `src/lib/`.
+
+### 5. Running the App
+Install dependencies with `npm install` (or `yarn`). Start both the frontend and
+backend together in development mode using:
+
+```bash
+npm run dev
+```
+This command launches the Vite dev server and the Express API concurrently.
+
