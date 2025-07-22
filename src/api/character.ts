@@ -32,7 +32,7 @@ export interface SkillNode {
 }
 
 // Description: Get user character data
-// Endpoint: GET /api/character
+// Endpoint: GET /character
 // Request: {}
 // Response: { character: Character }
 export const getCharacter = async () => {
@@ -83,14 +83,14 @@ export const getCharacter = async () => {
   });
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.get('/api/character');
+  //   return await api.get('/character');
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }
 };
 
 // Description: Gain XP and update character
-// Endpoint: POST /api/character/xp
+// Endpoint: POST /character/xp
 // Request: { amount: number, source: string }
 // Response: { character: Character, levelUp: boolean }
 export const gainXP = async (amount: number, source: string) => {
@@ -114,14 +114,14 @@ export const gainXP = async (amount: number, source: string) => {
   });
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.post('/api/character/xp', { amount, source });
+  //   return await api.post('/character/xp', { amount, source });
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }
 };
 
 // Description: Complete a quest
-// Endpoint: POST /api/character/quest/complete
+// Endpoint: POST /character/quest/complete
 // Request: { questId: string }
 // Response: { character: Character, xpGained: number }
 export const completeQuest = async (questId: string) => {
@@ -145,14 +145,14 @@ export const completeQuest = async (questId: string) => {
   });
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.post('/api/character/quest/complete', { questId });
+  //   return await api.post('/character/quest/complete', { questId });
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }
 };
 
 // Description: Get skill tree for current job
-// Endpoint: GET /api/character/skills
+// Endpoint: GET /character/skills
 // Request: {}
 // Response: { skills: SkillNode[] }
 export const getSkillTree = async () => {
@@ -203,7 +203,7 @@ export const getSkillTree = async () => {
   });
   // Uncomment the below lines to make an actual API call
   // try {
-  //   return await api.get('/api/character/skills');
+  //   return await api.get('/character/skills');
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);
   // }

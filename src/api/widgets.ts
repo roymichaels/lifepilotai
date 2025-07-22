@@ -1,7 +1,7 @@
 import api from './api';
 
 // Description: Get widget configuration and data based on chat context
-// Endpoint: POST /api/widgets/generate
+// Endpoint: POST /widgets/generate
 // Request: { context: string, activeWidgets: string[] }
 // Response: { widgets: Array<WidgetData> }
 export const generateWidgets = async (context: string, activeWidgets: string[] = []) => {
@@ -263,7 +263,7 @@ export const generateWidgets = async (context: string, activeWidgets: string[] =
 
   // Uncomment the below lines to make an actual API call
   // try {
-  //   const response = await api.post('/api/widgets/generate', { context, activeWidgets });
+  //   const response = await api.post('/widgets/generate', { context, activeWidgets });
   //   return response.data;
   // } catch (error) {
   //   throw new Error(error?.response?.data?.error || error.message);

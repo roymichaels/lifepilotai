@@ -1,19 +1,19 @@
 import api from './api';
 
 // Description: Get user profile information
-// Endpoint: GET /api/users/profile
+// Endpoint: GET /users/profile
 // Request: {}
 // Response: { success: boolean, user: { id: string, email: string, name: string, level: number, xp: number, unlockedSkills: string[], createdAt: string, lastLoginAt: string } }
 export const getUserProfile = async () => {
   try {
-    console.log('getUserProfile - Making API request to /api/users/profile');
+    console.log('getUserProfile - Making API request to /users/profile');
     console.log('getUserProfile - Checking localStorage for access token...');
     
     const token = localStorage.getItem('accessToken');
     console.log('getUserProfile - Access token exists:', !!token);
     console.log('getUserProfile - Access token length:', token ? token.length : 0);
     
-    const response = await api.get('/api/users/profile');
+    const response = await api.get('/users/profile');
     console.log('getUserProfile - API response received:', response.data);
     return response.data;
   } catch (error: any) {
