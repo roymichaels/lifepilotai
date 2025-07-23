@@ -12,6 +12,7 @@ import { GoalsModal } from './modals/GoalsModal';
 import { TasksModal } from './modals/TasksModal';
 import { RewardsModal } from './modals/RewardsModal';
 import { ChatProvider, useChatContext } from '@/contexts/ChatContext';
+import { ProactiveTipsToast } from './ProactiveTipsToast';
 import { CharacterSheet } from '@/components/rpg/CharacterSheet';
 import { RoadmapTimeline } from '@/components/rpg/RoadmapTimeline';
 import { QuestLog } from '@/components/rpg/QuestLog';
@@ -505,6 +506,7 @@ export function AuraLayout() {
   return (
     <ChatProvider>
       <AuraLayoutContent />
+      <ProactiveTipsToast />
     </ChatProvider>
   );
 }
