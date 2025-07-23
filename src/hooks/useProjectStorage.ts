@@ -29,16 +29,23 @@ export function useProjectStorage() {
         }
       }
 
-      const active = await electric.settings.get('activeProjectId')
-      if (!active && localStorage.getItem('lifepilot_active_project')) {
+      const activeSetting = await electric.settings.get('activeProjectId')
+      let activeId: string | null = null
+      if (!activeSetting && localStorage.getItem('lifepilot_active_project')) {
         const id = localStorage.getItem('lifepilot_active_project') as string
         await electric.settings.put({ key: 'activeProjectId', value: id })
         localStorage.removeItem('lifepilot_active_project')
-        setActiveProjectId(id)
+        activeId = id
       } else {
-        setActiveProjectId(active?.value ?? null)
+        activeId = activeSetting?.value ?? null
       }
 
+      if (!activeId && all.length > 0) {
+        activeId = all[0].id
+        await electric.settings.put({ key: 'activeProjectId', value: activeId })
+      }
+
+      setActiveProjectId(activeId)
       setProjects(all)
       setIsLoading(false)
     }
