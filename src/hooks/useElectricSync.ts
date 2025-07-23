@@ -228,7 +228,7 @@ export function useElectricSync() {
       startMessages()
       startSummaries()
       startTips()
-      startBrainSettings()
+      // startBrainSettings()
     }
 
     window.addEventListener('online', startAll)
