@@ -43,7 +43,7 @@ Create the following products and prices in your Stripe dashboard:
 
 ### 2. Environment Variables
 
-Copy the provided `.env.example` file to `.env` in the project root and fill in the values.
+Copy the provided `.env.example` file to `.env` in the project root and replace the placeholder strings (for example `YOUR_FIREBASE_API_KEY`) with your actual credentials.
 Frontend variables must be prefixed with `VITE_` so Vite can expose them to the client. The
 Firebase values are required for authentication to work correctly.
 
