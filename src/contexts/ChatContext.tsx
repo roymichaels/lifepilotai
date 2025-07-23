@@ -29,20 +29,37 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const activeWidgets = activeProject?.widgets || [];
 
   useEffect(() => {
-    if (activeProject) {
-      AuraMemoryService.getConversation(activeProject.id).then(setMessages);
-      AuraMemoryService.getProactiveTips(activeProject.id).then(tips =>
-        setProactiveTips(tips.map(t => t.tip))
-      );
-      AuraMemoryService.startTipScheduler(activeProject.id);
-    } else {
-      setMessages([]);
-      setProactiveTips([]);
+    const loadConversation = async () => {
+      if (!activeProject) {
+        setMessages([])
+        setProactiveTips([])
+        return
+      }
+
+      const convo = await AuraMemoryService.getConversation(activeProject.id)
+      if (convo.length === 0) {
+        const onboarding: ChatMessage = {
+          sender: 'aura',
+          text: "Let's build your system. First, tell me your Game — your mission.",
+          timestamp: new Date().toISOString()
+        }
+        await AuraMemoryService.addMessage(activeProject.id, onboarding)
+        setMessages([onboarding])
+      } else {
+        setMessages(convo)
+      }
+
+      const tips = await AuraMemoryService.getProactiveTips(activeProject.id)
+      setProactiveTips(tips.map(t => t.tip))
+      AuraMemoryService.startTipScheduler(activeProject.id)
     }
+
+    loadConversation()
+
     return () => {
-      if (activeProject) AuraMemoryService.stopTipScheduler(activeProject.id);
-    };
-  }, [activeProject]);
+      if (activeProject) AuraMemoryService.stopTipScheduler(activeProject.id)
+    }
+  }, [activeProject])
 
   const sendMessage = useCallback(async (content: string): Promise<string> => {
     if (!activeProject) return '';

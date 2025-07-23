@@ -15,7 +15,7 @@ interface DashboardHeaderProps {
 }
 
 export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useMobile();
   const { activeProject } = useProjectStorage();
@@ -117,6 +117,15 @@ export function DashboardHeader({ onMenuToggle }: DashboardHeaderProps) {
                 <Settings className="mr-2 h-4 w-4" />
                 <span>Settings</span>
               </DropdownMenuItem>
+              {user?.isAdmin && (
+                <DropdownMenuItem
+                  className="hover:bg-gray-800 cursor-pointer"
+                  onClick={() => navigate('/admin')}
+                >
+                  <Crown className="mr-2 h-4 w-4" />
+                  <span>Admin Tools</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuSeparator className="bg-gray-700" />
               <DropdownMenuItem onClick={handleLogout} className="hover:bg-gray-800 cursor-pointer text-red-400">
                 <LogOut className="mr-2 h-4 w-4" />

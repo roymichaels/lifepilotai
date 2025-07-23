@@ -14,6 +14,7 @@ type User = {
   unlockedSkills?: string[];
   createdAt?: string;
   lastLoginAt?: string;
+  isAdmin?: boolean;
 };
 
 type AuthContextType = {
@@ -52,7 +53,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Set user data if provided in login response
         if (response.user) {
           console.log("AuthContext - Setting user data from login response:", response.user);
-          setUser(response.user);
+          const adminUser = {
+            ...response.user,
+            isAdmin: response.user.email === 'deandeanazulay@gmail.com'
+          };
+          setUser(adminUser);
         }
         
         setIsAuthenticated(true);
