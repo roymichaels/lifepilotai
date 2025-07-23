@@ -22,6 +22,11 @@ interface TipRow {
   createdAt: string
 }
 
+interface BrainSettingsRow {
+  key: string
+  value: string
+}
+
 /**
  * Hook that syncs local ElectricSQL tables with the backend when the browser
  * comes online using the official client utilities.
@@ -34,8 +39,9 @@ export function useElectricSync() {
     }
     let projectStream: ShapeStream<Project> | null = null
     let messageStream: ShapeStream<MessageRow> | null = null
-    let summaryStream: ShapeStream<SummaryRow> | null = null
-    let tipStream: ShapeStream<TipRow> | null = null
+  let summaryStream: ShapeStream<SummaryRow> | null = null
+  let tipStream: ShapeStream<TipRow> | null = null
+  let brainStream: ShapeStream<BrainSettingsRow> | null = null
 
     const startProjects = async () => {
       if (!navigator.onLine) return
@@ -145,7 +151,7 @@ export function useElectricSync() {
       }
     }
 
-    const startTips = async () => {
+  const startTips = async () => {
       if (!navigator.onLine) return
       if (tipStream?.isConnected()) return
 
@@ -171,8 +177,44 @@ export function useElectricSync() {
                 await electric.tips.put(row)
               } else if (operation === 'delete') {
                 await electric.tips.delete(row.id)
+    }
+  }
+
+    const startBrainSettings = async () => {
+      if (!navigator.onLine) return
+      if (brainStream?.isConnected()) return
+
+      try {
+        brainStream = new ShapeStream<BrainSettingsRow>({
+          url: `${import.meta.env.VITE_ELECTRIC_URL}/v1/shape`,
+          params: { table: 'brain_settings', replica: 'full' },
+          subscribe: true,
+          onError: async err => {
+            console.error('[electric] brain settings sync error', err)
+            brainStream?.unsubscribeAll()
+            brainStream = null
+            if (navigator.onLine) setTimeout(startBrainSettings, 5000)
+          }
+        })
+
+        brainStream.subscribe(async messages => {
+          for (const msg of messages) {
+            if (isChangeMessage<BrainSettingsRow>(msg)) {
+              const { operation } = msg.headers
+              const row = msg.value as BrainSettingsRow
+              if (operation === 'insert' || operation === 'update') {
+                await electric.brain_settings.put(row)
+              } else if (operation === 'delete') {
+                await electric.brain_settings.delete(row.key)
               }
             }
+          }
+        })
+      } catch (err) {
+        console.error('[electric] failed to start brain settings sync', err)
+        if (navigator.onLine) setTimeout(startBrainSettings, 5000)
+      }
+    }
           }
         })
       } catch (err) {
@@ -186,6 +228,7 @@ export function useElectricSync() {
       startMessages()
       startSummaries()
       startTips()
+      startBrainSettings()
     }
 
     window.addEventListener('online', startAll)
@@ -197,6 +240,7 @@ export function useElectricSync() {
       messageStream?.unsubscribeAll()
       summaryStream?.unsubscribeAll()
       tipStream?.unsubscribeAll()
+      brainStream?.unsubscribeAll()
     }
   }, [])
 }
