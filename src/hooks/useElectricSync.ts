@@ -28,6 +28,10 @@ interface TipRow {
  */
 export function useElectricSync() {
   useEffect(() => {
+    if (!import.meta.env.VITE_ELECTRIC_URL) {
+      console.warn('[electric] VITE_ELECTRIC_URL not defined; skipping sync')
+      return
+    }
     let projectStream: ShapeStream<Project> | null = null
     let messageStream: ShapeStream<MessageRow> | null = null
     let summaryStream: ShapeStream<SummaryRow> | null = null

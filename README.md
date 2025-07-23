@@ -52,6 +52,7 @@ Firebase values are required for authentication to work correctly.
 - `VITE_API_BASE_URL` – base URL of the remote API
 - `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
 - `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
+- `VITE_ELECTRIC_URL` – URL of the ElectricSQL backend (optional)
 - `VITE_FIREBASE_API_KEY` – Firebase project API key
 - `VITE_FIREBASE_AUTH_DOMAIN` – Firebase auth domain
 - `VITE_FIREBASE_PROJECT_ID` – Firebase project ID
