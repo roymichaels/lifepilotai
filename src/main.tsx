@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import { loadBrainSettings } from './services/BrainSettingsService'
 
 // Suppress console.log statements in production builds
 if (import.meta.env.PROD) {
@@ -39,18 +40,23 @@ window.addEventListener('unhandledrejection', (event) => {
   console.error('[Main] Rejection reason:', event.reason);
 });
 
-try {
-  console.log('[Main] Creating React root...');
-  const root = ReactDOM.createRoot(document.getElementById('root')!);
-  console.log('[Main] Root created successfully');
-  
-  console.log('[Main] Rendering App component...');
-  root.render(
-    <React.StrictMode>
-      <App />
-    </React.StrictMode>,
-  );
-  console.log('[Main] App component rendered successfully');
-} catch (error) {
-  console.error('[Main] Error during React initialization:', error);
+async function start() {
+  try {
+    await loadBrainSettings()
+    console.log('[Main] Creating React root...')
+    const root = ReactDOM.createRoot(document.getElementById('root')!)
+    console.log('[Main] Root created successfully')
+
+    console.log('[Main] Rendering App component...')
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>,
+    )
+    console.log('[Main] App component rendered successfully')
+  } catch (error) {
+    console.error('[Main] Error during React initialization:', error)
+  }
 }
+
+start()
