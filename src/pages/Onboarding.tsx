@@ -28,8 +28,8 @@ export function Onboarding() {
     }
   };
 
-  const finish = () => {
-    createProject({
+  const finish = async () => {
+    await createProject({
       name: 'My LifePlan',
       icon: '🌟',
       category: 'personal',
