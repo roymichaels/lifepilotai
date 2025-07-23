@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Send, Mic, MicOff, ChevronDown, ChevronUp } from 'lucide-react';
 import { ChatMessage } from './ChatMessage';
 import { useChatContext } from '@/contexts/ChatContext';
-import { AuraMemoryService } from '@/services/AuraMemoryService';
+import { useProjectStorage } from '@/hooks/useProjectStorage';
 import { useVoiceInput } from '@/hooks/useVoiceInput';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 
@@ -20,17 +20,9 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, sendMessage, auraState, setAuraState } = useChatContext();
+  const { activeProject } = useProjectStorage();
   const { startRecording, stopRecording, transcript, setTranscript, isRecording } = useVoiceInput();
   const { speak, isSpeaking } = useTextToSpeech();
-
-  // Load conversation history from AuraMemoryService
-  const [conversationHistory, setConversationHistory] = useState<Array<{ sender: string; text: string; timestamp: string }>>([]);
-
-  useEffect(() => {
-    const history = AuraMemoryService.getConversation();
-    console.log("BottomChatSection - Loaded conversation history:", history);
-    setConversationHistory(history);
-  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -38,7 +30,7 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
 
   useEffect(() => {
     scrollToBottom();
-  }, [conversationHistory]);
+  }, [messages]);
 
   const handleSendMessage = async (text?: string) => {
     const messageToSend = (text ?? inputValue).trim();
@@ -48,16 +40,7 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
     console.log("BottomChatSection - Sending message:", userMessage);
     setInputValue('');
 
-    // Add user message to memory
-    AuraMemoryService.addMessage({
-      sender: 'user',
-      text: userMessage
-    });
-
-    // Update local state
-    const updatedHistory = AuraMemoryService.getConversation();
-    console.log("BottomChatSection - Updated history after user message:", updatedHistory);
-    setConversationHistory(updatedHistory);
+    if (!activeProject) return;
 
     // Set Aura to thinking state
     setAuraState('thinking');
@@ -66,17 +49,6 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
       // Send message through chat context
       const response = await sendMessage(userMessage);
       console.log("BottomChatSection - Received AI response:", response);
-
-      // Add Aura response to memory
-      AuraMemoryService.addMessage({
-        sender: 'aura',
-        text: response
-      });
-
-      // Update local state
-      const finalHistory = AuraMemoryService.getConversation();
-      console.log("BottomChatSection - Final history after AI response:", finalHistory);
-      setConversationHistory(finalHistory);
 
       setAuraState('speaking');
       speak(response);
@@ -120,7 +92,7 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
   }, [isSpeaking]);
 
   // Get recent messages for display (last 10)
-  const recentMessages = conversationHistory.slice(-10);
+  const recentMessages = messages.slice(-10);
   console.log("BottomChatSection - Recent messages to display:", recentMessages);
 
   return (
