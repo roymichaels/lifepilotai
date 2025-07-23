@@ -1,12 +1,14 @@
 
-import { Bell, LogOut } from "lucide-react"
+import { LogOut, User } from "lucide-react"
 import { Button } from "./ui/button"
 import { ThemeToggle } from "./ui/theme-toggle"
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "./ui/dropdown-menu"
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { useAuth } from "@/contexts/AuthContext"
 import { useNavigate } from "react-router-dom"
 
 export function Header() {
-  const { logout } = useAuth()
+  const { logout, isAuthenticated, user } = useAuth()
   const navigate = useNavigate()
   const handleLogout = () => {
     logout()
@@ -20,13 +22,33 @@ export function Header() {
           <Button variant="ghost" onClick={() => navigate('/onboarding')}>
             Onboarding
           </Button>
-          <Button variant="ghost" onClick={() => navigate('/settings')}>
-            Settings
-          </Button>
           <ThemeToggle />
-          <Button variant="ghost" size="icon" onClick={handleLogout}>
-            <LogOut className="h-5 w-5" />
-          </Button>
+          {isAuthenticated && user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src="" alt="User Avatar" />
+                    <AvatarFallback className="bg-muted text-white">
+                      {user.email.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56 bg-gray-900 border-gray-700" align="end" forceMount>
+                <DropdownMenuItem onClick={() => navigate('/settings')} className="hover:bg-gray-800 cursor-pointer">
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout} className="hover:bg-gray-800 cursor-pointer text-red-400">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Button variant="ghost" onClick={() => navigate('/login')}>Login</Button>
+          )}
         </div>
       </div>
     </header>

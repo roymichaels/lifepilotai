@@ -16,6 +16,7 @@ class FakeRec {
   lang = ''
   interimResults = false
   constructor() {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     lastRec = this
   }
 }
