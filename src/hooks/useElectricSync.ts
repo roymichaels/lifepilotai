@@ -152,31 +152,38 @@ export function useElectricSync() {
     }
 
   const startTips = async () => {
-      if (!navigator.onLine) return
-      if (tipStream?.isConnected()) return
+    if (!navigator.onLine) return
+    if (tipStream?.isConnected()) return
 
-      try {
-        tipStream = new ShapeStream<TipRow>({
-          url: `${import.meta.env.VITE_ELECTRIC_URL}/v1/shape`,
-          params: { table: 'tips', replica: 'full' },
-          subscribe: true,
-          onError: async err => {
-            console.error('[electric] tip sync error', err)
-            tipStream?.unsubscribeAll()
-            tipStream = null
-            if (navigator.onLine) setTimeout(startTips, 5000)
+    try {
+      tipStream = new ShapeStream<TipRow>({
+        url: `${import.meta.env.VITE_ELECTRIC_URL}/v1/shape`,
+        params: { table: 'tips', replica: 'full' },
+        subscribe: true,
+        onError: async err => {
+          console.error('[electric] tip sync error', err)
+          tipStream?.unsubscribeAll()
+          tipStream = null
+          if (navigator.onLine) setTimeout(startTips, 5000)
+        }
+      })
+
+      tipStream.subscribe(async messages => {
+        for (const msg of messages) {
+          if (isChangeMessage<TipRow>(msg)) {
+            const { operation } = msg.headers
+            const row = msg.value as TipRow
+            if (operation === 'insert' || operation === 'update') {
+              await electric.tips.put(row)
+            } else if (operation === 'delete') {
+              await electric.tips.delete(row.id)
+            }
           }
-        })
-
-        tipStream.subscribe(async messages => {
-          for (const msg of messages) {
-            if (isChangeMessage<TipRow>(msg)) {
-              const { operation } = msg.headers
-              const row = msg.value as TipRow
-              if (operation === 'insert' || operation === 'update') {
-                await electric.tips.put(row)
-              } else if (operation === 'delete') {
-                await electric.tips.delete(row.id)
+        }
+      })
+    } catch (err) {
+      console.error('[electric] failed to start tip sync', err)
+      if (navigator.onLine) setTimeout(startTips, 5000)
     }
   }
 
@@ -213,13 +220,6 @@ export function useElectricSync() {
       } catch (err) {
         console.error('[electric] failed to start brain settings sync', err)
         if (navigator.onLine) setTimeout(startBrainSettings, 5000)
-      }
-    }
-          }
-        })
-      } catch (err) {
-        console.error('[electric] failed to start tip sync', err)
-        if (navigator.onLine) setTimeout(startTips, 5000)
       }
     }
 
