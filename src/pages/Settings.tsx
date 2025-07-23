@@ -106,7 +106,7 @@ export function SettingsPage() {
             <Input value={behaviorStyle} onChange={e => setBehaviorStyle(e.target.value)} />
           </div>
           <div className="space-y-2">
-            <Label>Filters (array of function strings)</Label>
+            <Label>Filters (array of filter names)</Label>
             <Textarea value={filtersText} onChange={e => setFiltersText(e.target.value)} />
           </div>
           <div className="space-y-2">
