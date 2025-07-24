@@ -7,6 +7,7 @@ import { FloatingAuraSphere } from './FloatingAuraSphere';
 import { BottomChatSection } from './BottomChatSection';
 import { EmptyDashboardState } from './EmptyDashboardState';
 import { UnifiedPlanChatModal } from './UnifiedPlanChatModal';
+import { LifePlanChatModal } from './LifePlanChatModal';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { GoalsModal } from './modals/GoalsModal';
 import { TasksModal } from './modals/TasksModal';
@@ -74,7 +75,8 @@ function AuraLayoutContent() {
     // Only make decisions after loading is complete
     if (!projectsLoading) {
       if (projects.length === 0 && !isCreatingProject && !showPlanModal) {
-        if (import.meta.env.DEV) console.log("AuraLayout - No projects found, showing creation modal");
+        if (import.meta.env.DEV) console.log("AuraLayout - No projects found, showing life plan modal");
+        setPlanType('life');
         setShowPlanModal(true);
       } else if (projects.length > 0 && !activeProject && !isCreatingProject && !showPlanModal) {
         if (import.meta.env.DEV) console.log("AuraLayout - Projects exist but no active project, using first project");
@@ -154,16 +156,23 @@ function AuraLayoutContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white overflow-hidden flex">
-      {/* Unified Plan Chat Modal */}
-      <UnifiedPlanChatModal
-        isOpen={showPlanModal}
-        onClose={() => {
-          setShowPlanModal(false);
-          setIsCreatingProject(false);
-        }}
-        onComplete={handlePlanComplete}
-        planType={planType}
-      />
+      {/* Plan Chat Modal */}
+      {planType === 'life' ? (
+        <LifePlanChatModal
+          isOpen={showPlanModal}
+          onComplete={handlePlanComplete}
+        />
+      ) : (
+        <UnifiedPlanChatModal
+          isOpen={showPlanModal}
+          onClose={() => {
+            setShowPlanModal(false);
+            setIsCreatingProject(false);
+          }}
+          onComplete={handlePlanComplete}
+          planType={planType}
+        />
+      )}
 
       {/* Project Sidebar - Now visible on all screen sizes */}
       <ProjectSidebar
