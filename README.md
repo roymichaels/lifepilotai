@@ -50,6 +50,7 @@ Firebase values are required for authentication to work correctly.
 
 #### Frontend
 - `VITE_API_BASE_URL` – base URL of the remote API
+- The backend exposes `/projects` for project CRUD operations. Requests are made relative to this base URL.
 - `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
 - `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
 - `VITE_ELECTRIC_URL` – URL of the ElectricSQL backend (optional)
