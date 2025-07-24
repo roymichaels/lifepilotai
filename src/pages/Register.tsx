@@ -49,7 +49,7 @@ export function Register() {
       })
       navigate("/login")
     } catch (error) {
-      console.log("Register error:", error)
+      if (import.meta.env.DEV) console.log("Register error:", error)
       toast({
         variant: "destructive",
         title: "Error",

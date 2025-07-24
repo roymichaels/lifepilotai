@@ -15,16 +15,17 @@ interface ChatMessageProps {
 }
 
 export function ChatMessage({ message, index }: ChatMessageProps) {
-  console.log('[ChatMessage] Rendering message:', JSON.stringify(message, null, 2));
-  console.log('[ChatMessage] Message text:', message.text);
-  console.log('[ChatMessage] Message response:', message.response);
-  console.log('[ChatMessage] Message content:', message.content);
+  if (import.meta.env.DEV)
+    console.log('[ChatMessage] Rendering message:', JSON.stringify(message, null, 2));
+  if (import.meta.env.DEV) console.log('[ChatMessage] Message text:', message.text);
+  if (import.meta.env.DEV) console.log('[ChatMessage] Message response:', message.response);
+  if (import.meta.env.DEV) console.log('[ChatMessage] Message content:', message.content);
 
   const isUser = message.sender === 'user';
   
   // Try different property names for the message content
   const messageContent = message.text || message.response || message.content || '';
-  console.log('[ChatMessage] Final message content:', messageContent);
+  if (import.meta.env.DEV) console.log('[ChatMessage] Final message content:', messageContent);
 
   return (
     <motion.div

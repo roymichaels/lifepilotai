@@ -13,7 +13,7 @@ import { Onboarding } from "./pages/Onboarding"
 import { SettingsPage } from "./pages/Settings"
 
 function App() {
-  console.log("App component is rendering");
+  if (import.meta.env.DEV) console.log("App component is rendering");
   
   return (
   <AuthProvider>
@@ -22,49 +22,49 @@ function App() {
         <Routes>
           <Route path="/" element={
             (() => {
-              console.log("Rendering LandingPage for route /");
+              if (import.meta.env.DEV) console.log("Rendering LandingPage for route /");
               return <LandingPage />;
             })()
           } />
           <Route path="/login" element={
             (() => {
-              console.log("Rendering Login for route /login");
+              if (import.meta.env.DEV) console.log("Rendering Login for route /login");
               return <Login />;
             })()
           } />
           <Route path="/register" element={
             (() => {
-              console.log("Rendering Register for route /register");
+              if (import.meta.env.DEV) console.log("Rendering Register for route /register");
               return <Register />;
             })()
           } />
           <Route path="/pricing" element={
             (() => {
-              console.log("Rendering PricingPage for route /pricing");
+              if (import.meta.env.DEV) console.log("Rendering PricingPage for route /pricing");
               return <PricingPage />;
             })()
           } />
           <Route path="/dashboard" element={
             (() => {
-              console.log("Rendering Dashboard for route /dashboard");
+              if (import.meta.env.DEV) console.log("Rendering Dashboard for route /dashboard");
               return <ProtectedRoute> <Dashboard /> </ProtectedRoute>;
             })()
           } />
           <Route path="/subscription" element={
             (() => {
-              console.log("Rendering SubscriptionManager for route /subscription");
+              if (import.meta.env.DEV) console.log("Rendering SubscriptionManager for route /subscription");
               return <ProtectedRoute> <SubscriptionManager /> </ProtectedRoute>;
             })()
           } />
           <Route path="/onboarding" element={
             (() => {
-              console.log("Rendering Onboarding for route /onboarding");
+              if (import.meta.env.DEV) console.log("Rendering Onboarding for route /onboarding");
               return <ProtectedRoute> <Onboarding /> </ProtectedRoute>;
             })()
           } />
           <Route path="/settings" element={
             (() => {
-              console.log("Rendering SettingsPage for route /settings");
+              if (import.meta.env.DEV) console.log("Rendering SettingsPage for route /settings");
               return <ProtectedRoute> <SettingsPage /> </ProtectedRoute>;
             })()
           } />

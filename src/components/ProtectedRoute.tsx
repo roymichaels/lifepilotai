@@ -4,14 +4,18 @@ import { Navigate } from "react-router-dom";
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuth();
   
-  console.log("ProtectedRoute - isAuthenticated:", isAuthenticated);
-  console.log("ProtectedRoute - accessToken in localStorage:", !!localStorage.getItem("accessToken"));
+  if (import.meta.env.DEV)
+    console.log("ProtectedRoute - isAuthenticated:", isAuthenticated);
+  if (import.meta.env.DEV)
+    console.log("ProtectedRoute - accessToken in localStorage:", !!localStorage.getItem("accessToken"));
   
   if (!isAuthenticated) {
-    console.log("ProtectedRoute - Redirecting to landing page because not authenticated");
+    if (import.meta.env.DEV)
+      console.log("ProtectedRoute - Redirecting to landing page because not authenticated");
     return <Navigate to="/" replace />;
   }
 
-  console.log("ProtectedRoute - User is authenticated, rendering protected content");
+  if (import.meta.env.DEV)
+    console.log("ProtectedRoute - User is authenticated, rendering protected content");
   return <>{children}</>;
 }

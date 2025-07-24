@@ -128,7 +128,7 @@ export function UnifiedPlanChatModal({ isOpen, onClose, onComplete, planType }: 
 
   // Only log when component state actually changes, not on every render
   useEffect(() => {
-    console.log("UnifiedPlanChatModal - State changed:", {
+    if (import.meta.env.DEV) console.log("UnifiedPlanChatModal - State changed:", {
       isOpen,
       currentStep,
       responses: Object.keys(responses),
@@ -224,12 +224,12 @@ export function UnifiedPlanChatModal({ isOpen, onClose, onComplete, planType }: 
 
     try {
       // Process with AI first
-      console.log('UnifiedPlanChatModal: Processing with AI');
+      if (import.meta.env.DEV) console.log('UnifiedPlanChatModal: Processing with AI');
       const { processOnboardingWithAI } = await import('@/api/ai');
       const aiResult = await processOnboardingWithAI(finalResponses, planType);
       
       if (aiResult.success) {
-        console.log('UnifiedPlanChatModal: AI processing successful');
+        if (import.meta.env.DEV) console.log('UnifiedPlanChatModal: AI processing successful');
         if (planType === 'life') {
           createAIEnhancedLifePlan(aiResult.plan);
         } else {
@@ -517,11 +517,12 @@ export function UnifiedPlanChatModal({ isOpen, onClose, onComplete, planType }: 
   };
 
   const handleContinue = () => {
-    console.log("UnifiedPlanChatModal - handleContinue called, currentStep:", currentStep);
-    console.log("UnifiedPlanChatModal - milestones:", milestones);
+    if (import.meta.env.DEV)
+      console.log("UnifiedPlanChatModal - handleContinue called, currentStep:", currentStep);
+    if (import.meta.env.DEV) console.log("UnifiedPlanChatModal - milestones:", milestones);
     
     if (currentStep === 4 && milestones.length > 0) {
-      console.log("UnifiedPlanChatModal - Creating project with milestones:", milestones);
+      if (import.meta.env.DEV) console.log("UnifiedPlanChatModal - Creating project with milestones:", milestones);
       // existing code...
     }
   };

@@ -63,7 +63,7 @@ function AuraLayoutContent() {
 
   // Auto-open plan modal if no active project - wait for loading to complete
   useEffect(() => {
-    console.log("AuraLayout - useEffect triggered:", {
+    if (import.meta.env.DEV) console.log("AuraLayout - useEffect triggered:", {
       projectsLoading,
       projectsCount: projects.length,
       activeProject: activeProject?.name,
@@ -74,14 +74,14 @@ function AuraLayoutContent() {
     // Only make decisions after loading is complete
     if (!projectsLoading) {
       if (projects.length === 0 && !isCreatingProject && !showPlanModal) {
-        console.log("AuraLayout - No projects found, showing creation modal");
+        if (import.meta.env.DEV) console.log("AuraLayout - No projects found, showing creation modal");
         setShowPlanModal(true);
       } else if (projects.length > 0 && !activeProject && !isCreatingProject && !showPlanModal) {
-        console.log("AuraLayout - Projects exist but no active project, using first project");
+        if (import.meta.env.DEV) console.log("AuraLayout - Projects exist but no active project, using first project");
         // If we have projects but no active project, we should set the first one as active
         // This will be handled by the useProjectStorage hook
       } else if (activeProject) {
-        console.log("AuraLayout - Active project found:", activeProject.name);
+        if (import.meta.env.DEV) console.log("AuraLayout - Active project found:", activeProject.name);
         setIsCreatingProject(false);
         setShowPlanModal(false);
       }
@@ -121,14 +121,14 @@ function AuraLayoutContent() {
   };
 
   const handleNewProject = () => {
-    console.log("AuraLayout - handleNewProject called");
+    if (import.meta.env.DEV) console.log("AuraLayout - handleNewProject called");
     setPlanType('project');
     setShowPlanModal(true);
     setIsCreatingProject(true);
   };
 
   const handlePlanComplete = (result: any) => {
-    console.log("AuraLayout - handlePlanComplete called with result:", result);
+    if (import.meta.env.DEV) console.log("AuraLayout - handlePlanComplete called with result:", result);
     setShowPlanModal(false);
     setIsCreatingProject(false);
   };
@@ -143,7 +143,7 @@ function AuraLayoutContent() {
 
   // Show empty dashboard state only if no projects exist at all
   if (!projectsLoading && projects.length === 0 && !isCreatingProject && !showPlanModal) {
-    console.log("AuraLayout - Showing EmptyDashboardState");
+    if (import.meta.env.DEV) console.log("AuraLayout - Showing EmptyDashboardState");
     return (
       <EmptyDashboardState onCreateProject={handleNewProject} />
     );

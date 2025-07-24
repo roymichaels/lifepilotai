@@ -7,15 +7,15 @@ import brain from '@/brain/Brain';
 import type { ChatContext } from '@/types/chat';
 
 export const sendChatMessage = async (message: string, context?: ChatContext) => {
-  console.log('sendChatMessage - Called with message:', message);
-  console.log('sendChatMessage - Context:', context);
+  if (import.meta.env.DEV) console.log('sendChatMessage - Called with message:', message);
+  if (import.meta.env.DEV) console.log('sendChatMessage - Context:', context);
 
   // Apply configured filters to the outgoing message
   const filteredMessage = brain.filters.reduce((msg, filter) => filter(msg), message);
-  console.log('sendChatMessage - Using brain configuration:', brain);
+  if (import.meta.env.DEV) console.log('sendChatMessage - Using brain configuration:', brain);
 
   try {
-    console.log('sendChatMessage - Preparing OpenAI request');
+    if (import.meta.env.DEV) console.log('sendChatMessage - Preparing OpenAI request');
 
     const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
     if (!apiKey) {
@@ -42,7 +42,7 @@ export const sendChatMessage = async (message: string, context?: ChatContext) =>
       ]
     };
 
-    console.log('sendChatMessage - Making request to OpenAI');
+    if (import.meta.env.DEV) console.log('sendChatMessage - Making request to OpenAI');
 
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -54,7 +54,7 @@ export const sendChatMessage = async (message: string, context?: ChatContext) =>
     });
 
     const data = await res.json();
-    console.log('sendChatMessage - OpenAI response:', JSON.stringify(data, null, 2));
+    if (import.meta.env.DEV) console.log('sendChatMessage - OpenAI response:', JSON.stringify(data, null, 2));
 
     const reply = data.choices?.[0]?.message?.content?.trim() ?? '';
     return { message: reply };

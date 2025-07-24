@@ -109,7 +109,8 @@ export function SkillTree() {
                       className="mt-2 bg-blue-500 hover:bg-blue-600"
                       onClick={() => {
                         // Handle skill unlock
-                        console.log('Unlock skill:', skill.id);
+                        if (import.meta.env.DEV)
+                          console.log('Unlock skill:', skill.id);
                       }}
                     >
                       Unlock

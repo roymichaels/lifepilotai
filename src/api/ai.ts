@@ -1,7 +1,8 @@
 // Description: Process onboarding responses with AI to create enhanced life plan or project plan
 // Returns: { success: boolean, plan: any, message: string, usedFallback?: boolean }
 export const processOnboardingWithAI = async (responses: Record<string, any>, planType: 'life' | 'project') => {
-  console.log('AI API: Processing onboarding with AI', { planType, responseKeys: Object.keys(responses) });
+  if (import.meta.env.DEV)
+    console.log('AI API: Processing onboarding with AI', { planType, responseKeys: Object.keys(responses) });
 
   const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
   if (!apiKey) {
@@ -30,7 +31,8 @@ export const processOnboardingWithAI = async (responses: Record<string, any>, pl
     });
 
     const data = await res.json();
-    console.log('AI API: OpenAI response:', JSON.stringify(data, null, 2));
+    if (import.meta.env.DEV)
+      console.log('AI API: OpenAI response:', JSON.stringify(data, null, 2));
     const content = data.choices?.[0]?.message?.content?.trim() || '';
 
     let plan: any = null;
