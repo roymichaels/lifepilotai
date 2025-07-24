@@ -30,6 +30,13 @@ export const processOnboardingWithAI = async (responses: Record<string, any>, pl
       body: JSON.stringify(body)
     });
 
+    if (!res.ok) {
+      const errorText = await res.text();
+      throw new Error(
+        `OpenAI chat request failed (${res.status}): ${errorText}`
+      );
+    }
+
     const data = await res.json();
     if (import.meta.env.DEV)
       console.log('AI API: OpenAI response:', JSON.stringify(data, null, 2));
