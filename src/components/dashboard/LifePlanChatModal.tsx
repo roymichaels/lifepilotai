@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Send, Sparkles, Mic, MicOff } from 'lucide-react';
 import { useChatContext } from '@/contexts/ChatContext';
 import { useProjectStorage } from '@/hooks/useProjectStorage';
+import { useVoiceInput } from '@/hooks/useVoiceInput';
 
 interface LifePlanStep {
   id: string;
@@ -56,8 +57,8 @@ export function LifePlanChatModal({ isOpen, onComplete }: LifePlanChatModalProps
   const [currentStep, setCurrentStep] = useState(0);
   const [responses, setResponses] = useState<Record<string, string>>({});
   const [inputValue, setInputValue] = useState('');
-  const [isListening, setIsListening] = useState(false);
   const [chatHistory, setChatHistory] = useState<Array<{id: string, sender: 'user' | 'aura', content: string}>>([]);
+  const { startRecording, stopRecording, transcript, setTranscript, isRecording } = useVoiceInput();
   const { setAuraState } = useChatContext();
   const { createProject } = useProjectStorage();
 
@@ -78,20 +79,21 @@ export function LifePlanChatModal({ isOpen, onComplete }: LifePlanChatModalProps
     }
   }, [isOpen, chatHistory.length, currentStepData.question, setAuraState]);
 
-  const handleSendMessage = async () => {
-    if (!inputValue.trim()) return;
+  const handleSendMessage = async (text?: string) => {
+    const message = (text ?? inputValue).trim();
+    if (!message) return;
 
     const userMessage = {
       id: Date.now().toString(),
       sender: 'user' as const,
-      content: inputValue.trim()
+      content: message
     };
 
     // Add user message
     setChatHistory(prev => [...prev, userMessage]);
     
     // Store response
-    const newResponses = { ...responses, [currentStepData.id]: inputValue.trim() };
+    const newResponses = { ...responses, [currentStepData.id]: message };
     setResponses(newResponses);
     
     setInputValue('');
@@ -204,10 +206,22 @@ export function LifePlanChatModal({ isOpen, onComplete }: LifePlanChatModalProps
   };
 
   const toggleVoiceInput = () => {
-    setIsListening(!isListening);
-    setAuraState(isListening ? 'idle' : 'listening');
-    // TODO: Implement actual voice recognition
+    if (isRecording) {
+      stopRecording();
+      setAuraState('idle');
+    } else {
+      setTranscript('');
+      startRecording();
+      setAuraState('listening');
+    }
   };
+
+  useEffect(() => {
+    if (!isRecording && transcript) {
+      handleSendMessage(transcript);
+      setTranscript('');
+    }
+  }, [isRecording, transcript]);
 
   if (!isOpen) return null;
 
@@ -290,9 +304,9 @@ export function LifePlanChatModal({ isOpen, onComplete }: LifePlanChatModalProps
               onClick={toggleVoiceInput}
               variant="outline"
               size="icon"
-              className={`${isListening ? 'bg-orange-100 border-orange-300 text-orange-600' : ''}`}
+              className={`${isRecording ? 'bg-orange-100 border-orange-300 text-orange-600' : ''}`}
             >
-              {isListening ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
             </Button>
 
             <Button
