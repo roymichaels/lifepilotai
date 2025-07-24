@@ -190,113 +190,12 @@ export const generateWidgets = async (
   context: string,
   activeWidgets: string[] = []
 ) => {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-
-  if (apiKey) {
-    try {
-      const body = {
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are Aura, an assistant that suggests dashboard widgets based on the user\'s context. Return JSON with a `widgets` array.'
-          },
-          { role: 'user', content: context }
-        ]
-      };
-
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${apiKey}`
-        },
-        body: JSON.stringify(body)
-      });
-
-      const data = await res.json();
-      const content = data.choices?.[0]?.message?.content?.trim() || '';
-
-      try {
-        const parsed = JSON.parse(content);
-        const widgets = Array.isArray(parsed.widgets) ? parsed.widgets : [];
-        const filtered = widgets.filter((w: any) => !activeWidgets.includes(w.id));
-        return { widgets: filtered };
-      } catch (err) {
-        console.error('generateWidgets: failed to parse AI response', err);
-      }
-    } catch (err) {
-      console.error('generateWidgets: OpenAI request failed', err);
-    }
+  try {
+    const response = await api.post('/widgets/generate', { context, activeWidgets });
+    return response.data as { widgets: any[] };
+  } catch (error: any) {
+    throw new Error(error?.response?.data?.message || error.message);
   }
-
-  // Keyword fallback
-  return new Promise<{ widgets: any[] }>((resolve) => {
-    setTimeout(() => {
-      const availableWidgets = fallbackWidgets;
-
-      let selectedWidgets: any[] = [];
-
-      const lower = context.toLowerCase();
-      if (lower.includes('goal')) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'goals-progress'));
-      }
-      if (lower.includes('skill')) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'skills-radar'));
-      }
-      if (lower.includes('value')) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'values-wheel'));
-      }
-      if (lower.includes('focus') || lower.includes('today')) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'daily-focus'));
-      }
-      if (lower.includes('mood') || lower.includes('feel')) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'mood-tracker'));
-      }
-      if (lower.includes('habit')) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'habit-streaks'));
-      }
-      if (lower.includes('performance') || lower.includes('week')) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'weekly-stats'));
-      }
-      if (lower.includes('time') || lower.includes('productivity')) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'focus-time'));
-      }
-      if (lower.includes('analytics') || lower.includes('dashboard') || lower.includes('metrics')) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'analytics-dashboard'));
-      }
-      if (lower.includes('project') || lower.includes('task') || lower.includes('manage')) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'project-manager'));
-      }
-      if (lower.includes('board') || lower.includes('kanban')) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'project-board'));
-      }
-      if (lower.includes('habit') && (lower.includes('board') || lower.includes('track'))) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'habit-board'));
-      }
-      if (lower.includes('skill') && (lower.includes('board') || lower.includes('roadmap'))) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'skill-board'));
-      }
-      if (lower.includes('mood') && lower.includes('board')) {
-        selectedWidgets.push(availableWidgets.find((w) => w.id === 'mood-board'));
-      }
-
-      if (selectedWidgets.length === 0) {
-        selectedWidgets = [
-          availableWidgets.find((w) => w.id === 'goals-progress'),
-          availableWidgets.find((w) => w.id === 'daily-focus'),
-          availableWidgets.find((w) => w.id === 'analytics-dashboard')
-        ];
-      }
-
-      selectedWidgets = selectedWidgets
-        .filter(Boolean)
-        .filter((widget) => !activeWidgets.includes(widget.id));
-
-      resolve({ widgets: selectedWidgets });
-    }, 800);
-  });
 };
 
 // Description: Update widgets with new data based on chat context
@@ -304,35 +203,10 @@ export const generateWidgets = async (
 // Request: { context: string, widgets: WidgetData[] }
 // Response: { widgets: WidgetData[] }
 export const updateWidgets = async (context: string, widgets: any[]) => {
-  return new Promise<{ widgets: any[] }>((resolve) => {
-    setTimeout(() => {
-      const lower = context.toLowerCase();
-      const updated = widgets.map((w) => {
-        if (w.id === 'goals-progress' && lower.includes('goal')) {
-          return {
-            ...w,
-            data: w.data.map((g: any) => ({
-              ...g,
-              progress: Math.min(100, g.progress + 5)
-            }))
-          };
-        }
-        if (w.id === 'habit-streaks' && lower.includes('habit')) {
-          return {
-            ...w,
-            data: w.data.map((h: any) => ({
-              ...h,
-              streak: h.streak + 1
-            }))
-          };
-        }
-        if (w.id === 'mood-tracker' && lower.includes('mood')) {
-          const mood = Math.max(1, Math.min(5, Math.round(Math.random() * 5)));
-          return { ...w, data: [...w.data.slice(1), { date: 'Today', mood }] };
-        }
-        return w;
-      });
-      resolve({ widgets: updated });
-    }, 300);
-  });
+  try {
+    const response = await api.post('/widgets/update', { context, widgets });
+    return response.data as { widgets: any[] };
+  } catch (error: any) {
+    throw new Error(error?.response?.data?.message || error.message);
+  }
 };
