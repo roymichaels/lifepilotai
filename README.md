@@ -48,9 +48,18 @@ Frontend variables must be prefixed with `VITE_` so Vite can expose them to the 
 Firebase values are required for authentication to work correctly.
 
 
-#### Frontend
+-#### Frontend
 - `VITE_API_BASE_URL` – base URL of the remote API
 - The backend exposes `/projects` for project CRUD operations. Requests are made relative to this base URL.
+-   When this value starts with `/` (for example `/api` in development), Vite treats
+-   it as a proxied path. The development server forwards these requests to the
+-   backend configured in `server.proxy`.
+-   ```env
+-   # .env (development)
+-   VITE_API_BASE_URL=/api
+-   ```
+-   The proxy hides the actual backend URL, so `/api/projects` is transparently
+-   redirected to the real server during local development.
 - `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
 - `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
 - `VITE_ELECTRIC_URL` – URL of the ElectricSQL backend (optional)
