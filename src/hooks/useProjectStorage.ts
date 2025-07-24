@@ -1,6 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Project } from '@/types/project'
 import { electric } from '@/lib/electric'
+import {
+  getProjects as apiGetProjects,
+  createProject as apiCreateProject,
+  updateProject as apiUpdateProject,
+  deleteProject as apiDeleteProject
+} from '@/api/projects'
 
 /**
  * Stores projects in the local ElectricSQL database. On first load any
@@ -11,9 +17,19 @@ export function useProjectStorage() {
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
 
-  // initial load + migration
+  // initial load + migration + remote fetch
   useEffect(() => {
     const init = async () => {
+      try {
+        const remote = await apiGetProjects()
+        if (remote && remote.length > 0) {
+          await electric.projects.clear()
+          await electric.projects.bulkPut(remote)
+        }
+      } catch (err) {
+        console.error('Failed to fetch projects from API', err)
+      }
+
       let all = await electric.projects.toArray()
       if (all.length === 0) {
         const stored = localStorage.getItem('lifepilot_projects')
@@ -60,12 +76,7 @@ export function useProjectStorage() {
   }, [])
 
   const createProject = useCallback(async (projectData: Partial<Project>) => {
-    const newProject: Project = {
-      ...projectData,
-      id: crypto.randomUUID(),
-      createdAt: new Date(),
-      updatedAt: new Date()
-    } as Project
+    const newProject = await apiCreateProject(projectData)
     await electric.projects.add(newProject)
     await electric.settings.put({ key: 'activeProjectId', value: newProject.id })
     setActiveProjectId(newProject.id)
@@ -74,14 +85,13 @@ export function useProjectStorage() {
   }, [reload])
 
   const updateProject = useCallback(async (projectId: string, updates: Partial<Project>) => {
-    const existing = await electric.projects.get(projectId)
-    if (existing) {
-      await electric.projects.put({ ...existing, ...updates, updatedAt: new Date() })
-      reload()
-    }
+    const updated = await apiUpdateProject(projectId, updates)
+    await electric.projects.put(updated)
+    reload()
   }, [reload])
 
   const deleteProject = useCallback(async (projectId: string) => {
+    await apiDeleteProject(projectId)
     await electric.projects.delete(projectId)
     const remaining = await electric.projects.toArray()
     if (activeProjectId === projectId) {
