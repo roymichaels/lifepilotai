@@ -1,4 +1,4 @@
-import React, { useRef, useMemo, Suspense } from 'react';
+import React, { useRef, useEffect, useState, Suspense } from 'react';
 import { motion } from 'framer-motion';
 
 interface LiquidMetalSphereProps {
@@ -149,7 +149,75 @@ const FallbackSphere = ({
 };
 
 export function LiquidMetalSphere(props: LiquidMetalSphereProps) {
-  // For now, always use the fallback sphere to avoid Three.js issues
-  // TODO: Implement proper Three.js sphere when dependencies are stable
-  return <FallbackSphere {...props} />;
+  const { size = 1, className = '' } = props;
+  const [threeReady, setThreeReady] = useState<boolean | null>(null);
+  const CanvasRef = useRef<any>(null);
+  const useFrameRef = useRef<any>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        const fiber = await import('@react-three/fiber');
+        if (!cancelled) {
+          CanvasRef.current = fiber.Canvas;
+          useFrameRef.current = fiber.useFrame;
+          setThreeReady(true);
+        }
+      } catch (err) {
+        console.error('Failed to load three.js', err);
+        if (!cancelled) setThreeReady(false);
+      }
+    }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (threeReady !== true) {
+    return <FallbackSphere {...props} />;
+  }
+
+  const Canvas = CanvasRef.current as React.ComponentType<any>;
+  const useFrame = useFrameRef.current as any;
+
+  const SphereMesh = () => {
+    const mesh = useRef<any>(null);
+    useFrame(() => {
+      if (mesh.current && props.isActive) {
+        mesh.current.rotation.y += 0.01;
+      }
+    });
+
+    const scale = props.isSpeaking
+      ? [1.1, 1.1, 1.1]
+      : props.isPulsing
+        ? [1.05, 1.05, 1.05]
+        : [1, 1, 1];
+
+    return (
+      <mesh ref={mesh} scale={scale}>
+        {/* @ts-ignore -- three types not guaranteed */}
+        <sphereGeometry args={[1, 64, 64]} />
+        {/* @ts-ignore -- three types not guaranteed */}
+        <meshStandardMaterial metalness={1} roughness={0.2} color="silver" />
+      </mesh>
+    );
+  };
+
+  return (
+    <Suspense fallback={<FallbackSphere {...props} />}>
+      <Canvas
+        className={className}
+        style={{ width: `${size * 64}px`, height: `${size * 64}px` }}
+      >
+        {/* @ts-ignore -- three types not guaranteed */}
+        <ambientLight intensity={0.5} />
+        {/* @ts-ignore -- three types not guaranteed */}
+        <pointLight position={[10, 10, 10]} />
+        <SphereMesh />
+      </Canvas>
+    </Suspense>
+  );
 }
