@@ -95,6 +95,7 @@ export const updateCard = async (cardId: string, updates: Partial<BoardCard>) =>
 // Request: {}
 // Response: { templates: BoardTemplate[] }
 export const getBoardTemplates = async () => {
+
   try {
     const response = await api.get('/boards/templates');
     return response.data as { templates: any[] };
