@@ -2,6 +2,7 @@ node_modules/
 dist/
 .env
 lifepilot.db
+blue-ocean.db
 *.log
 yarn.lock
 .yarn/*
