@@ -7,25 +7,27 @@ const api = axios.create({
   timeout: 10000,
 });
 
+const isDev = import.meta.env.DEV;
+
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    console.log('[API] Making request to:', config.url);
-    console.log('[API] Request method:', config.method);
+    isDev && console.log('[API] Making request to:', config.url);
+    isDev && console.log('[API] Request method:', config.method);
     
     const token = localStorage.getItem('accessToken');
-    console.log('[API] Access token exists:', !!token);
-    console.log('[API] Access token length:', token ? token.length : 0);
-    console.log('[API] Access token first 20 chars:', token ? token.substring(0, 20) + '...' : 'null');
+    isDev && console.log('[API] Access token exists:', !!token);
+    isDev && console.log('[API] Access token length:', token ? token.length : 0);
+    isDev && console.log('[API] Access token first 20 chars:', token ? token.substring(0, 20) + '...' : 'null');
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
-      console.log('[API] Authorization header set:', config.headers.Authorization.substring(0, 30) + '...');
+      isDev && console.log('[API] Authorization header set:', config.headers.Authorization.substring(0, 30) + '...');
     } else {
-      console.log('[API] No access token found in localStorage');
+      isDev && console.log('[API] No access token found in localStorage');
     }
     
-    console.log('[API] Final request headers:', JSON.stringify(config.headers, null, 2));
+    isDev && console.log('[API] Final request headers:', JSON.stringify(config.headers, null, 2));
     return config;
   },
   (error) => {
@@ -37,9 +39,9 @@ api.interceptors.request.use(
 // Response interceptor to handle token refresh
 api.interceptors.response.use(
   (response) => {
-    console.log('[API] Response received for:', response.config.url);
-    console.log('[API] Response status:', response.status);
-    console.log('[API] Response data:', JSON.stringify(response.data, null, 2));
+    isDev && console.log('[API] Response received for:', response.config.url);
+    isDev && console.log('[API] Response status:', response.status);
+    isDev && console.log('[API] Response data:', JSON.stringify(response.data, null, 2));
     return response;
   },
   async (error) => {
@@ -51,31 +53,31 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      console.log('[API] 401 error detected, attempting token refresh...');
+      isDev && console.log('[API] 401 error detected, attempting token refresh...');
       originalRequest._retry = true;
 
       try {
         const refreshToken = localStorage.getItem('refreshToken');
-        console.log('[API] Refresh token exists:', !!refreshToken);
+        isDev && console.log('[API] Refresh token exists:', !!refreshToken);
         
         if (!refreshToken) {
-          console.log('[API] No refresh token available, redirecting to login');
+          isDev && console.log('[API] No refresh token available, redirecting to login');
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           window.location.href = '/login';
           return Promise.reject(error);
         }
 
-        console.log('[API] Attempting to refresh access token...');
+        isDev && console.log('[API] Attempting to refresh access token...');
         const response = await axios.post(`${baseURL}/auth/refresh`, {
           refreshToken: refreshToken
         });
 
-        console.log('[API] Token refresh response:', response.data);
+        isDev && console.log('[API] Token refresh response:', response.data);
         
         if (response.data.accessToken) {
           localStorage.setItem('accessToken', response.data.accessToken);
-          console.log('[API] New access token stored, retrying original request');
+          isDev && console.log('[API] New access token stored, retrying original request');
           
           // Retry the original request with new token
           originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
