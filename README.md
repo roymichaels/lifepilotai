@@ -48,7 +48,7 @@ Frontend variables must be prefixed with `VITE_` so Vite can expose them to the 
 Firebase values are required for authentication to work correctly.
 
 
-#### Frontend
+-#### Frontend
 - `VITE_API_BASE_URL` – base URL of the remote API
 - The backend exposes `/projects` for project CRUD operations. Requests are made relative to this base URL.
 - During development the Vite server proxies API paths like `/projects`, `/subscription`, `/users`, and more to this URL.
