@@ -51,15 +51,7 @@ Firebase values are required for authentication to work correctly.
 -#### Frontend
 - `VITE_API_BASE_URL` – base URL of the remote API
 - The backend exposes `/projects` for project CRUD operations. Requests are made relative to this base URL.
--   When this value starts with `/` (for example `/api` in development), Vite treats
--   it as a proxied path. The development server forwards these requests to the
--   backend configured in `server.proxy`.
--   ```env
--   # .env (development)
--   VITE_API_BASE_URL=/api
--   ```
--   The proxy hides the actual backend URL, so `/api/projects` is transparently
--   redirected to the real server during local development.
+- During development the Vite server proxies API paths like `/projects`, `/subscription`, `/users`, and more to this URL.
 - `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
 - `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
 - `VITE_ELECTRIC_URL` – URL of the ElectricSQL backend (optional)
@@ -85,6 +77,9 @@ Install dependencies with `npm install` (or `yarn`). Start the development serve
 npm run dev
 ```
 This command starts the Vite dev server.
+Ensure your backend is running at `VITE_API_BASE_URL`; the dev server will proxy
+API requests like `/projects` or `/subscription` to that address so the client
+can use relative URLs.
 
 ## Brain prompt configuration
 

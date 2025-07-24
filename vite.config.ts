@@ -1,6 +1,11 @@
 import path from "path"
 import react from "@vitejs/plugin-react"
 import { defineConfig } from "vite"
+import * as dotenv from "dotenv"
+
+dotenv.config()
+
+const API_BASE_URL = process.env.VITE_API_BASE_URL
 
 export default defineConfig({
   define: {
@@ -21,7 +26,62 @@ export default defineConfig({
       '/logs': {
         target: 'http://localhost:4444',
         changeOrigin: true,
-      }
+      },
+      '/projects': {
+        target: API_BASE_URL,
+        changeOrigin: true,
+        rewrite: (path) => path,
+      },
+      '/subscription': {
+        target: API_BASE_URL,
+        changeOrigin: true,
+        rewrite: (path) => path,
+      },
+      '/users': {
+        target: API_BASE_URL,
+        changeOrigin: true,
+        rewrite: (path) => path,
+      },
+      '/boards': {
+        target: API_BASE_URL,
+        changeOrigin: true,
+        rewrite: (path) => path,
+      },
+      '/widgets': {
+        target: API_BASE_URL,
+        changeOrigin: true,
+        rewrite: (path) => path,
+      },
+      '/goals': {
+        target: API_BASE_URL,
+        changeOrigin: true,
+        rewrite: (path) => path,
+      },
+      '/roadmap': {
+        target: API_BASE_URL,
+        changeOrigin: true,
+        rewrite: (path) => path,
+      },
+      '/achievements': {
+        target: API_BASE_URL,
+        changeOrigin: true,
+        rewrite: (path) => path,
+      },
+      '/rewards': {
+        target: API_BASE_URL,
+        changeOrigin: true,
+        rewrite: (path) => path,
+      },
+      '/character': {
+        target: API_BASE_URL,
+        changeOrigin: true,
+        rewrite: (path) => path,
+      },
+      '/auth': {
+        target: API_BASE_URL,
+        changeOrigin: true,
+        rewrite: (path) => path,
+      },
     },
     allowedHosts: [
       'localhost',
