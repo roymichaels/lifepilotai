@@ -62,6 +62,16 @@ Firebase values are required for authentication to work correctly.
 - `VITE_FIREBASE_MESSAGING_SENDER_ID` – Firebase messaging sender ID
 - `VITE_FIREBASE_APP_ID` – Firebase app ID
 
+### ElectricSQL
+Setting `VITE_ELECTRIC_URL` enables realtime sync through an [ElectricSQL](https://electric-sql.com/) backend.
+To run the server locally, install the Electric CLI and start it:
+
+```bash
+npx electric-sql dev
+```
+
+The server listens on port **5133** by default. Leave `VITE_ELECTRIC_URL` unset to disable sync. If the backend isn't running, the app may log repeated `ECONNRESET` errors as it attempts to connect.
+
 ### 3. Firebase Console Setup
 1. Open the [Firebase console](https://console.firebase.google.com/) and navigate to **Authentication → Sign‑in method**.
    Enable **Email/Password** or any other providers your app uses.
