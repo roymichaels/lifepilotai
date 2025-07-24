@@ -74,7 +74,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     setAuraState('thinking');
 
     try {
-      console.log('Sending message to Aura:', content);
+      if (import.meta.env.DEV) console.log('Sending message to Aura:', content);
       const response = await sendChatMessage(content);
 
       const auraMessage: ChatMessage = {
@@ -112,7 +112,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const handleWidgetAction = useCallback(async (action: string, data?: any) => {
     if (!activeProject) return;
 
-    console.log('Widget action:', action, data);
+    if (import.meta.env.DEV) console.log('Widget action:', action, data);
 
     switch (action) {
       case 'toggle': {
@@ -135,7 +135,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         // This will be handled by the parent component to open modals
         break;
       default:
-        console.log('Unhandled action:', action);
+        if (import.meta.env.DEV) console.log('Unhandled action:', action);
     }
   }, [activeProject, activeWidgets, updateProject]);
 

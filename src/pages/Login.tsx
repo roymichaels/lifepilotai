@@ -33,15 +33,15 @@ export function Login() {
   const onSubmit = async (data: LoginForm) => {
     try {
       setLoading(true)
-      console.log("Login - Starting login process");
+      if (import.meta.env.DEV) console.log("Login - Starting login process");
       await login(data.email, data.password);
-      console.log("Login - Login successful, about to navigate to /dashboard");
+      if (import.meta.env.DEV) console.log("Login - Login successful, about to navigate to /dashboard");
       toast({
         title: "Success",
         description: "Logged in successfully",
       })
       navigate("/dashboard")
-      console.log("Login - Navigation to /dashboard completed");
+      if (import.meta.env.DEV) console.log("Login - Navigation to /dashboard completed");
     } catch (error) {
       console.error("Login error:", error.message)
       toast({

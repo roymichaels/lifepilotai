@@ -178,7 +178,7 @@ export function BoardWidget({
                 setShowAddCard(true);
               }}
               onEditCard={(cardId) => {
-                console.log('Edit card:', cardId);
+                if (import.meta.env.DEV) console.log('Edit card:', cardId);
               }}
               compact={true}
               projectName={activeProject?.name}
@@ -227,7 +227,7 @@ export function BoardWidget({
                   setShowAddCard(true);
                 }}
                 onEditCard={(cardId) => {
-                  console.log('Edit card:', cardId);
+                  if (import.meta.env.DEV) console.log('Edit card:', cardId);
                 }}
                 compact={false}
                 showAIChat={true}

@@ -31,28 +31,33 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     const hasToken = !!localStorage.getItem("accessToken");
-    console.log("AuthProvider - Initial authentication state:", hasToken);
+    if (import.meta.env.DEV)
+      console.log("AuthProvider - Initial authentication state:", hasToken);
     return hasToken;
   });
 
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    console.log("AuthContext - User state changed:", user);
+    if (import.meta.env.DEV)
+      console.log("AuthContext - User state changed:", user);
   }, [user]);
 
   const login = async (email: string, password: string) => {
     try {
-      console.log("AuthContext - Starting login process");
+      if (import.meta.env.DEV)
+        console.log("AuthContext - Starting login process");
       const response = await apiLogin(email, password);
-      console.log("AuthContext - Login API response:", response);
+      if (import.meta.env.DEV)
+        console.log("AuthContext - Login API response:", response);
 
       if (response?.accessToken) {
         localStorage.setItem("accessToken", response.accessToken);
 
         // Set user data if provided in login response
         if (response.user) {
-          console.log("AuthContext - Setting user data from login response:", response.user);
+          if (import.meta.env.DEV)
+            console.log("AuthContext - Setting user data from login response:", response.user);
           const adminUser = {
             ...response.user,
             isAdmin: response.user.email === 'deandeanazulay@gmail.com'
@@ -61,9 +66,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         
         setIsAuthenticated(true);
-        console.log("AuthContext - Login successful, authentication state set to true");
+        if (import.meta.env.DEV)
+          console.log("AuthContext - Login successful, authentication state set to true");
       } else {
-        console.log("AuthContext - Login failed - no access token received");
+        if (import.meta.env.DEV)
+          console.log("AuthContext - Login failed - no access token received");
         throw new Error('Login failed - no access token received');
       }
     } catch (error) {
@@ -77,9 +84,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = async (email: string, password: string) => {
     try {
-      console.log("AuthContext - Starting registration process");
+      if (import.meta.env.DEV)
+        console.log("AuthContext - Starting registration process");
       const response = await apiRegister(email, password);
-      console.log("AuthContext - Registration successful");
+      if (import.meta.env.DEV)
+        console.log("AuthContext - Registration successful");
       // Registration successful - user needs to login separately
     } catch (error) {
       console.error("AuthContext - Registration error:", error);
@@ -91,7 +100,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = async () => {
-    console.log("AuthContext - Logging out user");
+    if (import.meta.env.DEV)
+      console.log("AuthContext - Logging out user");
     await apiLogout();
     localStorage.removeItem("accessToken");
     setIsAuthenticated(false);

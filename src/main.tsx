@@ -9,8 +9,8 @@ if (import.meta.env.PROD) {
   console.log = () => {};
 }
 
-console.log('[Main] Starting React application...');
-console.log('[Main] Environment variables:', {
+if (import.meta.env.DEV) console.log('[Main] Starting React application...');
+if (import.meta.env.DEV) console.log('[Main] Environment variables:', {
   NODE_ENV: import.meta.env.NODE_ENV,
   DEV: import.meta.env.DEV,
   PROD: import.meta.env.PROD,
@@ -43,17 +43,17 @@ window.addEventListener('unhandledrejection', (event) => {
 async function start() {
   try {
     await loadBrainSettings()
-    console.log('[Main] Creating React root...')
+    if (import.meta.env.DEV) console.log('[Main] Creating React root...')
     const root = ReactDOM.createRoot(document.getElementById('root')!)
-    console.log('[Main] Root created successfully')
+    if (import.meta.env.DEV) console.log('[Main] Root created successfully')
 
-    console.log('[Main] Rendering App component...')
+    if (import.meta.env.DEV) console.log('[Main] Rendering App component...')
     root.render(
       <React.StrictMode>
         <App />
       </React.StrictMode>,
     )
-    console.log('[Main] App component rendered successfully')
+    if (import.meta.env.DEV) console.log('[Main] App component rendered successfully')
   } catch (error) {
     console.error('[Main] Error during React initialization:', error)
   }

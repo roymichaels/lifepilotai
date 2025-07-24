@@ -37,7 +37,8 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
     if (!messageToSend) return;
 
     const userMessage = messageToSend;
-    console.log("BottomChatSection - Sending message:", userMessage);
+    if (import.meta.env.DEV)
+      console.log("BottomChatSection - Sending message:", userMessage);
     setInputValue('');
 
     if (!activeProject) return;
@@ -48,7 +49,8 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
     try {
       // Send message through chat context
       const response = await sendMessage(userMessage);
-      console.log("BottomChatSection - Received AI response:", response);
+      if (import.meta.env.DEV)
+        console.log("BottomChatSection - Received AI response:", response);
 
       setAuraState('speaking');
       speak(response);
@@ -93,7 +95,8 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
 
   // Get recent messages for display (last 10)
   const recentMessages = messages.slice(-10);
-  console.log("BottomChatSection - Recent messages to display:", recentMessages);
+  if (import.meta.env.DEV)
+    console.log("BottomChatSection - Recent messages to display:", recentMessages);
 
   return (
     <motion.div
@@ -143,7 +146,8 @@ export function BottomChatSection({ isExpanded, onToggle }: BottomChatSectionPro
                 </div>
               ) : (
                 recentMessages.map((msg, index) => {
-                  console.log("BottomChatSection - Rendering message:", msg);
+                  if (import.meta.env.DEV)
+                    console.log("BottomChatSection - Rendering message:", msg);
                   return (
                     <ChatMessage
                       key={`${msg.timestamp}-${index}`}

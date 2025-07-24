@@ -55,7 +55,8 @@ export function HolographicDashboard() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        console.log('Synchronizing with Aura neural network...')
+        if (import.meta.env.DEV)
+          console.log('Synchronizing with Aura neural network...')
         const [profileResponse, goalsResponse, tasksResponse, achievementsResponse, rewardsResponse] = await Promise.all([
           getUserProfile(),
           getGoals(),
