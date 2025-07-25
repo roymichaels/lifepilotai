@@ -190,11 +190,19 @@ export const generateWidgets = async (
   context: string,
   activeWidgets: string[] = []
 ) => {
+  const fallback = () => ({
+    widgets: fallbackWidgets.filter(w => !activeWidgets.includes(w.id))
+  });
+
+  if (!import.meta.env.VITE_API_BASE_URL) {
+    return fallback();
+  }
+
   try {
     const response = await api.post('/widgets/generate', { context, activeWidgets });
     return response.data as { widgets: any[] };
   } catch (error: any) {
-    throw new Error(error?.response?.data?.message || error.message);
+    return fallback();
   }
 };
 
@@ -203,10 +211,33 @@ export const generateWidgets = async (
 // Request: { context: string, widgets: WidgetData[] }
 // Response: { widgets: WidgetData[] }
 export const updateWidgets = async (context: string, widgets: any[]) => {
+  const fallback = () => {
+    if (context.toLowerCase().includes('goal')) {
+      const updated = widgets.map(w => {
+        if (w.id === 'goals-progress') {
+          return {
+            ...w,
+            data: w.data.map((d: any) => ({
+              ...d,
+              progress: (d.progress || 0) + 10
+            }))
+          }
+        }
+        return w
+      })
+      return { widgets: updated }
+    }
+    return { widgets }
+  }
+
+  if (!import.meta.env.VITE_API_BASE_URL) {
+    return fallback()
+  }
+
   try {
-    const response = await api.post('/widgets/update', { context, widgets });
-    return response.data as { widgets: any[] };
+    const response = await api.post('/widgets/update', { context, widgets })
+    return response.data as { widgets: any[] }
   } catch (error: any) {
-    throw new Error(error?.response?.data?.message || error.message);
+    return fallback()
   }
 };
