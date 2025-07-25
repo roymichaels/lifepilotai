@@ -104,6 +104,8 @@ Install dependencies with `npm install` (or `yarn`). Start the development serve
 npm run dev
 ```
 This command starts the Vite dev server.
+The `predev` step automatically runs `scripts/init-db.ts` to create a local database in memory, so no `.db` file is written to disk.
+
 In another terminal start your backend API (typically on port **3000**), for example:
 
 ```bash
