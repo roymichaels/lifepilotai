@@ -6,11 +6,14 @@ import { loadBrainSettings } from './services/BrainSettingsService'
 
 async function initDatabase() {
   try {
-    const { Database } = await import('wa-sqlite')
+    const SQLiteFactory = (await import('wa-sqlite/dist/wa-sqlite.mjs')).default
+    const SQLite = await import('wa-sqlite')
     const { initSQLite } = await import('./lib/sqlite')
-    const db = new Database(':memory:')
+    const module = await SQLiteFactory()
+    const sqlite3 = SQLite.Factory(module)
+    const db = await sqlite3.open_v2(':memory:')
     await initSQLite(db)
-    await db.close()
+    await sqlite3.close(db)
     if (import.meta.env.DEV) console.log('[Main] SQLite schema applied')
   } catch (err) {
     console.error('[Main] Failed to initialise SQLite', err)

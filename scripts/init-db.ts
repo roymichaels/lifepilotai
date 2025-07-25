@@ -3,13 +3,16 @@
 
 async function run() {
   try {
-    const { Database } = await import('wa-sqlite')
+    const SQLiteFactory = (await import('wa-sqlite/dist/wa-sqlite.mjs')).default
+    const SQLite = await import('wa-sqlite')
     const { initSQLite } = await import('../src/lib/sqlite')
 
     // Use an in-memory SQLite database for local development
-    const db = new Database(':memory:')
+    const module = await SQLiteFactory()
+    const sqlite3 = SQLite.Factory(module)
+    const db = await sqlite3.open_v2(':memory:')
     await initSQLite(db)
-    await db.close()
+    await sqlite3.close(db)
     console.log('Database initialized')
   } catch (err) {
     console.error('Failed to initialise database', err)
