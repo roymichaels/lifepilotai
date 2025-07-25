@@ -149,6 +149,14 @@ After installation, run the test suite with:
 npm test
 ```
 
+### Linting
+
+Run ESLint using the shared configuration:
+
+```bash
+npm run lint
+```
+
 ## Brain prompt configuration
 
 The prompts and behaviour used by Aura are defined under `src/brain/`.  Each
