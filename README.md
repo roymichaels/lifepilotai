@@ -130,10 +130,10 @@ When `npm run dev` starts it first executes the `predev` script defined in
 "predev": "ts-node scripts/init-db.ts"
 ```
 
-The script loads `initSQLite` from `src/lib/sqlite.ts`, opens `blue-ocean.db`
-using `wa-sqlite` and applies any migrations. If the file doesn't exist it will
-be created automatically. Restart the dev server to reapply migrations after
-changing the schema.
+The script loads `initSQLite` from `src/lib/sqlite.ts` and sets up an
+in-memory SQLite database using `wa-sqlite`. All migrations are applied each
+time the dev server starts, so the database is recreated on every run. Restart
+the dev server to reapply migrations after changing the schema.
 Ensure your backend is running at `VITE_API_BASE_URL`; the dev server will proxy
 API requests like `/projects` or `/subscription` to that address so the client
 can use relative URLs.
