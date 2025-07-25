@@ -1,14 +1,13 @@
-import path from 'path'
-
-// Database initialization using ElectricSQL migrations
+// Database initialization using ElectricSQL migrations.
+// This script now uses an in-memory database so no file is created.
 
 async function run() {
   try {
     const { Database } = await import('wa-sqlite')
     const { initSQLite } = await import('../src/lib/sqlite')
 
-    const dbPath = path.resolve(__dirname, '../blue-ocean.db')
-    const db = new Database(dbPath)
+    // Use an in-memory SQLite database for local development
+    const db = new Database(':memory:')
     await initSQLite(db)
     await db.close()
     console.log('Database initialized')
