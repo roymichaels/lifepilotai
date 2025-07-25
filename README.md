@@ -174,3 +174,7 @@ These are combined in `Brain.ts` and imported by the chat API.  To tweak Aura's
 responses, edit the objects in these files.  No other code changes are needed as
 all chat functions read the configuration from `Brain.ts`.
 
+
+## License
+
+This project is licensed under the GNU General Public License v3.0. See [LICENSE](LICENSE) for details.
