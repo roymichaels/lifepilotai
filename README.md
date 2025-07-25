@@ -133,6 +133,20 @@ Ensure your backend is running at `VITE_API_BASE_URL`; the dev server will proxy
 API requests like `/projects` or `/subscription` to that address so the client
 can use relative URLs.
 
+### 5. Development dependencies
+
+Use the helper script to install all development packages, including the test runner **Vitest**:
+
+```bash
+./scripts/setup-dev.sh
+```
+
+After installation, run the test suite with:
+
+```bash
+npm test
+```
+
 ## Brain prompt configuration
 
 The prompts and behaviour used by Aura are defined under `src/brain/`.  Each
