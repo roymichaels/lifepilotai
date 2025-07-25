@@ -8,7 +8,7 @@ async function initDatabase() {
   try {
     const { Database } = await import('wa-sqlite')
     const { initSQLite } = await import('./lib/sqlite')
-    const db = new Database('blue-ocean.db')
+    const db = new Database(':memory:')
     await initSQLite(db)
     await db.close()
     if (import.meta.env.DEV) console.log('[Main] SQLite schema applied')
