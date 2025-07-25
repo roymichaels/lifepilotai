@@ -101,7 +101,7 @@ the app may log repeated `ECONNRESET` errors as it attempts to connect.
    names shown above.
 
 ### 4. Running the App
-Install dependencies with `npm install` (or `yarn`). Start the development server using:
+Install dependencies with `npm install`. Start the development server using:
 
 ```bash
 npm run dev
