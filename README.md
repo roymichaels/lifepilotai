@@ -138,7 +138,7 @@ Ensure your backend is running at `VITE_API_BASE_URL`; the dev server will proxy
 API requests like `/projects` or `/subscription` to that address so the client
 can use relative URLs.
 
-### 5. Development dependencies
+### 6. Development dependencies
 
 Use the helper script to install all development packages, including the test runner **Vitest**:
 
