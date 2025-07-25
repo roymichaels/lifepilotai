@@ -116,6 +116,19 @@ Run the ElectricSQL service as well:
 npx electric-sql dev
 ```
 This starts Postgres on **5432** and Electric on **5133**.
+
+### 5. Database initialization
+When `npm run dev` starts it first executes the `predev` script defined in
+`package.json`:
+
+```json
+"predev": "ts-node scripts/init-db.ts"
+```
+
+The script loads `initSQLite` from `src/lib/sqlite.ts`, opens `blue-ocean.db`
+using `wa-sqlite` and applies any migrations. If the file doesn't exist it will
+be created automatically. Restart the dev server to reapply migrations after
+changing the schema.
 Ensure your backend is running at `VITE_API_BASE_URL`; the dev server will proxy
 API requests like `/projects` or `/subscription` to that address so the client
 can use relative URLs.

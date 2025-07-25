@@ -4,6 +4,19 @@ import App from './App.tsx'
 import './index.css'
 import { loadBrainSettings } from './services/BrainSettingsService'
 
+async function initDatabase() {
+  try {
+    const { Database } = await import('wa-sqlite')
+    const { initSQLite } = await import('./lib/sqlite')
+    const db = new Database('blue-ocean.db')
+    await initSQLite(db)
+    await db.close()
+    if (import.meta.env.DEV) console.log('[Main] SQLite schema applied')
+  } catch (err) {
+    console.error('[Main] Failed to initialise SQLite', err)
+  }
+}
+
 // Suppress console.log statements in production builds
 if (import.meta.env.PROD) {
   console.log = () => {};
@@ -42,6 +55,7 @@ window.addEventListener('unhandledrejection', (event) => {
 
 async function start() {
   try {
+    await initDatabase()
     await loadBrainSettings()
     if (import.meta.env.DEV) console.log('[Main] Creating React root...')
     const root = ReactDOM.createRoot(document.getElementById('root')!)
