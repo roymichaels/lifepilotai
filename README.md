@@ -24,6 +24,9 @@ This document outlines the setup and implementation of LifePilot's subscription 
 
 ## Setup Instructions
 
+This project targets **Node.js 18**. Ensure you have Node 18 installed before
+running the following steps.
+
 ### 1. Stripe Configuration
 
 Create the following products and prices in your Stripe dashboard:
