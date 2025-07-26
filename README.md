@@ -129,8 +129,8 @@ When `npm run dev` starts it first executes the `predev` script defined in
 ```json
 "predev": "ts-node scripts/init-db.ts"
 ```
-
-The script loads `initSQLite` from `src/lib/sqlite.ts` and sets up an
+The script depends on the `electric-sql` package. It loads `initSQLite` from
+`src/lib/sqlite.ts` and sets up an
 in-memory SQLite database using `wa-sqlite`. All migrations are applied each
 time the dev server starts, so the database is recreated on every run. Restart
 the dev server to reapply migrations after changing the schema.
