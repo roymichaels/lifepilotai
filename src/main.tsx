@@ -8,6 +8,7 @@ async function initDatabase() {
   try {
     const SQLiteModule = await import('wa-sqlite/dist/wa-sqlite.mjs') as any
     const SQLiteFactory = SQLiteModule.default as (config?: object) => Promise<any>
+
     const SQLite = await import('wa-sqlite')
     const { initSQLite } = await import('./lib/sqlite')
     const module = await SQLiteFactory()
