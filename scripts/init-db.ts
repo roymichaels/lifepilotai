@@ -1,9 +1,11 @@
 // Database initialization using ElectricSQL migrations.
 // This script now uses an in-memory database so no file is created.
+/// <reference path="./wa-sqlite.d.ts" />
 
 async function run() {
   try {
-    const SQLiteFactory = (await import('wa-sqlite/dist/wa-sqlite.mjs')).default
+    const SQLiteModule = await import('wa-sqlite/dist/wa-sqlite.mjs') as any
+    const SQLiteFactory = SQLiteModule.default as (config?: object) => Promise<any>
     const SQLite = await import('wa-sqlite')
     const { initSQLite } = await import('../src/lib/sqlite')
 
