@@ -101,6 +101,9 @@ the app may log repeated `ECONNRESET` errors as it attempts to connect.
    names shown above.
 
 ### 4. Running the App
+
+**Note:** npm is required for this project. Ensure Node.js and npm are installed.
+
 Install dependencies with `npm install`. Start the development server using:
 
 ```bash
