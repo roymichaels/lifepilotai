@@ -55,6 +55,7 @@
     "date-fns": "^3.6.0",
     "dexie": "^3.2.5",
     "dotenv": "^16.4.1",
+    "electric-sql": "^0.12.1",
     "embla-carousel-react": "^8.5.1",
     "firebase": "^9.6.0",
     "framer-motion": "^12.23.6",
@@ -105,6 +106,5 @@
   },
   "engines": {
     "node": ">=18"
+  }
 }
-}
-
