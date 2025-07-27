@@ -1,7 +1,5 @@
-import type { DbSchema } from 'electric-sql/client/model'
+import { getConnection } from './db'
 
-export async function initSQLite(db: any) {
-  const { electrify } = await import('electric-sql/node')
-  const { schema } = await import('../sqlite/migrations')
-  await electrify(db, schema as unknown as DbSchema<any>)
+export async function initSQLite() {
+  await getConnection()
 }

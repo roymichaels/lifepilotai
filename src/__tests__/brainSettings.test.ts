@@ -1,13 +1,17 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 let store: Record<string, string> = {}
-vi.mock('../lib/electric', () => ({
-  electric: {
-    brain_settings: {
-      get: vi.fn((key: string) => Promise.resolve(store[key] ? { key, value: store[key] } : undefined)),
-      put: vi.fn(({ key, value }: { key: string; value: string }) => { store[key] = value; return Promise.resolve() })
-    }
-  }
+vi.mock('../lib/db', () => ({
+  get: vi.fn((sql: string, params: any[]) => {
+    const key = params[0]
+    return Promise.resolve(store[key] ? { value: store[key] } : undefined)
+  }),
+  run: vi.fn((sql: string, params: any[]) => {
+    const key = params[0]
+    const value = params[1]
+    store[key] = value
+    return Promise.resolve()
+  })
 }))
 
 import brain from '../brain/Brain'
