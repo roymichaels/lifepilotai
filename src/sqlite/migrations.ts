@@ -1,5 +1,12 @@
+import type { DbSchema } from 'electric-sql/client/model'
+
 export interface TableDefinition {
   columns: string[]
+}
+
+export interface LocalDbSchema {
+  version: number
+  tables: Record<string, TableDefinition>
 }
 
 /**
@@ -7,7 +14,7 @@ export interface TableDefinition {
  * Only the table structure is required here so the app can create the
  * IndexedDB/SQLite replica and sync it with the backend.
  */
-export const schema: { version: number; tables: Record<string, TableDefinition> } = {
+export const schema: LocalDbSchema = {
   version: 1,
   tables: {
     projects: {
