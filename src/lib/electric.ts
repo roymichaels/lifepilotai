@@ -3,8 +3,8 @@ import type { Project } from '@/types/project'
 import type { ChatMessage } from '@/types/chat'
 
 /**
- * Minimal ElectricSQL client using Dexie/IndexedDB for local storage.
- * This acts as the local replica that can be synced to Postgres when online.
+ * Minimal Dexie-based client using IndexedDB for local storage.
+ * Acts as the local replica that can be synced to Postgres when online.
  */
 class ElectricDatabase extends Dexie {
   projects!: Table<Project, string>

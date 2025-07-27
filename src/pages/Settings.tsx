@@ -90,7 +90,7 @@ export function SettingsPage() {
             />
           </div>
           <div className="space-y-2">
-            <Label>ElectricSQL Sync Status</Label>
+            <Label>Sync Status</Label>
             <p className="text-sm text-muted-foreground">{syncStatus}</p>
           </div>
           <div className="space-y-2">

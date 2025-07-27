@@ -9,7 +9,7 @@ import {
 } from '@/api/projects'
 
 /**
- * Stores projects in the local ElectricSQL database. On first load any
+ * Stores projects in the local database. On first load any
  * projects found in localStorage will be migrated into the database.
  */
 export function useProjectStorage() {
