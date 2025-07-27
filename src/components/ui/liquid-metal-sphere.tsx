@@ -198,9 +198,9 @@ export function LiquidMetalSphere(props: LiquidMetalSphereProps) {
 
     return (
       <mesh ref={mesh} scale={scale}>
-        {/* @ts-ignore -- three types not guaranteed */}
+        {/* @ts-expect-error -- three types not guaranteed */}
         <sphereGeometry args={[1, 64, 64]} />
-        {/* @ts-ignore -- three types not guaranteed */}
+        {/* @ts-expect-error -- three types not guaranteed */}
         <meshStandardMaterial metalness={1} roughness={0.2} color="silver" />
       </mesh>
     );
@@ -212,9 +212,9 @@ export function LiquidMetalSphere(props: LiquidMetalSphereProps) {
         className={className}
         style={{ width: `${size * 64}px`, height: `${size * 64}px` }}
       >
-        {/* @ts-ignore -- three types not guaranteed */}
+        {/* @ts-expect-error -- three types not guaranteed */}
         <ambientLight intensity={0.5} />
-        {/* @ts-ignore -- three types not guaranteed */}
+        {/* @ts-expect-error -- three types not guaranteed */}
         <pointLight position={[10, 10, 10]} />
         <SphereMesh />
       </Canvas>
