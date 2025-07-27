@@ -57,6 +57,7 @@ Firebase values are required for authentication to work correctly.
 - `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
 - `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
 - `VITE_ELECTRIC_URL` – URL of the ElectricSQL backend (e.g., `http://localhost:5133`). Postgres typically listens on `5432`.
+- `VITE_ENABLE_WAKU` – set to `true` to enable Waku peer-to-peer chat (optional)
 - `VITE_FIREBASE_API_KEY` – Firebase project API key
 - `VITE_FIREBASE_AUTH_DOMAIN` – Firebase auth domain
 - `VITE_FIREBASE_PROJECT_ID` – Firebase project ID
@@ -91,6 +92,13 @@ This command spins up Electric and Postgres containers. Electric's websocket
 endpoint usually runs on port **5133** while Postgres listens on **5432**.
 Leave `VITE_ELECTRIC_URL` unset to disable sync. If the backend isn't running,
 the app may log repeated `ECONNRESET` errors as it attempts to connect.
+
+### Waku Messaging
+Setting `VITE_ENABLE_WAKU` to `true` enables peer-to-peer chat via the
+[@waku/sdk](https://github.com/waku-org/js-waku) package. When enabled the
+client starts a light node and publishes chat messages on the `/lifepilot/1/chat`
+content topic. If the variable is unset or the browser is offline, the app
+continues to function using only local storage.
 
 ### 3. Firebase Console Setup
 1. Open the [Firebase console](https://console.firebase.google.com/) and navigate to **Authentication → Sign‑in method**.
