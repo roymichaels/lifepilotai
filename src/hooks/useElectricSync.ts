@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { ShapeStream, isChangeMessage } from '@electric-sql/client'
-import { electric } from '@/lib/electric'
+import { run } from '@/lib/db'
 import type { Project } from '@/types/project'
 import type { ChatMessage } from '@/types/chat'
 
@@ -66,9 +66,24 @@ export function useElectricSync() {
               const { operation } = msg.headers
               const row = msg.value as Project
               if (operation === 'insert' || operation === 'update') {
-                await electric.projects.put(row)
+                await run(
+                  'INSERT OR REPLACE INTO projects (id,name,icon,category,createdAt,updatedAt,profile,character,milestones,widgets,chatHistory) VALUES (?,?,?,?,?,?,?,?,?,?,?)',
+                  [
+                    row.id,
+                    row.name,
+                    row.icon,
+                    row.category,
+                    String(row.createdAt),
+                    String(row.updatedAt),
+                    JSON.stringify(row.profile),
+                    JSON.stringify(row.character),
+                    JSON.stringify(row.milestones),
+                    JSON.stringify(row.widgets),
+                    JSON.stringify(row.chatHistory)
+                  ]
+                )
               } else if (operation === 'delete') {
-                await electric.projects.delete(row.id)
+                await run('DELETE FROM projects WHERE id = ?', [row.id])
               }
             }
           }
@@ -102,9 +117,12 @@ export function useElectricSync() {
               const { operation } = msg.headers
               const row = msg.value as MessageRow
               if (operation === 'insert' || operation === 'update') {
-                await electric.messages.put(row)
+                await run(
+                  'INSERT OR REPLACE INTO messages (id, projectId, sender, text, timestamp) VALUES (?,?,?,?,?)',
+                  [row.id, row.projectId, row.sender, row.text, row.timestamp]
+                )
               } else if (operation === 'delete') {
-                await electric.messages.delete(row.id)
+                await run('DELETE FROM messages WHERE id = ?', [row.id])
               }
             }
           }
@@ -138,9 +156,12 @@ export function useElectricSync() {
               const { operation } = msg.headers
               const row = msg.value as SummaryRow
               if (operation === 'insert' || operation === 'update') {
-                await electric.summaries.put(row)
+                await run(
+                  'INSERT OR REPLACE INTO summaries (id, summary, createdAt) VALUES (?,?,?)',
+                  [row.id, row.summary, row.createdAt]
+                )
               } else if (operation === 'delete') {
-                await electric.summaries.delete(row.id)
+                await run('DELETE FROM summaries WHERE id = ?', [row.id])
               }
             }
           }
@@ -174,9 +195,12 @@ export function useElectricSync() {
             const { operation } = msg.headers
             const row = msg.value as TipRow
             if (operation === 'insert' || operation === 'update') {
-              await electric.tips.put(row)
+              await run(
+                'INSERT OR REPLACE INTO tips (id, projectId, tip, createdAt) VALUES (?,?,?,?)',
+                [row.id, row.projectId, row.tip, row.createdAt]
+              )
             } else if (operation === 'delete') {
-              await electric.tips.delete(row.id)
+              await run('DELETE FROM tips WHERE id = ?', [row.id])
             }
           }
         }
@@ -210,9 +234,12 @@ export function useElectricSync() {
               const { operation } = msg.headers
               const row = msg.value as BrainSettingsRow
               if (operation === 'insert' || operation === 'update') {
-                await electric.brain_settings.put(row)
+                await run(
+                  'INSERT OR REPLACE INTO brain_settings (key, value) VALUES (?,?)',
+                  [row.key, row.value]
+                )
               } else if (operation === 'delete') {
-                await electric.brain_settings.delete(row.key)
+                await run('DELETE FROM brain_settings WHERE key = ?', [row.key])
               }
             }
           }

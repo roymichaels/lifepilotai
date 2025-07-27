@@ -3,7 +3,7 @@ import type { CognitionConfig } from '@/brain/cognition'
 import type { BehaviorConfig } from '@/brain/behavior'
 import type { Skill } from '@/brain/skills'
 import { getFilterByName, getFilterName } from '@/brain/filters'
-import { electric } from '@/lib/electric'
+import { get, run } from '@/lib/db'
 
 export interface BrainSettingsData {
   cognition: CognitionConfig
@@ -24,7 +24,7 @@ function applyConfig(data: BrainSettingsData) {
 }
 
 export async function loadBrainSettings() {
-  const row = await electric.brain_settings.get(STORAGE_KEY)
+  const row = await get<{ value: string }>('SELECT value FROM brain_settings WHERE key = ?', [STORAGE_KEY])
   if (row?.value) {
     try {
       const data: BrainSettingsData = JSON.parse(row.value)
@@ -36,12 +36,12 @@ export async function loadBrainSettings() {
 }
 
 export async function saveBrainSettings(data: BrainSettingsData) {
-  await electric.brain_settings.put({ key: STORAGE_KEY, value: JSON.stringify(data) })
+  await run('INSERT OR REPLACE INTO brain_settings (key, value) VALUES (?, ?)', [STORAGE_KEY, JSON.stringify(data)])
   applyConfig(data)
 }
 
 export async function exportBrainSettings(): Promise<string> {
-  const row = await electric.brain_settings.get(STORAGE_KEY)
+  const row = await get<{ value: string }>('SELECT value FROM brain_settings WHERE key = ?', [STORAGE_KEY])
   if (row?.value) return row.value
   const defaults: BrainSettingsData = {
     cognition: brain.cognition,

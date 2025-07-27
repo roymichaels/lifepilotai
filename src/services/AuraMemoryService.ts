@@ -1,4 +1,4 @@
-import { electric } from '@/lib/electric'
+import { run, all, get } from '@/lib/db'
 import type { ChatMessage } from '@/types/chat'
 
 interface ProactiveTip {
@@ -17,26 +17,29 @@ export class AuraMemoryService {
     projectId: string,
     message: { sender: 'user' | 'aura'; text: string; timestamp?: string }
   ) {
-    await electric.messages.add({
-      projectId,
-      sender: message.sender,
-      text: message.text,
-      timestamp: message.timestamp ?? new Date().toISOString()
-    })
+    await run(
+      'INSERT INTO messages (projectId, sender, text, timestamp) VALUES (?,?,?,?)',
+      [
+        projectId,
+        message.sender,
+        message.text,
+        message.timestamp ?? new Date().toISOString()
+      ]
+    )
     await this.summarizeIfNeeded(projectId)
   }
 
   /** get full array of all messages for a project */
   static async getConversation(projectId: string): Promise<ChatMessage[]> {
-    return await electric.messages
-      .where('projectId')
-      .equals(projectId)
-      .sortBy('timestamp')
+    return await all<ChatMessage>(
+      'SELECT id, projectId, sender, text, timestamp FROM messages WHERE projectId = ? ORDER BY timestamp',
+      [projectId]
+    )
   }
 
   /** wipe conversation for a project */
   static async clearConversation(projectId: string) {
-    await electric.messages.where('projectId').equals(projectId).delete()
+    await run('DELETE FROM messages WHERE projectId = ?', [projectId])
   }
 
   /**
@@ -46,11 +49,10 @@ export class AuraMemoryService {
   static async persistSummary(projectId: string) {
     const convo = await this.getConversation(projectId)
     const summary = await this.generateSummary(convo)
-    await electric.summaries.put({
-      id: projectId,
-      summary,
-      createdAt: new Date().toISOString()
-    })
+    await run(
+      'INSERT OR REPLACE INTO summaries (id, summary, createdAt) VALUES (?,?,?)',
+      [projectId, summary, new Date().toISOString()]
+    )
   }
 
   /** summarize old messages when over threshold */
@@ -61,13 +63,15 @@ export class AuraMemoryService {
     const excess = convo.length - this.MEMORY_THRESHOLD
     const toSummarize = convo.slice(0, excess)
     const summary = await this.generateSummary(toSummarize)
-    await electric.summaries.add({
-      id: crypto.randomUUID(),
-      summary,
-      createdAt: new Date().toISOString()
-    })
+    await run(
+      'INSERT INTO summaries (id, summary, createdAt) VALUES (?,?,?)',
+      [crypto.randomUUID(), summary, new Date().toISOString()]
+    )
     const ids = toSummarize.map((m: any) => m.id)
-    await electric.messages.bulkDelete(ids)
+    if (ids.length > 0) {
+      const placeholders = ids.map(() => '?').join(',')
+      await run(`DELETE FROM messages WHERE id IN (${placeholders})`, ids)
+    }
   }
 
   /** start periodic review of conversation summaries */
@@ -92,10 +96,10 @@ export class AuraMemoryService {
 
   /** fetch stored proactive tips */
   static async getProactiveTips(projectId: string): Promise<ProactiveTip[]> {
-    return await electric.tips
-      .where('projectId')
-      .equals(projectId)
-      .sortBy('createdAt')
+    return await all<ProactiveTip>(
+      'SELECT id, projectId, tip, createdAt FROM tips WHERE projectId = ? ORDER BY createdAt',
+      [projectId]
+    )
   }
 
   /** review summaries and store a tip */
@@ -105,12 +109,10 @@ export class AuraMemoryService {
     const summary = await this.generateSummary(convo)
     const tip = await this.generateTip(summary)
     if (!tip) return
-    await electric.tips.add({
-      id: crypto.randomUUID(),
-      projectId,
-      tip,
-      createdAt: new Date().toISOString()
-    })
+    await run(
+      'INSERT INTO tips (id, projectId, tip, createdAt) VALUES (?,?,?,?)',
+      [crypto.randomUUID(), projectId, tip, new Date().toISOString()]
+    )
   }
 
   /** helper to call OpenAI to summarize text */
