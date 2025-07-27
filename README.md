@@ -87,8 +87,10 @@ required, so the app can run completely offline.
 
 When network access is available you can optionally sync messages over
 [Waku](https://waku.org/). Start a Waku node and set `VITE_WAKU_RELAY_URL` in
-your `.env` file to the node's multiaddress. If the variable is omitted the
-client uses the public bootstrap peers provided by the Waku network.
+your `.env` file to the node's multiaddress and set `VITE_ENABLE_WAKU=true`.
+Leaving these variables unset keeps the app in offline mode and no network
+requests are made for messaging.
+
 
 ### Waku Messaging
 Setting `VITE_ENABLE_WAKU` to `true` enables peer-to-peer chat via the
