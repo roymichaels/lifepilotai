@@ -56,8 +56,8 @@ Firebase values are required for authentication to work correctly.
 - During development the Vite server proxies API paths like `/projects`, `/subscription`, `/users`, and more to this URL.
 - `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
 - `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
-- `VITE_ELECTRIC_URL` – URL of the ElectricSQL backend (e.g., `http://localhost:5133`). Postgres typically listens on `5432`.
 - `VITE_ENABLE_WAKU` – set to `true` to enable Waku peer-to-peer chat (optional)
+- `VITE_WAKU_RELAY_URL` – address of a Waku relay for optional message sync (leave unset for offline use)
 - `VITE_FIREBASE_API_KEY` – Firebase project API key
 - `VITE_FIREBASE_AUTH_DOMAIN` – Firebase auth domain
 - `VITE_FIREBASE_PROJECT_ID` – Firebase project ID
@@ -80,18 +80,15 @@ Rails users can run:
 bundle exec rails s -p 3000
 ```
 
-### ElectricSQL
-Setting `VITE_ELECTRIC_URL` enables realtime sync through an [ElectricSQL](https://electric-sql.com/) backend.
-To run the server locally, install the Electric CLI and start it (see the [Quickstart guide](https://electric-sql.com/docs/quickstart)):
+### Local SQLite & Waku Messaging
+All application data is stored in a local SQLite database created by
+`scripts/init-db.ts` using `wa-sqlite`. No external database service is
+required, so the app can run completely offline.
 
-```bash
-npx electric-sql dev
-```
-
-This command spins up Electric and Postgres containers. Electric's websocket
-endpoint usually runs on port **5133** while Postgres listens on **5432**.
-Leave `VITE_ELECTRIC_URL` unset to disable sync. If the backend isn't running,
-the app may log repeated `ECONNRESET` errors as it attempts to connect.
+When network access is available you can optionally sync messages over
+[Waku](https://waku.org/). Start a Waku node and set `VITE_WAKU_RELAY_URL` in
+your `.env` file to the node's multiaddress. Leaving this variable unset keeps
+the app in offline mode and no network requests are made for messaging.
 
 ### Waku Messaging
 Setting `VITE_ENABLE_WAKU` to `true` enables peer-to-peer chat via the
@@ -126,12 +123,9 @@ In another terminal start your backend API (typically on port **3000**), for exa
 cd path/to/api && npm start
 ```
 
-Run the ElectricSQL service as well:
-
-```bash
-npx electric-sql dev
-```
-This starts Postgres on **5432** and Electric on **5133**.
+To keep the app completely offline simply skip any additional services.
+If you want to sync messages when online, start a Waku node and set
+`VITE_WAKU_RELAY_URL` in your `.env` file.
 
 ### 5. Database initialization
 When `npm run dev` starts it first executes the `predev` script defined in
@@ -140,7 +134,7 @@ When `npm run dev` starts it first executes the `predev` script defined in
 ```json
 "predev": "ts-node scripts/init-db.ts"
 ```
-The script depends on the `electric-sql` dependency for database initialization. It loads `initSQLite` from
+The script loads `initSQLite` from
 `src/lib/sqlite.ts` and sets up an
 in-memory SQLite database using `wa-sqlite`. All migrations are applied each
 time the dev server starts, so the database is recreated on every run. Restart

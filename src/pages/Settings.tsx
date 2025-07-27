@@ -17,7 +17,6 @@ export function SettingsPage() {
   const [voiceEnabled, setVoiceEnabled] = useState<boolean>(false);
   const [voiceLanguage, setVoiceLanguage] = useState('en-US');
   const [apiKey, setApiKey] = useState('');
-  const [syncStatus, setSyncStatus] = useState('disconnected');
 
   const [systemPrompt, setSystemPrompt] = useState('');
   const [contextPrompt, setContextPrompt] = useState('');
@@ -88,10 +87,6 @@ export function SettingsPage() {
               onChange={e => setApiKey(e.target.value)}
               placeholder="sk-..."
             />
-          </div>
-          <div className="space-y-2">
-            <Label>ElectricSQL Sync Status</Label>
-            <p className="text-sm text-muted-foreground">{syncStatus}</p>
           </div>
           <div className="space-y-2">
             <Label>System Prompt</Label>
