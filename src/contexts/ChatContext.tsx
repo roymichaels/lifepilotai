@@ -5,6 +5,7 @@ import { sendChatMessage } from '@/api/chat';
 import { generateWidgets } from '@/api/widgets';
 import { useProjectStorage } from '@/hooks/useProjectStorage';
 import { AuraMemoryService } from '@/services/AuraMemoryService';
+import { connect as connectWaku, send as sendWaku, listen as listenWaku } from '@/lib/waku';
 
 type AuraState = 'idle' | 'listening' | 'thinking' | 'speaking';
 
@@ -26,8 +27,34 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const { activeProject, updateProject } = useProjectStorage();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [proactiveTips, setProactiveTips] = useState<string[]>([]);
+  const enableWaku = import.meta.env.VITE_ENABLE_WAKU === 'true';
 
   const activeWidgets = useMemo(() => activeProject?.widgets ?? [], [activeProject?.widgets]);
+
+  // Connect to Waku and listen for incoming chat messages when enabled
+  useEffect(() => {
+    if (!enableWaku || !navigator.onLine || !activeProject) return;
+    let sub: { unsubscribe: () => Promise<void> } | null = null;
+
+    const start = async () => {
+      try {
+        await connectWaku();
+        sub = await listenWaku(async msg => {
+          if (!activeProject) return;
+          await AuraMemoryService.addMessage(activeProject.id, msg);
+          setMessages(await AuraMemoryService.getConversation(activeProject.id));
+        });
+      } catch (err) {
+        console.error('[waku] failed to start', err);
+      }
+    };
+
+    start();
+
+    return () => {
+      sub?.unsubscribe?.();
+    };
+  }, [enableWaku, activeProject]);
 
   useEffect(() => {
     const loadConversation = async () => {
@@ -71,6 +98,14 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       timestamp: new Date().toISOString()
     };
     await AuraMemoryService.addMessage(activeProject.id, userMessage);
+    if (enableWaku && navigator.onLine) {
+      try {
+        await connectWaku();
+        await sendWaku(userMessage);
+      } catch (err) {
+        console.warn('[waku] failed to send user message', err);
+      }
+    }
     setMessages(await AuraMemoryService.getConversation(activeProject.id));
     setAuraState('thinking');
 
@@ -84,6 +119,14 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         timestamp: new Date().toISOString()
       };
       await AuraMemoryService.addMessage(activeProject.id, auraMessage);
+      if (enableWaku && navigator.onLine) {
+        try {
+          await connectWaku();
+          await sendWaku(auraMessage);
+        } catch (err) {
+          console.warn('[waku] failed to send aura message', err);
+        }
+      }
       setMessages(await AuraMemoryService.getConversation(activeProject.id));
 
       // Generate new widgets based on the conversation context
@@ -102,7 +145,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       setAuraState('idle');
       return '';
     }
-  }, [activeProject, activeWidgets, updateProject]);
+  }, [activeProject, activeWidgets, updateProject, enableWaku]);
 
   const refreshProactiveTips = useCallback(async () => {
     if (!activeProject) return;

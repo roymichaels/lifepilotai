@@ -38,6 +38,12 @@ vi.mock('../api/widgets', () => ({
   generateWidgets: vi.fn().mockResolvedValue({ widgets: [{ id: 'w1' }] })
 }))
 
+vi.mock('../lib/waku', () => ({
+  connect: vi.fn(),
+  send: vi.fn(),
+  listen: vi.fn().mockResolvedValue({ unsubscribe: vi.fn() })
+}))
+
 describe('ChatContext', () => {
   beforeEach(() => {
     vi.useFakeTimers()

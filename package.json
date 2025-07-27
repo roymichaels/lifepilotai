@@ -47,6 +47,7 @@
     "@react-three/fiber": "^8.18.0",
     "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^7.5.0",
+    "@waku/sdk": "^0.0.33",
     "axios": "^1.10.0",
     "chart.js": "^4.4.1",
     "class-variance-authority": "^0.7.0",

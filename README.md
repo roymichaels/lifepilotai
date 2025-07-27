@@ -56,6 +56,7 @@ Firebase values are required for authentication to work correctly.
 - During development the Vite server proxies API paths like `/projects`, `/subscription`, `/users`, and more to this URL.
 - `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
 - `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
+- `VITE_ENABLE_WAKU` – set to `true` to enable Waku peer-to-peer chat (optional)
 - `VITE_WAKU_RELAY_URL` – address of a Waku relay for optional message sync (leave unset for offline use)
 - `VITE_FIREBASE_API_KEY` – Firebase project API key
 - `VITE_FIREBASE_AUTH_DOMAIN` – Firebase auth domain
@@ -88,6 +89,13 @@ When network access is available you can optionally sync messages over
 [Waku](https://waku.org/). Start a Waku node and set `VITE_WAKU_RELAY_URL` in
 your `.env` file to the node's multiaddress. Leaving this variable unset keeps
 the app in offline mode and no network requests are made for messaging.
+
+### Waku Messaging
+Setting `VITE_ENABLE_WAKU` to `true` enables peer-to-peer chat via the
+[@waku/sdk](https://github.com/waku-org/js-waku) package. When enabled the
+client starts a light node and publishes chat messages on the `/lifepilot/1/chat`
+content topic. If the variable is unset or the browser is offline, the app
+continues to function using only local storage.
 
 ### 3. Firebase Console Setup
 1. Open the [Firebase console](https://console.firebase.google.com/) and navigate to **Authentication → Sign‑in method**.
