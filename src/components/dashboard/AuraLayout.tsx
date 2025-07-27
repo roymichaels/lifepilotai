@@ -29,7 +29,6 @@ import { useCharacter } from '@/hooks/useCharacter';
 import { SkillTree } from '@/components/rpg/SkillTree';
 import { useNavigate } from 'react-router-dom';
 import { AuraMemoryService } from '@/services/AuraMemoryService';
-import { useElectricSync } from '@/hooks/useElectricSync';
 
 const jobIcons = {
   'Strategist': Crown,
@@ -60,7 +59,6 @@ function AuraLayoutContent() {
   const { projects, activeProject, isLoading: projectsLoading } = useProjectStorage();
   const isMobile = useMobile();
   const navigate = useNavigate();
-  useElectricSync();
 
   // Auto-open plan modal if no active project - wait for loading to complete
   useEffect(() => {
