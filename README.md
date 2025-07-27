@@ -57,7 +57,7 @@ Firebase values are required for authentication to work correctly.
 - `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
 - `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
 - `VITE_ENABLE_WAKU` – set to `true` to enable Waku peer-to-peer chat (optional)
-- `VITE_WAKU_RELAY_URL` – address of a Waku relay for optional message sync (leave unset for offline use)
+- `VITE_WAKU_RELAY_URL` – multiaddress of a Waku relay to bootstrap from (optional; defaults to public peers)
 - `VITE_FIREBASE_API_KEY` – Firebase project API key
 - `VITE_FIREBASE_AUTH_DOMAIN` – Firebase auth domain
 - `VITE_FIREBASE_PROJECT_ID` – Firebase project ID
@@ -87,8 +87,8 @@ required, so the app can run completely offline.
 
 When network access is available you can optionally sync messages over
 [Waku](https://waku.org/). Start a Waku node and set `VITE_WAKU_RELAY_URL` in
-your `.env` file to the node's multiaddress. Leaving this variable unset keeps
-the app in offline mode and no network requests are made for messaging.
+your `.env` file to the node's multiaddress. If the variable is omitted the
+client uses the public bootstrap peers provided by the Waku network.
 
 ### Waku Messaging
 Setting `VITE_ENABLE_WAKU` to `true` enables peer-to-peer chat via the
@@ -124,8 +124,9 @@ cd path/to/api && npm start
 ```
 
 To keep the app completely offline simply skip any additional services.
-If you want to sync messages when online, start a Waku node and set
-`VITE_WAKU_RELAY_URL` in your `.env` file.
+If Waku is enabled the client will connect to public bootstrap peers by default.
+Set `VITE_WAKU_RELAY_URL` to point at your own node if you prefer to use a
+specific relay.
 
 ### 5. Database initialization
 When `npm run dev` starts it first executes the `predev` script defined in

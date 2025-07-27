@@ -12,10 +12,15 @@ import type { ChatMessage } from '@/types/chat'
 const CONTENT_TOPIC = '/lifepilot/1/chat'
 
 let node: LightNode | null = null
+const { VITE_WAKU_RELAY_URL } = import.meta.env
 
 export async function connect(): Promise<LightNode> {
   if (node) return node
-  node = await createLightNode({ defaultBootstrap: true })
+  node = await createLightNode(
+    VITE_WAKU_RELAY_URL
+      ? { bootstrapPeers: [VITE_WAKU_RELAY_URL] }
+      : { defaultBootstrap: true }
+  )
   await node.start()
   await waitForRemotePeer(node)
   return node
