@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import type { ChatMessage } from '@/types/chat';
 import { sendChatMessage } from '@/api/chat';
 import { generateWidgets } from '@/api/widgets';
@@ -26,7 +27,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [proactiveTips, setProactiveTips] = useState<string[]>([]);
 
-  const activeWidgets = activeProject?.widgets || [];
+  const activeWidgets = useMemo(() => activeProject?.widgets ?? [], [activeProject?.widgets]);
 
   useEffect(() => {
     const loadConversation = async () => {

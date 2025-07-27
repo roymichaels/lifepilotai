@@ -1,6 +1,6 @@
 // Database initialization using ElectricSQL migrations.
 // This script now uses an in-memory database so no file is created.
-/// <reference path="./wa-sqlite.d.ts" />
+import './wa-sqlite.d.ts'
 
 async function run() {
   try {
