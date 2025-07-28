@@ -1,57 +1,47 @@
-import '../../scripts/wa-sqlite.d.ts'
+import { electric } from '@/lib/electric'
 
-let sqlite3: any | undefined
-let db: any | undefined
-
-async function openDb() {
-  if (!db) {
-    const SQLiteModule = await import('wa-sqlite/dist/wa-sqlite.mjs') as any
-    const SQLiteFactory = SQLiteModule.default as (config?: object) => Promise<any>
-    const SQLite = await import('wa-sqlite')
-    const module = await SQLiteFactory()
-    sqlite3 = SQLite.Factory(module)
-    db = await sqlite3.open_v2(':memory:')
+/**
+ * Service for storing and retrieving character traits.
+ * Traits are persisted per project in the ElectricSQL settings table.
+ */
+export class TraitService {
+  private static key(projectId: string) {
+    return `traits_${projectId}`
   }
-  return { sqlite3, db }
+
+  static async getTraits(projectId: string): Promise<string[]> {
+    const row = await electric.settings.get(this.key(projectId))
+    if (row?.value) {
+      try {
+        return JSON.parse(row.value) as string[]
+      } catch {
+        return []
+      }
+    }
+    return []
+  }
+
+  static async addTrait(projectId: string, trait: string): Promise<string[]> {
+    const traits = await this.getTraits(projectId)
+    if (!traits.includes(trait)) {
+      const updated = [...traits, trait]
+      await electric.settings.put({
+        key: this.key(projectId),
+        value: JSON.stringify(updated)
+      })
+      return updated
+    }
+    return traits
+  }
+
+  static async removeTrait(projectId: string, trait: string): Promise<string[]> {
+    const traits = await this.getTraits(projectId)
+    const updated = traits.filter(t => t !== trait)
+    await electric.settings.put({
+      key: this.key(projectId),
+      value: JSON.stringify(updated)
+    })
+    return updated
+  }
 }
 
-export interface TraitRecord {
-  name: string
-  value: string
-  timestamp: string
-}
-
-export async function addTrait(name: string, value: string): Promise<void> {
-  const { sqlite3, db } = await openDb()
-  const ts = new Date().toISOString()
-  const escapedName = name.replace(/'/g, "''")
-  const escapedValue = value.replace(/'/g, "''")
-  await sqlite3.exec(db, `INSERT INTO traits(name, value, timestamp) VALUES ('${escapedName}', '${escapedValue}', '${ts}')`)
-}
-
-export async function getTraits(): Promise<string[]> {
-  const { sqlite3, db } = await openDb()
-  const traits: string[] = []
-  await sqlite3.exec(db, 'SELECT DISTINCT name FROM traits ORDER BY name', (row: any[]) => {
-    traits.push(row[0])
-  })
-  return traits
-}
-
-export async function getHistory(name: string): Promise<TraitRecord[]> {
-  const { sqlite3, db } = await openDb()
-  const escaped = name.replace(/'/g, "''")
-  const records: TraitRecord[] = []
-  await sqlite3.exec(db, `SELECT name, value, timestamp FROM traits WHERE name='${escaped}' ORDER BY timestamp DESC`, (row: any[]) => {
-    records.push({ name: row[0], value: row[1], timestamp: row[2] })
-  })
-  return records
-}
-
-export const TraitService = {
-  addTrait,
-  getTraits,
-  getHistory
-}
-
-export default TraitService
