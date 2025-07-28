@@ -6,9 +6,10 @@ import { useChatContext } from '@/contexts/ChatContext';
 
 interface FloatingAuraSphereProps {
   onActivate: () => void;
+  traits?: string[];
 }
 
-export function FloatingAuraSphere({ onActivate }: FloatingAuraSphereProps) {
+export function FloatingAuraSphere({ onActivate, traits = [] }: FloatingAuraSphereProps) {
   const controls = useAnimation();
   const { auraState } = useChatContext();
   const [isHovered, setIsHovered] = useState(false);
@@ -90,12 +91,21 @@ export function FloatingAuraSphere({ onActivate }: FloatingAuraSphereProps) {
   };
 
   // Smooth color transitions
-  const getSphereColor = () => {
+  const getSphereColor = (t: string[]) => {
+    if (t.includes('tech')) {
+      return 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
+    }
+    if (t.includes('nature')) {
+      return 'linear-gradient(135deg, #34d399, #059669)';
+    }
+    if (t.includes('creative')) {
+      return 'linear-gradient(135deg, #ec4899, #db2777)';
+    }
     switch (auraState) {
       case 'listening':
         return 'linear-gradient(135deg, #f59e0b, #d97706)';
       case 'thinking':
-        return 'linear-gradient(135deg, #3b82f6, #1d4ed8)';
+        return 'linear-gradient(135deg, #6366f1, #4338ca)';
       case 'speaking':
         return 'linear-gradient(135deg, #10b981, #059669)';
       default:
@@ -142,7 +152,7 @@ export function FloatingAuraSphere({ onActivate }: FloatingAuraSphereProps) {
           repeatType: "reverse"
         }}
         style={{
-          background: getSphereColor(),
+          background: getSphereColor(traits),
           filter: 'blur(8px)',
           width: '80px',
           height: '80px'
@@ -154,7 +164,7 @@ export function FloatingAuraSphere({ onActivate }: FloatingAuraSphereProps) {
         animate={controls}
         className="relative w-16 h-16 rounded-full shadow-2xl"
         style={{
-          background: getSphereColor(),
+          background: getSphereColor(traits),
           boxShadow: `
             0 0 ${isActive ? 30 : 20}px rgba(139, 92, 246, 0.4),
             0 0 ${isActive ? 60 : 40}px rgba(139, 92, 246, 0.2),
