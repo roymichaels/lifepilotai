@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Crown, Zap, Target, Heart, Sparkles } from 'lucide-react';
-import { useCharacter } from '@/hooks/useCharacter';
-import { SkillTree } from './SkillTree';
+import React, { useState, useEffect } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Progress } from '@/components/ui/progress'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Crown, Zap, Target, Heart, Sparkles, X } from 'lucide-react'
+import { useCharacter } from '@/hooks/useCharacter'
+import { useProjectStorage } from '@/hooks/useProjectStorage'
+import { SkillTree } from './SkillTree'
+import { TraitService } from '@/services/TraitService'
 
 const jobIcons = {
   'Strategist': Crown,
@@ -22,8 +25,32 @@ const jobPerks = {
 };
 
 export function CharacterSheet() {
-  const { character, isLoading, xpAnimation, levelUpAnimation } = useCharacter();
-  const [showFullSheet, setShowFullSheet] = useState(false);
+  const { character, isLoading, xpAnimation, levelUpAnimation } = useCharacter()
+  const { activeProject } = useProjectStorage()
+  const [showFullSheet, setShowFullSheet] = useState(false)
+  const [traits, setTraits] = useState<string[]>([])
+  const [newTrait, setNewTrait] = useState('')
+
+  useEffect(() => {
+    if (showFullSheet && activeProject) {
+      TraitService.getTraits(activeProject.id).then(setTraits)
+    }
+  }, [showFullSheet, activeProject])
+
+  const handleAddTrait = async () => {
+    if (!activeProject) return
+    const trait = newTrait.trim()
+    if (!trait) return
+    const updated = await TraitService.addTrait(activeProject.id, trait)
+    setTraits(updated)
+    setNewTrait('')
+  }
+
+  const handleRemoveTrait = async (trait: string) => {
+    if (!activeProject) return
+    const updated = await TraitService.removeTrait(activeProject.id, trait)
+    setTraits(updated)
+  }
 
   if (isLoading || !character) {
     return (
@@ -141,6 +168,46 @@ export function CharacterSheet() {
                     <Sparkles className="w-3 h-3 mr-1" />
                     {jobPerks[character.currentJob]}
                   </Badge>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Traits */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Zap className="w-6 h-6 text-purple-500" />
+                  <span>Traits</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {traits.map(trait => (
+                    <Badge
+                      key={trait}
+                      className="flex items-center gap-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200"
+                    >
+                      <span>{trait}</span>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="w-4 h-4"
+                        onClick={() => handleRemoveTrait(trait)}
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </Badge>
+                  ))}
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    value={newTrait}
+                    onChange={e => setNewTrait(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleAddTrait()}
+                    placeholder="Add trait"
+                    className="flex-1"
+                  />
+                  <Button size="sm" onClick={handleAddTrait}>Add</Button>
                 </div>
               </CardContent>
             </Card>
