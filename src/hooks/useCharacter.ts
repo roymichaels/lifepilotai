@@ -1,12 +1,27 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Character, Quest, getCharacter, gainXP as apiGainXP, completeQuest as apiCompleteQuest } from '@/api/character';
 import { useProjectStorage } from './useProjectStorage';
+import { TraitService } from '@/services/TraitService';
 
 export function useCharacter() {
   const [isLoading, setIsLoading] = useState(false);
   const [xpAnimation, setXpAnimation] = useState<{ amount: number; source: string } | null>(null);
   const [levelUpAnimation, setLevelUpAnimation] = useState(false);
+  const [traits, setTraits] = useState<string[]>([]);
   const { activeProject, updateProject } = useProjectStorage();
+
+  useEffect(() => {
+    const loadTraits = async () => {
+      if (!activeProject) {
+        setTraits([]);
+        return;
+      }
+      const list = await TraitService.getTraits(activeProject.id);
+      setTraits(list);
+    };
+
+    loadTraits();
+  }, [activeProject]);
 
   // Use project character data instead of separate character state
   const character = activeProject ? {
@@ -14,6 +29,7 @@ export function useCharacter() {
     xp: activeProject.character.xp,
     xpToNext: activeProject.character.xpToNext,
     currentJob: activeProject.character.role,
+    traits,
     unlockedSkills: [],
     activeQuests: [],
     completedQuests: [],
@@ -67,11 +83,27 @@ export function useCharacter() {
     }
   }, [activeProject, gainXP]);
 
+  const addTrait = useCallback(async (trait: string) => {
+    if (!activeProject) return;
+    await TraitService.addTrait(activeProject.id, trait);
+    const list = await TraitService.getTraits(activeProject.id);
+    setTraits(list);
+  }, [activeProject]);
+
+  const removeTrait = useCallback(async (trait: string) => {
+    if (!activeProject) return;
+    await TraitService.removeTrait(activeProject.id, trait);
+    const list = await TraitService.getTraits(activeProject.id);
+    setTraits(list);
+  }, [activeProject]);
+
   return {
     character,
     isLoading,
     xpAnimation,
     levelUpAnimation,
+    addTrait,
+    removeTrait,
     gainXP,
     completeQuest
   };
