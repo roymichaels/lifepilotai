@@ -1,5 +1,7 @@
 // Description: Process onboarding responses with AI to create enhanced life plan or project plan
 // Returns: { success: boolean, plan: any, message: string, usedFallback?: boolean }
+import { TraitService } from '@/services/TraitService'
+
 export const processOnboardingWithAI = async (responses: Record<string, any>, planType: 'life' | 'project') => {
   if (import.meta.env.DEV)
     console.log('AI API: Processing onboarding with AI', { planType, responseKeys: Object.keys(responses) });
@@ -50,6 +52,13 @@ export const processOnboardingWithAI = async (responses: Record<string, any>, pl
     }
 
     if (plan) {
+      try {
+        const allText = Object.values(responses).map(r => String(r)).join(' ')
+        await TraitService.addFromInput(allText, 'onboarding')
+      } catch (err) {
+        if (import.meta.env.DEV) console.warn('Trait extraction failed', err)
+      }
+
       return { success: true, plan, message: 'AI-enhanced plan created' };
     }
 
