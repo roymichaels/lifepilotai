@@ -14,6 +14,7 @@ export function useCharacter() {
     xp: activeProject.character.xp,
     xpToNext: activeProject.character.xpToNext,
     currentJob: activeProject.character.role,
+    traits: activeProject.character.traits ?? [],
     unlockedSkills: [],
     activeQuests: [],
     completedQuests: [],

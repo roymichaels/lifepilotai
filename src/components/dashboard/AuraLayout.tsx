@@ -267,6 +267,7 @@ function AuraLayoutContent() {
 
             <FloatingAuraSphere
               onActivate={() => setIsChatExpanded(true)}
+              traits={character?.traits || []}
             />
           </main>
         )}
