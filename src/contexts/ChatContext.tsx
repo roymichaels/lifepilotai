@@ -5,6 +5,7 @@ import { sendChatMessage } from '@/api/chat';
 import { generateWidgets } from '@/api/widgets';
 import { useProjectStorage } from '@/hooks/useProjectStorage';
 import { AuraMemoryService } from '@/services/AuraMemoryService';
+import { TraitService } from '@/services/TraitService';
 import { connect as connectWaku, send as sendWaku, listen as listenWaku } from '@/lib/waku';
 
 type AuraState = 'idle' | 'listening' | 'thinking' | 'speaking';
@@ -98,6 +99,11 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       timestamp: new Date().toISOString()
     };
     await AuraMemoryService.addMessage(activeProject.id, userMessage);
+    try {
+      await TraitService.addFromInput(content, 'chat');
+    } catch (err) {
+      if (import.meta.env.DEV) console.warn('Trait extraction failed', err);
+    }
     if (enableWaku && navigator.onLine) {
       try {
         await connectWaku();

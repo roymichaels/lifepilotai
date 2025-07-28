@@ -1,47 +1,79 @@
 import { electric } from '@/lib/electric'
 
+export interface Trait {
+  id: string
+  trait: string
+  source: string
+  createdAt: string
+}
+
 /**
- * Service for storing and retrieving character traits.
- * Traits are persisted per project in the ElectricSQL settings table.
+ * Simple storage for user traits discovered during onboarding or chat.
+ * Traits are persisted in the ElectricSQL `settings` table under the `traits` key
+ * as a JSON encoded array.
  */
 export class TraitService {
-  private static key(projectId: string) {
-    return `traits_${projectId}`
-  }
+  private static readonly STORAGE_KEY = 'traits'
 
-  static async getTraits(projectId: string): Promise<string[]> {
-    const row = await electric.settings.get(this.key(projectId))
-    if (row?.value) {
-      try {
-        return JSON.parse(row.value) as string[]
-      } catch {
-        return []
-      }
+  private static async getAll(): Promise<Trait[]> {
+    const row = await electric.settings.get(this.STORAGE_KEY)
+    if (!row?.value) return []
+    try {
+      return JSON.parse(row.value) as Trait[]
+    } catch {
+      return []
     }
-    return []
   }
 
-  static async addTrait(projectId: string, trait: string): Promise<string[]> {
-    const traits = await this.getTraits(projectId)
-    if (!traits.includes(trait)) {
-      const updated = [...traits, trait]
-      await electric.settings.put({
-        key: this.key(projectId),
-        value: JSON.stringify(updated)
-      })
-      return updated
+  private static async saveAll(traits: Trait[]) {
+    await electric.settings.put({ key: this.STORAGE_KEY, value: JSON.stringify(traits) })
+  }
+
+  /**
+   * Store a single trait with an optional source label.
+   */
+  static async addTrait(trait: string, source = 'unknown') {
+    const traits = await this.getAll()
+    traits.push({
+      id: crypto.randomUUID(),
+      trait,
+      source,
+      createdAt: new Date().toISOString()
+    })
+    await this.saveAll(traits)
+  }
+
+  /**
+   * Extract traits from free form text and store them.
+   * Currently uses a simple keyword match against a small set of common traits.
+   * Returns the traits that were found.
+   */
+  static async addFromInput(input: string, source = 'input'): Promise<string[]> {
+    const traits = this.extractTraits(input)
+    for (const t of traits) {
+      await this.addTrait(t, source)
     }
     return traits
   }
 
-  static async removeTrait(projectId: string, trait: string): Promise<string[]> {
-    const traits = await this.getTraits(projectId)
-    const updated = traits.filter(t => t !== trait)
-    await electric.settings.put({
-      key: this.key(projectId),
-      value: JSON.stringify(updated)
-    })
-    return updated
+  /**
+   * Naive trait extraction based on a list of keywords.
+   */
+  private static extractTraits(text: string): string[] {
+    const keywords = [
+      'organized',
+      'creative',
+      'reliable',
+      'punctual',
+      'curious',
+      'disciplined',
+      'empathetic',
+      'ambitious',
+      'patient',
+      'adaptable'
+    ]
+    const lower = text.toLowerCase()
+    const found = keywords.filter(k => lower.includes(k))
+    return Array.from(new Set(found))
   }
 }
-
