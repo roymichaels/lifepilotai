@@ -1,5 +1,6 @@
-import React from 'react';
-import { motion } from 'framer-motion';
+import React from 'react'
+import type { CSSProperties } from 'react'
+import { motion } from 'framer-motion'
 
 interface HolographicSphere3DProps {
   isActive?: boolean;
@@ -22,8 +23,8 @@ export function HolographicSphere3D({
         className="rounded-full bg-gradient-to-r from-purple-500 via-blue-500 to-pink-500 relative overflow-hidden"
         style={{
           width: `${size * 64}px`,
-          height: `${size * 64}px`
-        }}
+          height: `${size * 64}px`,
+        } as React.CSSProperties}
         animate={{
           scale: isSpeaking ? [1, 1.1, 1] : isPulsing ? [1, 1.05, 1] : 1,
           rotate: isActive ? 360 : 0,
@@ -53,8 +54,8 @@ export function HolographicSphere3D({
             ease: "easeInOut"
           }}
           style={{
-            background: 'radial-gradient(circle, rgba(255,255,255,0.8), transparent 70%)'
-          }}
+            background: 'radial-gradient(circle, rgba(255,255,255,0.8), transparent 70%)',
+          } as React.CSSProperties}
         />
 
         {/* Holographic layers */}
@@ -135,8 +136,8 @@ export function HolographicSphere3D({
               style={{
                 left: '50%',
                 top: '50%',
-                transform: 'translate(-50%, -50%)'
-              }}
+                transform: 'translate(-50%, -50%)',
+              } as React.CSSProperties}
             />
           ))}
         </div>
