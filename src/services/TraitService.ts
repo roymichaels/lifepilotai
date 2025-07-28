@@ -44,3 +44,4 @@ export class TraitService {
     return updated
   }
 }
+
