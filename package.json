@@ -55,7 +55,7 @@
     "dexie": "^3.2.5",
     "dotenv": "^16.4.1",
     "embla-carousel-react": "^8.5.1",
-    "firebase": "^9.6.0",
+    "firebase": "^10.9.0",
     "framer-motion": "^12.23.6",
     "input-otp": "^1.4.1",
     "json-bigint": "^1.0.0",
