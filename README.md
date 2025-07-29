@@ -125,9 +125,11 @@ No database setup is required. When the dev server starts it connects to Waku an
 
 ### 6. Development dependencies
 
-Use the helper script to install all development packages, including the test runner **Vitest**:
+Install all dependencies (including the test runner **Vitest**) before running the tests:
 
 ```bash
+npm install
+# or use the helper script
 ./scripts/setup-dev.sh
 ```
 
