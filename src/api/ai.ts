@@ -9,6 +9,7 @@ export const processOnboardingWithAI = async (responses: Record<string, any>, pl
 
   const cfg = await loadConfig()
   const apiKey = cfg?.openaiApiKey
+
   if (!apiKey) {
     console.warn('AI API: Missing OpenAI API key');
     return { success: false, plan: null, message: 'Missing OpenAI API key', usedFallback: true };

@@ -4,7 +4,6 @@ import { loadConfig } from '@/services/ConfigService'
 
 let baseURL = ''
 const api = axios.create({
-  baseURL,
   timeout: 10000,
 })
 
@@ -23,6 +22,7 @@ const isDev = import.meta.env.DEV;
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
+    config.baseURL = baseURL
     isDev && console.log('[API] Making request to:', config.url);
     isDev && console.log('[API] Request method:', config.method);
     

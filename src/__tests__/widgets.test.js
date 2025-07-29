@@ -18,7 +18,8 @@ vi.mock('../api/api', () => ({
     }),
     interceptors: { request: { use: () => {} }, response: { use: () => {} } }
   }
-}))
+}));
+
 
 import { generateWidgets, updateWidgets } from '../api/widgets'
 vi.mock('../services/ConfigService', () => ({
@@ -29,7 +30,8 @@ globalThis.localStorage = {
   getItem: () => null,
   setItem: () => undefined,
   removeItem: () => undefined
-}
+};
+
 
 describe('generateWidgets', () => {
   it('returns goal widget when context mentions goals', async () => {

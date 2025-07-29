@@ -6,13 +6,12 @@ import {
   LightNode,
   DecodedMessage
 } from '@waku/sdk'
-import { wakuTopics, type WakuTopic } from './wakuTopics'
+import type { WakuTopic } from './wakuTopics'
+import { loadConfig } from '@/services/ConfigService'
 
-
-const CONTENT_TOPIC = wakuTopics.chat
+const CONTENT_TOPIC = '/lifepilot/1/chat'
 
 let node: LightNode | null = null
-import { loadConfig } from '@/services/ConfigService'
 
 let VITE_WAKU_RELAY_URL: string | undefined
 loadConfig().then(cfg => {

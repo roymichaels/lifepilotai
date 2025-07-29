@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-process.env.OPENAI_API_KEY = 'test'
+(global as any).__APP_CONFIG__ = { openaiApiKey: 'test' }
 
 const connect = vi.fn().mockResolvedValue({})
 const disconnect = vi.fn()

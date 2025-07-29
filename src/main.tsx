@@ -36,6 +36,7 @@ if (import.meta.env.DEV) console.log('[Main] Environment variables:', {
   PROD: import.meta.env.PROD
 });
 
+
 // Add error handling for script loading
 window.addEventListener('error', (event) => {
   console.error('[Main] Global error caught:', event);
