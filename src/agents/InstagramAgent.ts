@@ -72,56 +72,65 @@ export class InstagramAgent {
     return [account]
   }
 
-  async getRecentCaptions(username: string): Promise<string[]> {
-    const samples = [
-      'Exploring new adventures every day.',
-      'Fitness is a lifestyle, not a hobby.',
-      'Freedom is the best feeling.',
-      'Consistency is the secret sauce to success.',
-      'Pushing limits beyond comfort zones.'
-    ]
-    const count = 3 + Math.floor(Math.random() * 3)
-    return samples.slice(0, count)
+  async runDailyCycle(niche: string): Promise<void> {
+    const count = Math.random() > 0.5 ? 2 : 1
+    const discovered: Account[] = []
+    for (let i = 0; i < count; i++) {
+      const [account] = await this.discoverAccounts(niche)
+      discovered.push(account)
+    }
+    for (const acc of discovered) {
+      const captions = await this.fetchMockCaptions(acc.username)
+      await this.analyzeAccount(acc.id, captions)
+    }
+    // This can later be scheduled with setInterval or cron
   }
 
-  async analyzeAccount(accountId: string): Promise<string[]> {
-    const account = this.accounts.find(a => a.id === accountId)
-    const captions = await this.getRecentCaptions(account?.username || '')
+  private async fetchMockCaptions(username: string): Promise<string[]> {
+    return [
+      `${username} just dropped a new tip!`,
+      `Learning about ${username} every day.`,
+      `Follow for more ${username} content.`,
+    ]
+  }
 
-    const prompt = `Given these Instagram captions:\n${captions
-      .map(c => `- ${c}`)
-      .join('\n')}\n\nGenerate five short hook ideas for future posts.`
+  async analyzeAccount(accountId: string, captions: string[]): Promise<string> {
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+    const prompt = captions.join('\n')
+    let hook = `Hook for ${accountId}`
 
-    const res = await this.openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'system',
-          content: 'You craft engaging social media hooks.',
-        },
-        { role: 'user', content: prompt },
-      ],
-    })
-
-    const text = res.choices[0]?.message?.content || ''
-    const ideas = text
-      .split('\n')
-      .map(l => l.replace(/^[-\d.\s]+/, '').trim())
-      .filter(Boolean)
-      .slice(0, 5)
-
-    for (const ideaText of ideas) {
-      const idea: ContentIdea = {
-        id: crypto.randomUUID(),
-        accountId,
-        idea: ideaText,
-        createdAt: new Date().toISOString(),
+    if (apiKey) {
+      try {
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: 'gpt-3.5-turbo',
+            messages: [
+              {
+                role: 'user',
+                content: `Analyze these captions and suggest a new content hook in one sentence:\n${prompt}`,
+              },
+            ],
+            max_tokens: 60,
+          }),
+        })
+        const data = await res.json()
+        hook = data.choices?.[0]?.message?.content?.trim() || hook
+      } catch (err) {
+        console.error('[InstagramAgent] OpenAI analysis failed', err)
       }
-      await this.publish(IDEAS_TOPIC, idea)
-      this.ideas.push(idea)
     }
 
-    return ideas
+    const ideaId = crypto.randomUUID()
+    const createdAt = new Date().toISOString()
+    const idea: ContentIdea = { id: ideaId, accountId, idea: hook, createdAt }
+    await this.publish(IDEAS_TOPIC, idea)
+    this.ideas.push(idea)
+    return hook
   }
 
   async suggestDailyContent(): Promise<ContentIdea[]> {
