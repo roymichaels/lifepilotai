@@ -17,6 +17,9 @@ vi.mock('../lib/wakuTopics', () => ({
   sendMessage,
   subscribeToTopic
 }))
+vi.mock('../services/ConfigService', () => ({
+  loadConfig: vi.fn(async () => ({ openaiApiKey: '' }))
+}))
 
 let InstagramAgent: any
 let ACCOUNT_TOPIC: string

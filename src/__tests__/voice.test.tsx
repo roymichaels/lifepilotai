@@ -4,6 +4,9 @@ import { renderHook, act } from '@testing-library/react'
 import React from 'react'
 import { useVoiceInput } from '../hooks/useVoiceInput'
 import { useTextToSpeech } from '../hooks/useTextToSpeech'
+vi.mock('../services/ConfigService', () => ({
+  loadConfig: vi.fn(async () => ({ elevenLabsApiKey: '' }))
+}))
 
 // mock SpeechRecognition
 let lastRec: FakeRec | null = null
@@ -42,7 +45,6 @@ describe('useTextToSpeech', () => {
     ;(global as any).SpeechSynthesisUtterance = function (this: any, text: string) {
       this.text = text
     }
-    process.env.VITE_ELEVENLABS_API_KEY = ''
     const { result } = renderHook(() => useTextToSpeech())
     await act(async () => {
       await result.current.speak('hello')

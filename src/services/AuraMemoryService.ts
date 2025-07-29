@@ -1,5 +1,6 @@
 import { electric } from '@/lib/electric'
 import type { ChatMessage } from '@/types/chat'
+import { loadConfig } from './ConfigService'
 
 interface ProactiveTip {
   id: string
@@ -115,7 +116,8 @@ export class AuraMemoryService {
 
   /** helper to call OpenAI to summarize text */
   private static async generateSummary(messages: ChatMessage[]): Promise<string> {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+    const cfg = await loadConfig()
+    const apiKey = cfg?.openaiApiKey
     const prompt = messages
       .map(m => `${m.sender}: ${m.text}`)
       .join('\n')
@@ -146,7 +148,8 @@ export class AuraMemoryService {
 
   /** call OpenAI to create a short suggestion based on a summary */
   private static async generateTip(summary: string): Promise<string> {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+    const cfg = await loadConfig()
+    const apiKey = cfg?.openaiApiKey
     if (!apiKey) return ''
 
     try {

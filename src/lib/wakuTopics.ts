@@ -1,3 +1,6 @@
+import { connect } from './waku'
+import { createEncoder, createDecoder } from '@waku/sdk'
+
 export const wakuTopics = {
   chat: '/lifepilot/1/chat',
   instagramAccounts: '/aura/instagram-agent/accounts/1/app',
@@ -6,3 +9,29 @@ export const wakuTopics = {
 } as const;
 
 export type WakuTopic = typeof wakuTopics[keyof typeof wakuTopics];
+
+export async function sendMessage(topic: string, data: any) {
+  const node: any = await connect()
+  const encoder = createEncoder({ contentTopic: topic })
+  const payload = new TextEncoder().encode(JSON.stringify(data))
+  await node.lightPush.send(encoder, { payload })
+}
+
+export async function subscribeToTopic<T>(
+  topic: string,
+  handler: (data: T, raw: any) => void
+) {
+  const node: any = await connect()
+  const decoder = createDecoder(topic)
+  const sub = await node.filter.subscribe(decoder, (msg: any) => {
+    if (!msg.payload) return
+    try {
+      const text = new TextDecoder().decode(msg.payload)
+      const data = JSON.parse(text) as T
+      handler(data, msg)
+    } catch (err) {
+      console.error('[waku] failed to decode message', err)
+    }
+  })
+  return sub
+}

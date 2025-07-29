@@ -1,12 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import axios from 'axios';
+import { loadConfig } from '@/services/ConfigService'
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
-
+let baseURL = ''
 const api = axios.create({
   baseURL,
   timeout: 10000,
-});
+})
+
+loadConfig().then(cfg => {
+  baseURL = cfg?.apiBaseUrl || ''
+  api.defaults.baseURL = baseURL
+})
+
+export function setBaseURL(url: string) {
+  baseURL = url
+  api.defaults.baseURL = url
+}
 
 const isDev = import.meta.env.DEV;
 

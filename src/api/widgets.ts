@@ -1,4 +1,5 @@
 import api from './api';
+import { loadConfig } from '@/services/ConfigService'
 
 // A static set of widgets used when OpenAI is unavailable
 const fallbackWidgets = [
@@ -194,7 +195,8 @@ export const generateWidgets = async (
     widgets: fallbackWidgets.filter(w => !activeWidgets.includes(w.id))
   });
 
-  if (!import.meta.env.VITE_API_BASE_URL) {
+  const cfg = await loadConfig()
+  if (!cfg?.apiBaseUrl) {
     return fallback();
   }
 
@@ -230,7 +232,8 @@ export const updateWidgets = async (context: string, widgets: any[]) => {
     return { widgets }
   }
 
-  if (!import.meta.env.VITE_API_BASE_URL) {
+  const cfg = await loadConfig()
+  if (!cfg?.apiBaseUrl) {
     return fallback()
   }
 
