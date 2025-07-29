@@ -6,6 +6,8 @@ describe('sqlite schema', () => {
     const tables = Object.keys(schema.tables).sort()
     expect(tables).toEqual([
       'brain_settings',
+      'ig_accounts',
+      'ig_content',
       'messages',
       'projects',
       'settings',

@@ -41,7 +41,7 @@ export class AuraMemoryService {
 
   /**
    * Generate a text summary of the conversation and persist it
-   * in the ElectricSQL summaries table using the provided project id.
+   * in the local summaries table using the provided project id.
    */
   static async persistSummary(projectId: string) {
     const convo = await this.getConversation(projectId)
