@@ -1,16 +1,12 @@
-
 import { describe, it, expect, vi } from 'vitest'
 
-// Mock API client used by widget helpers
-const mockWidgets = [
-  { id: 'goals-progress', data: [{ id: 1, progress: 60 }] }
-]
+const mockWidgets = [{ id: 'goals-progress', data: [{ id: 1, progress: 60 }] }]
 
 vi.mock('../api/api', () => ({
   default: {
-    post: vi.fn((url: string, body: any) => {
+    post: vi.fn((url, body) => {
       if (url === '/widgets/generate') {
-        const active: string[] = body?.activeWidgets ?? []
+        const active = body?.activeWidgets ?? []
         const filtered = mockWidgets.filter(w => !active.includes(w.id))
         return Promise.resolve({ data: { widgets: filtered } })
       }
@@ -25,16 +21,15 @@ vi.mock('../api/api', () => ({
 }))
 
 import { generateWidgets, updateWidgets } from '../api/widgets'
+vi.mock('../services/ConfigService', () => ({
+  loadConfig: vi.fn(async () => ({ apiBaseUrl: '', openaiApiKey: '' }))
+}))
 
-// Basic localStorage mock for API module used in tests
-(global as any).localStorage = {
+globalThis.localStorage = {
   getItem: () => null,
   setItem: () => undefined,
   removeItem: () => undefined
 }
-
-// ensure no API key so fallback logic runs
-process.env.VITE_OPENAI_API_KEY = ''
 
 describe('generateWidgets', () => {
   it('returns goal widget when context mentions goals', async () => {
@@ -53,7 +48,7 @@ describe('generateWidgets', () => {
 describe('updateWidgets', () => {
   it('updates goal progress when context mentions goal', async () => {
     const widgets = [{ id: 'goals-progress', data: [{ id: 1, progress: 50 }] }]
-    const res = await updateWidgets('goal', widgets as any)
+    const res = await updateWidgets('goal', widgets)
     expect(res.widgets[0].data[0].progress).toBeGreaterThan(50)
   })
 })

@@ -12,7 +12,12 @@ import { wakuTopics, type WakuTopic } from './wakuTopics'
 const CONTENT_TOPIC = wakuTopics.chat
 
 let node: LightNode | null = null
-const { VITE_WAKU_RELAY_URL } = import.meta.env
+import { loadConfig } from '@/services/ConfigService'
+
+let VITE_WAKU_RELAY_URL: string | undefined
+loadConfig().then(cfg => {
+  VITE_WAKU_RELAY_URL = cfg?.wakuRelayUrl
+})
 
 export async function connect(): Promise<LightNode> {
   if (node) return node
@@ -30,6 +35,13 @@ export async function send(message: any, topic: WakuTopic = CONTENT_TOPIC): Prom
   if (!node) throw new Error('Waku not connected')
   const encoder = createEncoder({ contentTopic: topic })
   const payload = new TextEncoder().encode(JSON.stringify(message))
+  await node.lightPush.send(encoder, { payload })
+}
+
+export async function sendOnTopic(topic: string, data: any): Promise<void> {
+  if (!node) throw new Error('Waku not connected')
+  const encoder = createEncoder({ contentTopic: topic })
+  const payload = new TextEncoder().encode(JSON.stringify(data))
   await node.lightPush.send(encoder, { payload })
 }
 

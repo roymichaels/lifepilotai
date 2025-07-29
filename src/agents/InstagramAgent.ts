@@ -5,7 +5,7 @@ import {
   sendMessage,
   subscribeToTopic,
 } from '../lib/wakuTopics'
-import OpenAI from 'openai'
+import { loadConfig } from '@/services/ConfigService'
 
 export interface Account {
   id: string
@@ -31,7 +31,6 @@ export class InstagramAgent {
   private accounts: Account[] = []
   private ideas: ContentIdea[] = []
   private subs: { unsubscribe: () => Promise<void> }[] = []
-  private openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
   private constructor() {}
 
@@ -95,10 +94,9 @@ export class InstagramAgent {
   }
 
   async analyzeAccount(accountId: string, captions: string[] = []): Promise<string> {
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY
-    if (captions.length === 0) {
-      captions = await this.fetchMockCaptions(accountId)
-    }
+    const cfg = await loadConfig()
+    const apiKey = cfg?.openaiApiKey
+
     const prompt = captions.join('\n')
     let hook = `Hook for ${accountId}`
 
