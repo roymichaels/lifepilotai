@@ -5,6 +5,7 @@ import brain from '@/brain/Brain';
  * Returns the assistant's reply wrapped in an object with a `message` field.
  */
 import type { ChatContext } from '@/types/chat';
+import { loadConfig } from '@/services/ConfigService'
 
 export const sendChatMessage = async (message: string, context?: ChatContext) => {
   if (import.meta.env.DEV) console.log('sendChatMessage - Called with message:', message);
@@ -17,7 +18,8 @@ export const sendChatMessage = async (message: string, context?: ChatContext) =>
   try {
     if (import.meta.env.DEV) console.log('sendChatMessage - Preparing OpenAI request');
 
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    const cfg = await loadConfig()
+    const apiKey = cfg?.openaiApiKey;
     if (!apiKey) {
       throw new Error('Missing OpenAI API key');
     }

@@ -4,13 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LifePilotAI</title>
-    <script type="module">
-      if (import.meta.env.VITE_USE_PYTHAGORA === 'true') {
-        const s = document.createElement('script');
-        s.src = 'https://s3.us-east-1.amazonaws.com/assets.pythagora.ai/scripts/utils.js';
-        document.head.appendChild(s);
-      }
-    </script>
+    <!-- Pythagora logging is injected at runtime based on user configuration -->
     <link rel="icon" type="image/x-icon" href="https://s3.us-east-1.amazonaws.com/assets.pythagora.ai/logos/favicon.ico" />
   </head>
   <body>

@@ -3,6 +3,8 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { loadBrainSettings } from './services/BrainSettingsService'
+import { ensureConfig } from './services/ConfigService'
+import { setBaseURL } from './api/api'
 
 async function initDatabase() {
   try {
@@ -31,10 +33,9 @@ if (import.meta.env.DEV) console.log('[Main] Starting React application...');
 if (import.meta.env.DEV) console.log('[Main] Environment variables:', {
   NODE_ENV: import.meta.env.NODE_ENV,
   DEV: import.meta.env.DEV,
-  PROD: import.meta.env.PROD,
-  VITE_OPENAI_API_KEY: import.meta.env.VITE_OPENAI_API_KEY ? 'Present' : 'Missing',
-  VITE_ELEVENLABS_API_KEY: import.meta.env.VITE_ELEVENLABS_API_KEY ? 'Present' : 'Missing'
+  PROD: import.meta.env.PROD
 });
+
 
 // Add error handling for script loading
 window.addEventListener('error', (event) => {
@@ -61,7 +62,10 @@ window.addEventListener('unhandledrejection', (event) => {
 async function start() {
   try {
     await initDatabase()
+    const cfg = await ensureConfig()
+    setBaseURL(cfg.apiBaseUrl)
     await loadBrainSettings()
+    if (import.meta.env.DEV) console.log('[Main] Loaded config', cfg)
     if (import.meta.env.DEV) console.log('[Main] Creating React root...')
     const root = ReactDOM.createRoot(document.getElementById('root')!)
     if (import.meta.env.DEV) console.log('[Main] Root created successfully')

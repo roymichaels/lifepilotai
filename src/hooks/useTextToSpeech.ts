@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { loadConfig } from '@/services/ConfigService'
 
 export function useTextToSpeech() {
   const [isSpeaking, setIsSpeaking] = useState(false)
@@ -6,7 +7,8 @@ export function useTextToSpeech() {
   const speak = useCallback(async (text: string) => {
     if (!text) return
     try {
-      const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY
+      const cfg = await loadConfig()
+      const apiKey = cfg?.elevenLabsApiKey
 
       if (apiKey) {
         const voiceId = '21m00Tcm4TlvDq8ikWAM'

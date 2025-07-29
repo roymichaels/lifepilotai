@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { wakuTopics } from '../lib/wakuTopics'
 
 describe('wakuTopics', () => {
-  it('generates user topics from pubkey', () => {
+  it('generates user topics from pubkey', async () => {
+    ;(globalThis as any).localStorage = { getItem: () => null }
+    const { wakuTopics } = await import('../lib/wakuTopics')
     const key = 'abc'
     expect(wakuTopics.userProfile(key)).toBe(`/aura/users/${key}/profile`)
     expect(wakuTopics.userConfig(key)).toBe(`/aura/users/${key}/config`)
