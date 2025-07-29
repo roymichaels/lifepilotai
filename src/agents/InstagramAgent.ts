@@ -1,9 +1,10 @@
+import { disconnect, connect } from '../lib/waku'
 import {
-  LightNode,
-  createDecoder,
-  createEncoder,
-} from '@waku/sdk'
-import { connect } from '../lib/waku'
+  ACCOUNT_TOPIC,
+  IDEAS_TOPIC,
+  sendMessage,
+  subscribeToTopic,
+} from '../lib/wakuTopics'
 
 export interface Account {
   id: string
@@ -25,52 +26,37 @@ export interface ContentIdea {
  * Discovers accounts, analyses posts and stores daily content ideas.
  * Uses Waku peer-to-peer messaging with in-memory storage.
  */
-const ACCOUNTS_TOPIC = '/aura/instagram-agent/accounts/1/app'
-const IDEAS_TOPIC = '/aura/instagram-agent/ideas/1/app'
-
 export class InstagramAgent {
   private accounts: Account[] = []
   private ideas: ContentIdea[] = []
+  private subs: { unsubscribe: () => Promise<void> }[] = []
 
-  private constructor(private node: LightNode) {}
+  private constructor() {}
 
   static async create(): Promise<InstagramAgent> {
-    const node = await connect()
-    const agent = new InstagramAgent(node)
+    await connect()
+    const agent = new InstagramAgent()
     await agent.subscribe()
     return agent
   }
 
   private async publish(topic: string, data: object): Promise<void> {
-    const encoder = createEncoder({ contentTopic: topic })
-    const payload = new TextEncoder().encode(JSON.stringify(data))
-    await this.node.lightPush.send(encoder, { payload })
+    await sendMessage(topic, data)
   }
 
   private async subscribe() {
-    const accountDecoder = createDecoder(ACCOUNTS_TOPIC)
-    await this.node.filter.subscribe(accountDecoder, msg => {
-      if (!msg.payload) return
-      try {
-        const text = new TextDecoder().decode(msg.payload)
-        const data = JSON.parse(text) as Account
+    const accountSub = await subscribeToTopic<Account>(
+      ACCOUNT_TOPIC,
+      data => {
         this.accounts.push(data)
-      } catch (err) {
-        console.error('[InstagramAgent] failed to decode account', err)
       }
-    })
+    )
+    this.subs.push(accountSub)
 
-    const ideaDecoder = createDecoder(IDEAS_TOPIC)
-    await this.node.filter.subscribe(ideaDecoder, msg => {
-      if (!msg.payload) return
-      try {
-        const text = new TextDecoder().decode(msg.payload)
-        const data = JSON.parse(text) as ContentIdea
-        this.ideas.push(data)
-      } catch (err) {
-        console.error('[InstagramAgent] failed to decode idea', err)
-      }
+    const ideaSub = await subscribeToTopic<ContentIdea>(IDEAS_TOPIC, data => {
+      this.ideas.push(data)
     })
+    this.subs.push(ideaSub)
   }
 
   async discoverAccounts(niche: string): Promise<Account[]> {
@@ -105,6 +91,10 @@ export class InstagramAgent {
   }
 
   async close() {
-    await this.node.stop()
+    for (const sub of this.subs) {
+      await sub.unsubscribe()
+    }
+    this.subs = []
+    await disconnect()
   }
 }
