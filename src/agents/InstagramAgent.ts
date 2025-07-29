@@ -1,5 +1,9 @@
-import type { SQLite3, DB } from 'wa-sqlite'
-import { initSQLite } from '../lib/sqlite'
+import {
+  LightNode,
+  createDecoder,
+  createEncoder,
+} from '@waku/sdk'
+import { connect } from '../lib/waku'
 
 export interface Account {
   id: string
@@ -19,20 +23,54 @@ export interface ContentIdea {
 /**
  * Basic autonomous Instagram agent.
  * Discovers accounts, analyses posts and stores daily content ideas.
- * Uses a local SQLite database with no external services required.
+ * Uses Waku peer-to-peer messaging with in-memory storage.
  */
+const ACCOUNTS_TOPIC = '/aura/instagram-agent/accounts/1/app'
+const IDEAS_TOPIC = '/aura/instagram-agent/ideas/1/app'
+
 export class InstagramAgent {
-  private constructor(private sqlite3: SQLite3, private db: DB) {}
+  private accounts: Account[] = []
+  private ideas: ContentIdea[] = []
+
+  private constructor(private node: LightNode) {}
 
   static async create(): Promise<InstagramAgent> {
-    const SQLiteModule = await import('wa-sqlite/dist/wa-sqlite.mjs') as any
-    const SQLiteFactory = SQLiteModule.default as (config?: object) => Promise<any>
-    const SQLite = await import('wa-sqlite')
-    const module = await SQLiteFactory()
-    const sqlite3: SQLite3 = SQLite.Factory(module)
-    const db: DB = await sqlite3.open_v2(':memory:')
-    await initSQLite(sqlite3, db)
-    return new InstagramAgent(sqlite3, db)
+    const node = await connect()
+    const agent = new InstagramAgent(node)
+    await agent.subscribe()
+    return agent
+  }
+
+  private async publish(topic: string, data: object): Promise<void> {
+    const encoder = createEncoder({ contentTopic: topic })
+    const payload = new TextEncoder().encode(JSON.stringify(data))
+    await this.node.lightPush.send(encoder, { payload })
+  }
+
+  private async subscribe() {
+    const accountDecoder = createDecoder(ACCOUNTS_TOPIC)
+    await this.node.filter.subscribe(accountDecoder, msg => {
+      if (!msg.payload) return
+      try {
+        const text = new TextDecoder().decode(msg.payload)
+        const data = JSON.parse(text) as Account
+        this.accounts.push(data)
+      } catch (err) {
+        console.error('[InstagramAgent] failed to decode account', err)
+      }
+    })
+
+    const ideaDecoder = createDecoder(IDEAS_TOPIC)
+    await this.node.filter.subscribe(ideaDecoder, msg => {
+      if (!msg.payload) return
+      try {
+        const text = new TextDecoder().decode(msg.payload)
+        const data = JSON.parse(text) as ContentIdea
+        this.ideas.push(data)
+      } catch (err) {
+        console.error('[InstagramAgent] failed to decode idea', err)
+      }
+    })
   }
 
   async discoverAccounts(niche: string): Promise<Account[]> {
@@ -40,11 +78,10 @@ export class InstagramAgent {
     const username = `${niche}_example`
     const followers = Math.floor(Math.random() * 1000)
     const discoveredAt = new Date().toISOString()
-    await this.sqlite3.exec(
-      this.db,
-      `INSERT INTO ig_accounts(id, username, followers, niche, discoveredAt) VALUES ('${id}','${username}',${followers},'${niche}','${discoveredAt}')`
-    )
-    return [{ id, username, followers, niche, discoveredAt }]
+    const account: Account = { id, username, followers, niche, discoveredAt }
+    await this.publish(ACCOUNTS_TOPIC, account)
+    this.accounts.push(account)
+    return [account]
   }
 
   async analyzeAccount(accountId: string): Promise<string> {
@@ -52,36 +89,22 @@ export class InstagramAgent {
     const hook = `Hook for ${accountId}`
     const ideaId = crypto.randomUUID()
     const createdAt = new Date().toISOString()
-    await this.sqlite3.exec(
-      this.db,
-      `INSERT INTO ig_content(id, accountId, idea, createdAt) VALUES ('${ideaId}','${accountId}','${hook}','${createdAt}')`
-    )
+    const idea: ContentIdea = { id: ideaId, accountId, idea: hook, createdAt }
+    await this.publish(IDEAS_TOPIC, idea)
+    this.ideas.push(idea)
     return hook
   }
 
   async suggestDailyContent(): Promise<ContentIdea[]> {
-    const ideas: ContentIdea[] = []
-    await this.sqlite3.exec(
-      this.db,
-      `SELECT id, accountId, idea, createdAt FROM ig_content ORDER BY createdAt DESC LIMIT 5`,
-      row => {
-        ideas.push({
-          id: row[0] as string,
-          accountId: row[1] as string,
-          idea: row[2] as string,
-          createdAt: row[3] as string
-        })
-      }
-    )
-    return ideas
+    return this.ideas.slice(-5).reverse()
   }
 
   async engage(accountId: string, message: string) {
     // Placeholder for future engagement features
-    await this.sqlite3.exec(this.db, `-- engage ${accountId}: ${message}`)
+    console.log(`[InstagramAgent] engage ${accountId}: ${message}`)
   }
 
   async close() {
-    await this.sqlite3.close(this.db)
+    await this.node.stop()
   }
 }
