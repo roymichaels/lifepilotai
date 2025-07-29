@@ -65,7 +65,7 @@ export class InstagramAgent {
     const followers = Math.floor(Math.random() * 1000)
     const discoveredAt = new Date().toISOString()
     const account: Account = { id, username, followers, niche, discoveredAt }
-    await this.publish(ACCOUNTS_TOPIC, account)
+    await this.publish(ACCOUNT_TOPIC, account)
     this.accounts.push(account)
     return [account]
   }
