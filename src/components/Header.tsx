@@ -30,7 +30,7 @@ export function Header() {
                   <Avatar className="h-8 w-8">
                     <AvatarImage src="" alt="User Avatar" />
                     <AvatarFallback className="bg-muted text-white">
-                      {user.email.charAt(0)}
+                      {user.id.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
