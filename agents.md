@@ -37,7 +37,7 @@ This document outlines the autonomous agents present in the project, their archi
 - **Technologies:**
   - Waku (LightNode, LightPush, LightSubscribe)
   - GPT-4 via OpenAI API
-- **Status:** Active. Migrating from SQLite to full Waku-based design.
+- **Status:** Active. Data is persisted exclusively via Waku topics (see `src/lib/wakuTopics.ts`).
 - **Planned Features:**
   - Real caption scraping
   - Engagement simulations
@@ -61,6 +61,7 @@ This document outlines the autonomous agents present in the project, their archi
 ## 🛠 Agent Communication Protocol
 
 All agents communicate via Waku using the following topics:
+These topics are listed in `src/lib/wakuTopics.ts`.
 
 | Purpose             | Topic Path                                       |
 |---------------------|--------------------------------------------------|
