@@ -64,23 +64,6 @@ export const schema: LocalDbSchema = {
         'tip text not null',
         'createdAt text not null'
       ]
-    },
-    ig_accounts: {
-      columns: [
-        'id text primary key',
-        'username text not null',
-        'followers integer not null',
-        'niche text',
-        'discoveredAt text not null'
-      ]
-    },
-    ig_content: {
-      columns: [
-        'id text primary key',
-        'accountId text not null',
-        'idea text not null',
-        'createdAt text not null'
-      ]
     }
   }
 }
