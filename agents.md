@@ -38,6 +38,7 @@ This document outlines the autonomous agents present in the project, their archi
   - Waku (LightNode, LightPush, LightSubscribe)
   - GPT-4 via OpenAI API
   - Shared helpers in `src/lib/wakuTopics.ts`
+  - `runDailyCycle` method for automated discovery and analysis
 - **Status:** Active. Migrating from SQLite to full Waku-based design.
 - **Planned Features:**
   - Real caption scraping
