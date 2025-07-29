@@ -1,29 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import {
-  login as apiLogin,
-  register as apiRegister,
-  logout as apiLogout,
-} from "../api/auth";
+import { WakuIdentityService, type WakuIdentity } from '@/services/WakuIdentityService'
 
-type User = {
-  id: string;
-  email: string;
-  name?: string;
-  level?: number;
-  xp?: number;
-  unlockedSkills?: string[];
-  createdAt?: string;
-  lastLoginAt?: string;
-  isAdmin?: boolean;
-};
+type User = WakuIdentity;
 
 type AuthContextType = {
   isAuthenticated: boolean;
   user: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  login: () => Promise<void>;
+  register: () => Promise<void>;
+  logout: () => Promise<void>;
   setUser: (user: User | null) => void;
 };
 
@@ -41,74 +27,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (import.meta.env.DEV)
-      console.log("AuthContext - User state changed:", user);
-  }, [user]);
+      console.log('AuthContext - User state changed:', user)
+  }, [user])
 
-  const login = async (email: string, password: string) => {
-    try {
-      if (import.meta.env.DEV)
-        console.log("AuthContext - Starting login process");
-      const response = await apiLogin(email, password);
-      if (import.meta.env.DEV)
-        console.log("AuthContext - Login API response:", response);
-
-      if (response?.accessToken) {
-        localStorage.setItem("accessToken", response.accessToken);
-
-        // Set user data if provided in login response
-        if (response.user) {
-          if (import.meta.env.DEV)
-            console.log("AuthContext - Setting user data from login response:", response.user);
-          const adminUser = {
-            ...response.user,
-            isAdmin: response.user.email === 'deandeanazulay@gmail.com'
-          };
-          setUser(adminUser);
-        }
-        
-        setIsAuthenticated(true);
-        if (import.meta.env.DEV)
-          console.log("AuthContext - Login successful, authentication state set to true");
-      } else {
-        if (import.meta.env.DEV)
-          console.log("AuthContext - Login failed - no access token received");
-        throw new Error('Login failed - no access token received');
+  useEffect(() => {
+    WakuIdentityService.getIdentity().then(identity => {
+      if (identity) {
+        setUser(identity)
+        setIsAuthenticated(true)
       }
-    } catch (error) {
-      console.error("AuthContext - Login error:", error);
-      localStorage.removeItem("accessToken");
-      setIsAuthenticated(false);
-      setUser(null);
-      throw new Error(error?.message || 'Login failed');
-    }
-  };
+    })
+  }, [])
+  const login = async () => {
+    const identity = await WakuIdentityService.createIdentity()
+    setUser(identity)
+    setIsAuthenticated(true)
+  }
 
-  const register = async (email: string, password: string) => {
-    try {
-      if (import.meta.env.DEV)
-        console.log("AuthContext - Starting registration process");
-      const response = await apiRegister(email, password);
-      if (import.meta.env.DEV)
-        console.log("AuthContext - Registration successful");
-      // Registration successful - user needs to login separately
-    } catch (error) {
-      console.error("AuthContext - Registration error:", error);
-      localStorage.removeItem("accessToken");
-      setIsAuthenticated(false);
-      setUser(null);
-      throw new Error(error?.message || 'Registration failed');
-    }
-  };
+  const register = async () => {
+    const identity = await WakuIdentityService.createIdentity()
+    setUser(identity)
+    setIsAuthenticated(true)
+  }
 
   const logout = async () => {
-    if (import.meta.env.DEV)
-      console.log("AuthContext - Logging out user");
-    await apiLogout();
-    localStorage.removeItem("accessToken");
-    setIsAuthenticated(false);
-    setUser(null);
-    window.location.reload();
-  };
+    await WakuIdentityService.clearIdentity()
+    localStorage.removeItem('accessToken')
+    setIsAuthenticated(false)
+    setUser(null)
+  }
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, login, register, logout, setUser }}>
