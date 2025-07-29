@@ -33,8 +33,6 @@ import { generateWidgets, updateWidgets } from '../api/widgets'
   removeItem: () => undefined
 }
 
-// ensure no API key so fallback logic runs
-process.env.VITE_OPENAI_API_KEY = ''
 
 describe('generateWidgets', () => {
   it('returns goal widget when context mentions goals', async () => {

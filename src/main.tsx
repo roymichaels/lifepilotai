@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { loadBrainSettings } from './services/BrainSettingsService'
+import { getRuntimeConfig } from './lib/runtimeConfig'
 
 async function initDatabase() {
   try {
@@ -28,13 +29,15 @@ if (import.meta.env.PROD) {
 }
 
 if (import.meta.env.DEV) console.log('[Main] Starting React application...');
-if (import.meta.env.DEV) console.log('[Main] Environment variables:', {
-  NODE_ENV: import.meta.env.NODE_ENV,
-  DEV: import.meta.env.DEV,
-  PROD: import.meta.env.PROD,
-  VITE_OPENAI_API_KEY: import.meta.env.VITE_OPENAI_API_KEY ? 'Present' : 'Missing',
-  VITE_ELEVENLABS_API_KEY: import.meta.env.VITE_ELEVENLABS_API_KEY ? 'Present' : 'Missing'
-});
+
+if (import.meta.env.DEV) {
+  const cfg = getRuntimeConfig();
+  console.log('[Main] Runtime configuration:', {
+    apiBaseUrl: cfg.apiBaseUrl,
+    openaiKey: cfg.openaiApiKey ? 'Present' : 'Missing',
+    elevenLabsKey: cfg.elevenlabsApiKey ? 'Present' : 'Missing'
+  });
+}
 
 // Add error handling for script loading
 window.addEventListener('error', (event) => {

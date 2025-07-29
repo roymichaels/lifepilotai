@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import axios from 'axios';
+import { getRuntimeConfig } from '@/lib/runtimeConfig';
 
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+const { apiBaseUrl } = getRuntimeConfig();
 
 const api = axios.create({
-  baseURL,
+  baseURL: apiBaseUrl,
   timeout: 10000,
 });
 
@@ -70,7 +71,7 @@ api.interceptors.response.use(
         }
 
         isDev && console.log('[API] Attempting to refresh access token...');
-        const response = await axios.post(`${baseURL}/auth/refresh`, {
+        const response = await axios.post(`${apiBaseUrl}/auth/refresh`, {
           refreshToken: refreshToken
         });
 

@@ -7,6 +7,7 @@ import { useProjectStorage } from '@/hooks/useProjectStorage';
 import { AuraMemoryService } from '@/services/AuraMemoryService';
 import { TraitService } from '@/services/TraitService';
 import { connect as connectWaku, send as sendWaku, listen as listenWaku } from '@/lib/waku';
+import { getRuntimeConfig } from '@/lib/runtimeConfig';
 
 type AuraState = 'idle' | 'listening' | 'thinking' | 'speaking';
 
@@ -28,7 +29,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const { activeProject, updateProject } = useProjectStorage();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [proactiveTips, setProactiveTips] = useState<string[]>([]);
-  const enableWaku = import.meta.env.VITE_ENABLE_WAKU === 'true';
+  const enableWaku = getRuntimeConfig().enableWaku === true;
 
   const activeWidgets = useMemo(() => activeProject?.widgets ?? [], [activeProject?.widgets]);
 

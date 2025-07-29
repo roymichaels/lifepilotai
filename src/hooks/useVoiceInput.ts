@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
+import { getRuntimeConfig } from '@/lib/runtimeConfig'
 
 export function useVoiceInput() {
   const [isRecording, setIsRecording] = useState(false)
@@ -38,7 +39,7 @@ export function useVoiceInput() {
             formData.append('file', blob, 'recording.webm')
             formData.append('model', 'whisper-1')
 
-            const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+            const apiKey = getRuntimeConfig().openaiApiKey
             if (!apiKey) throw new Error('Missing OpenAI API key')
 
             const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {

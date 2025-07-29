@@ -44,26 +44,15 @@ Create the following products and prices in your Stripe dashboard:
    - Extra Messages: `price_addon_messages`
    - Team Seat: `price_addon_seat`
 
-### 2. Environment Variables
+### 2. Runtime Configuration
 
-Copy the provided `.env.example` file to `.env` in the project root and replace the placeholder strings (for example `YOUR_FIREBASE_API_KEY`) with your actual credentials.
-Frontend variables must be prefixed with `VITE_` so Vite can expose them to the client. The
-Firebase values are required for authentication to work correctly.
+On first launch the client now prompts for its configuration values instead of loading a `.env` file. Enter your API base URL, Firebase credentials and any optional API keys when asked. The answers are stored in `localStorage` so you only need to provide them once. Remove the `lifepilot-config` entry from the browser's storage to reconfigure.
 
-#### Frontend
-- `VITE_API_BASE_URL` – base URL of the remote API (e.g., `http://localhost:3000`)
-- The backend exposes `/projects` for project CRUD operations. Requests are made relative to this base URL.
-- During development the Vite server proxies API paths like `/projects`, `/subscription`, `/users`, and more to this URL.
-- `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
-- `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
-- `VITE_ENABLE_WAKU` – set to `true` to enable Waku peer-to-peer chat (optional)
-- `VITE_WAKU_RELAY_URL` – multiaddress of a Waku relay to bootstrap from (optional; defaults to public peers)
-- `VITE_FIREBASE_API_KEY` – Firebase project API key
-- `VITE_FIREBASE_AUTH_DOMAIN` – Firebase auth domain
-- `VITE_FIREBASE_PROJECT_ID` – Firebase project ID
-- `VITE_FIREBASE_STORAGE_BUCKET` – Firebase storage bucket URL
-- `VITE_FIREBASE_MESSAGING_SENDER_ID` – Firebase messaging sender ID
-- `VITE_FIREBASE_APP_ID` – Firebase app ID
+The prompts request:
+- API base URL for the backend (defaults to `http://localhost:3000`)
+- Optional OpenAI and ElevenLabs API keys
+- Whether to enable Waku messaging and the relay address
+- Firebase project credentials
 
 ### Backend API
 The app communicates with a separate API server defined by `VITE_API_BASE_URL`.
@@ -86,10 +75,10 @@ All application data is stored in a local SQLite database created by
 required, so the app can run completely offline.
 
 When network access is available you can optionally sync messages over
-[Waku](https://waku.org/). Start a Waku node and set `VITE_WAKU_RELAY_URL` in
-your `.env` file to the node's multiaddress and set `VITE_ENABLE_WAKU=true`.
-Leaving these variables unset keeps the app in offline mode and no network
-requests are made for messaging.
+[Waku](https://waku.org/). Start a Waku node and provide its multiaddress when
+the client asks for the Waku relay URL. Choose to enable Waku messaging in the
+startup prompts. Leaving these values blank keeps the app in offline mode and no
+network requests are made for messaging.
 
 
 ### Waku Messaging
@@ -104,8 +93,8 @@ continues to function using only local storage.
    Enable **Email/Password** or any other providers your app uses.
 2. Under **Authentication → Settings**, add your development and production
    domains to the **Authorized domains** list (include `localhost` for local testing).
-3. Copy the Firebase project credentials into your `.env` file using the variable
-   names shown above.
+3. When the client starts it will prompt for your Firebase project credentials.
+   Enter the values for each field as requested.
 
 ### 4. Running the App
 
@@ -127,8 +116,8 @@ cd path/to/api && npm start
 
 To keep the app completely offline simply skip any additional services.
 If Waku is enabled the client will connect to public bootstrap peers by default.
-Set `VITE_WAKU_RELAY_URL` to point at your own node if you prefer to use a
-specific relay.
+  Provide your own relay URL in the startup prompt if you prefer to use a
+  specific node.
 
 ### 5. Database initialization
 When `npm run dev` starts it first executes the `predev` script defined in

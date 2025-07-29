@@ -11,14 +11,16 @@ import type { ChatMessage } from '@/types/chat'
 
 const CONTENT_TOPIC = '/lifepilot/1/chat'
 
+import { getRuntimeConfig } from './runtimeConfig'
+
 let node: LightNode | null = null
-const { VITE_WAKU_RELAY_URL } = import.meta.env
+const { wakuRelayUrl } = getRuntimeConfig()
 
 export async function connect(): Promise<LightNode> {
   if (node) return node
   node = await createLightNode(
-    VITE_WAKU_RELAY_URL
-      ? { bootstrapPeers: [VITE_WAKU_RELAY_URL] }
+    wakuRelayUrl
+      ? { bootstrapPeers: [wakuRelayUrl] }
       : { defaultBootstrap: true }
   )
   await node.start()
