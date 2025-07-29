@@ -60,8 +60,11 @@ describe('ChatContext', () => {
     const ChatProvider = mod.ChatProvider
     const useChatContext = mod.useChatContext
 
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
-      <ChatProvider>{children}</ChatProvider>
+  const AuthProvider = (await import('../contexts/AuthContext')).AuthProvider
+  const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <AuthProvider>
+        <ChatProvider>{children}</ChatProvider>
+      </AuthProvider>
     )
 
     const { result } = renderHook(() => useChatContext(), { wrapper })

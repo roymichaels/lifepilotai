@@ -71,6 +71,9 @@ These topics are listed in `src/lib/wakuTopics.ts`.
 | New account found   | `/aura/instagram-agent/accounts/1/app`           |
 | Content ideas       | `/aura/instagram-agent/ideas/1/app`              |
 | Engagement events   | `/aura/instagram-agent/engagements/1/app`        |
+| User profile        | `/aura/users/{pubkey}/profile`                   |
+| User config         | `/aura/users/{pubkey}/config`                    |
+| User traits         | `/aura/users/{pubkey}/traits`                    |
 
 All payloads are JSON-encoded and contain:
 

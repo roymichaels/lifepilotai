@@ -6,10 +6,10 @@ import {
   LightNode,
   DecodedMessage
 } from '@waku/sdk'
+import { wakuTopics, type WakuTopic } from './wakuTopics'
 
-import type { ChatMessage } from '@/types/chat'
 
-const CONTENT_TOPIC = '/lifepilot/1/chat'
+const CONTENT_TOPIC = wakuTopics.chat
 
 let node: LightNode | null = null
 const { VITE_WAKU_RELAY_URL } = import.meta.env
@@ -26,23 +26,24 @@ export async function connect(): Promise<LightNode> {
   return node
 }
 
-export async function send(message: ChatMessage): Promise<void> {
+export async function send(message: any, topic: WakuTopic = CONTENT_TOPIC): Promise<void> {
   if (!node) throw new Error('Waku not connected')
-  const encoder = createEncoder({ contentTopic: CONTENT_TOPIC })
+  const encoder = createEncoder({ contentTopic: topic })
   const payload = new TextEncoder().encode(JSON.stringify(message))
   await node.lightPush.send(encoder, { payload })
 }
 
 export async function listen(
-  callback: (msg: ChatMessage, raw: DecodedMessage) => void
+  callback: (msg: any, raw: DecodedMessage) => void,
+  topic: WakuTopic = CONTENT_TOPIC
 ) {
   if (!node) throw new Error('Waku not connected')
-  const decoder = createDecoder(CONTENT_TOPIC)
+  const decoder = createDecoder(topic)
   const sub = await node.filter.subscribe(decoder, msg => {
     if (!msg.payload) return
     try {
       const text = new TextDecoder().decode(msg.payload)
-      const data = JSON.parse(text) as ChatMessage
+      const data = JSON.parse(text)
       callback(data, msg)
     } catch (err) {
       console.error('[waku] failed to decode message', err)

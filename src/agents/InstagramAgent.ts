@@ -94,8 +94,11 @@ export class InstagramAgent {
     ]
   }
 
-  async analyzeAccount(accountId: string, captions: string[]): Promise<string> {
+  async analyzeAccount(accountId: string, captions: string[] = []): Promise<string> {
     const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+    if (captions.length === 0) {
+      captions = await this.fetchMockCaptions(accountId)
+    }
     const prompt = captions.join('\n')
     let hook = `Hook for ${accountId}`
 

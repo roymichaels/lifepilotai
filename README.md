@@ -96,7 +96,7 @@ Setting `VITE_ENABLE_WAKU` to `true` enables peer-to-peer chat via the [@waku/sd
 2. Start the app and choose **Import Waku Key** to load the JSON file. The key is
    stored locally and lets the client sign Waku messages.
 3. After the key is imported, your profile configuration is published on the
-   `/lifepilot/user-config/1/app` topic so it can be restored from any device.
+   `/aura/users/{pubkey}/config` topic so it can be restored from any device.
 
 ### 4. Running the App
 
