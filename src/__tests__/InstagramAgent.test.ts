@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
+process.env.OPENAI_API_KEY = 'test'
+
 const connect = vi.fn().mockResolvedValue({})
 const disconnect = vi.fn()
 
