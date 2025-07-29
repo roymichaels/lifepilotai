@@ -96,6 +96,7 @@ export class InstagramAgent {
   async analyzeAccount(accountId: string, captions: string[] = []): Promise<string> {
     const cfg = await loadConfig()
     const apiKey = cfg?.openaiApiKey
+
     const prompt = captions.join('\n')
     let hook = `Hook for ${accountId}`
 

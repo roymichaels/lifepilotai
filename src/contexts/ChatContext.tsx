@@ -9,6 +9,7 @@ import { TraitService } from '@/services/TraitService';
 import { connect as connectWaku, send as sendWaku, listen as listenWaku } from '@/lib/waku';
 import { loadConfig } from '@/services/ConfigService';
 
+
 type AuraState = 'idle' | 'listening' | 'thinking' | 'speaking';
 
 interface ChatContextType {
@@ -34,6 +35,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     loadConfig().then(cfg => setEnableWaku(cfg?.enableWaku ?? false));
   }, []);
+
 
   const activeWidgets = useMemo(() => activeProject?.widgets ?? [], [activeProject?.widgets]);
 
@@ -101,7 +103,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     const userMessage: ChatMessage = {
       sender: 'user',
       text: content,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      pubkey: user?.pubKey
     };
     await AuraMemoryService.addMessage(activeProject.id, userMessage);
     try {
@@ -127,7 +130,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       const auraMessage: ChatMessage = {
         sender: 'aura',
         text: response.message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        pubkey: user?.pubKey
       };
       await AuraMemoryService.addMessage(activeProject.id, auraMessage);
       if (enableWaku && navigator.onLine) {
@@ -156,7 +160,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       setAuraState('idle');
       return '';
     }
-  }, [activeProject, activeWidgets, updateProject, enableWaku]);
+  }, [activeProject, activeWidgets, updateProject, enableWaku, user?.pubKey]);
 
   const refreshProactiveTips = useCallback(async () => {
     if (!activeProject) return;

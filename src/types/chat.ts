@@ -4,6 +4,7 @@ export interface ChatMessage {
   sender: 'user' | 'aura';
   text?: string;
   timestamp: string;
+  pubkey?: string;
 }
 
 export interface ChatHistoryEntry {

@@ -1,33 +1,49 @@
-import { electric } from '@/lib/electric'
+import { connect, send } from '@/lib/waku'
+import { wakuTopics } from '@/lib/wakuTopics'
+import { x25519 } from '@noble/curves/ed25519'
 
 export interface WakuIdentity {
-  id: string
-  createdAt: string
+  pubKey: string
+  privKey: string
 }
 
-const STORAGE_KEY = 'waku-identity'
+const STORAGE_KEY = 'waku-keypair'
 
 export class WakuIdentityService {
-  static async getIdentity(): Promise<WakuIdentity | null> {
-    const row = await electric.settings.get(STORAGE_KEY)
-    if (!row?.value) return null
+  static getIdentity(): WakuIdentity | null {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return null
     try {
-      return JSON.parse(row.value) as WakuIdentity
+      return JSON.parse(raw) as WakuIdentity
     } catch {
       return null
     }
   }
 
-  static async createIdentity(): Promise<WakuIdentity> {
+  static async createIdentity(profile: any = {}, config: any = {}): Promise<WakuIdentity> {
+    const existing = this.getIdentity()
+    if (existing) return existing
+
+    const priv = x25519.utils.randomPrivateKey()
+    const pub = x25519.getPublicKey(priv)
     const identity: WakuIdentity = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString()
+      privKey: Buffer.from(priv).toString('hex'),
+      pubKey: Buffer.from(pub).toString('hex')
     }
-    await electric.settings.put({ key: STORAGE_KEY, value: JSON.stringify(identity) })
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(identity))
+
+    try {
+      await connect()
+      await send({ profile }, wakuTopics.userProfile(identity.pubKey))
+      await send({ config }, wakuTopics.userConfig(identity.pubKey))
+    } catch (err) {
+      if (import.meta.env.DEV) console.warn('[waku] failed to publish identity', err)
+    }
+
     return identity
   }
 
-  static async clearIdentity(): Promise<void> {
-    await electric.settings.delete(STORAGE_KEY)
+  static clearIdentity() {
+    localStorage.removeItem(STORAGE_KEY)
   }
 }
