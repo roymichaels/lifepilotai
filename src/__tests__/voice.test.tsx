@@ -42,7 +42,7 @@ describe('useTextToSpeech', () => {
     ;(global as any).SpeechSynthesisUtterance = function (this: any, text: string) {
       this.text = text
     }
-    process.env.VITE_ELEVENLABS_API_KEY = ''
+    ;(global as any).__APP_CONFIG__ = { elevenLabsApiKey: '' }
     const { result } = renderHook(() => useTextToSpeech())
     await act(async () => {
       await result.current.speak('hello')

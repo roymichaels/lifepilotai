@@ -1,18 +1,22 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import axios from 'axios';
-
-const baseURL = import.meta.env.VITE_API_BASE_URL;
+import { getRuntimeConfig } from '@/lib/runtimeConfig';
 
 const api = axios.create({
-  baseURL,
   timeout: 10000,
 });
+
+function applyBaseURL(config: any) {
+  const { apiBaseUrl } = getRuntimeConfig();
+  config.baseURL = apiBaseUrl;
+}
 
 const isDev = import.meta.env.DEV;
 
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
+    applyBaseURL(config)
     isDev && console.log('[API] Making request to:', config.url);
     isDev && console.log('[API] Request method:', config.method);
     
@@ -70,7 +74,8 @@ api.interceptors.response.use(
         }
 
         isDev && console.log('[API] Attempting to refresh access token...');
-        const response = await axios.post(`${baseURL}/auth/refresh`, {
+        const { apiBaseUrl } = getRuntimeConfig()
+        const response = await axios.post(`${apiBaseUrl}/auth/refresh`, {
           refreshToken: refreshToken
         });
 

@@ -46,6 +46,7 @@ vi.mock('../lib/waku', () => ({
 
 describe('ChatContext', () => {
   beforeEach(() => {
+    ;(global as any).__APP_CONFIG__ = { apiBaseUrl: '', openaiApiKey: '' }
     vi.useFakeTimers()
     vi.spyOn(React, 'useEffect').mockImplementation(() => {})
   })

@@ -1,12 +1,13 @@
 // Description: Process onboarding responses with AI to create enhanced life plan or project plan
 // Returns: { success: boolean, plan: any, message: string, usedFallback?: boolean }
 import { TraitService } from '@/services/TraitService'
+import { getRuntimeConfig } from '@/lib/runtimeConfig'
 
 export const processOnboardingWithAI = async (responses: Record<string, any>, planType: 'life' | 'project') => {
   if (import.meta.env.DEV)
     console.log('AI API: Processing onboarding with AI', { planType, responseKeys: Object.keys(responses) });
 
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  const { openaiApiKey: apiKey } = getRuntimeConfig();
   if (!apiKey) {
     console.warn('AI API: Missing OpenAI API key');
     return { success: false, plan: null, message: 'Missing OpenAI API key', usedFallback: true };

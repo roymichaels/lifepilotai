@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { getRuntimeConfig } from '@/lib/runtimeConfig'
 
 export function useTextToSpeech() {
   const [isSpeaking, setIsSpeaking] = useState(false)
@@ -6,7 +7,7 @@ export function useTextToSpeech() {
   const speak = useCallback(async (text: string) => {
     if (!text) return
     try {
-      const apiKey = import.meta.env.VITE_ELEVENLABS_API_KEY
+      const { elevenLabsApiKey: apiKey } = getRuntimeConfig()
 
       if (apiKey) {
         const voiceId = '21m00Tcm4TlvDq8ikWAM'

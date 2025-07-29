@@ -22,19 +22,19 @@ vi.mock('../api/api', () => ({
     }),
     interceptors: { request: { use: () => {} }, response: { use: () => {} } }
   }
-}))
+}));
 
-import { generateWidgets, updateWidgets } from '../api/widgets'
+import { generateWidgets, updateWidgets } from '../api/widgets';
 
 // Basic localStorage mock for API module used in tests
 (global as any).localStorage = {
   getItem: () => null,
   setItem: () => undefined,
   removeItem: () => undefined
-}
+};
 
 // ensure no API key so fallback logic runs
-process.env.VITE_OPENAI_API_KEY = ''
+(global as any).__APP_CONFIG__ = { openaiApiKey: '' }
 
 describe('generateWidgets', () => {
   it('returns goal widget when context mentions goals', async () => {

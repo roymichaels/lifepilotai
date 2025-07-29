@@ -44,30 +44,15 @@ Create the following products and prices in your Stripe dashboard:
    - Extra Messages: `price_addon_messages`
    - Team Seat: `price_addon_seat`
 
-### 2. Environment Variables
+### 2. Runtime Configuration
 
-Copy the provided `.env.example` file to `.env` in the project root and replace the placeholder strings (for example `YOUR_FIREBASE_API_KEY`) with your actual credentials.
-Frontend variables must be prefixed with `VITE_` so Vite can expose them to the client. The
-Firebase values are required for authentication to work correctly.
+When the client starts it checks local storage for a configuration object. If none is found you will be prompted in the browser for the API URL, OpenAI key, ElevenLabs key and Waku settings. These values are stored locally and can also be published on the `/aura/users/{pubkey}/config` topic so other devices can restore them.
 
-#### Frontend
-- `VITE_API_BASE_URL` – base URL of the remote API (e.g., `http://localhost:3000`)
-- The backend exposes `/projects` for project CRUD operations. Requests are made relative to this base URL.
-- During development the Vite server proxies API paths like `/projects`, `/subscription`, `/users`, and more to this URL.
-- `VITE_OPENAI_API_KEY` – OpenAI key used by the browser (optional)
-- `VITE_ELEVENLABS_API_KEY` – ElevenLabs key for voice features (optional)
-- `VITE_ENABLE_WAKU` – set to `true` to enable Waku peer-to-peer chat (optional)
-- `VITE_WAKU_RELAY_URL` – multiaddress of a Waku relay to bootstrap from (optional; defaults to public peers)
-- `VITE_FIREBASE_API_KEY` – Firebase project API key
-- `VITE_FIREBASE_AUTH_DOMAIN` – Firebase auth domain
-- `VITE_FIREBASE_PROJECT_ID` – Firebase project ID
-- `VITE_FIREBASE_STORAGE_BUCKET` – Firebase storage bucket URL
-- `VITE_FIREBASE_MESSAGING_SENDER_ID` – Firebase messaging sender ID
-- `VITE_FIREBASE_APP_ID` – Firebase app ID
+The backend API should still run on port **3000** (or update the prompted URL accordingly). During development the Vite dev server will proxy requests such as `/projects` or `/users` to this URL.
 
 ### Backend API
-The app communicates with a separate API server defined by `VITE_API_BASE_URL`.
-Run your backend locally so it listens on **3000** (or update the URL). A typical
+The app communicates with a separate API server defined by the URL you provide at startup.
+Run your backend locally so it listens on **3000** (or use a custom URL). A typical
 Node project can be started with:
 
 ```bash
@@ -82,10 +67,10 @@ bundle exec rails s -p 3000
 
 ### Waku Messaging and Persistence
 All agent data is persisted directly on Waku topics defined in `src/lib/wakuTopics.ts`.
-No SQL database is required. Set `VITE_ENABLE_WAKU=true` and optionally `VITE_WAKU_RELAY_URL` to join a relay.
+No SQL database is required. Enable Waku when prompted and optionally enter a relay multiaddress to join a network.
 
 ### Waku Messaging
-Setting `VITE_ENABLE_WAKU` to `true` enables peer-to-peer chat via the [@waku/sdk](https://github.com/waku-org/js-waku) package. Messages are published on the topics defined in `src/lib/wakuTopics.ts` such as `/lifepilot/1/chat`. If no relay is configured, data is kept only in memory.
+Enabling Waku turns on peer-to-peer chat via the [@waku/sdk](https://github.com/waku-org/js-waku) package. Messages are published on the topics defined in `src/lib/wakuTopics.ts` such as `/lifepilot/1/chat`. If no relay is configured, data is kept only in memory.
 
 ### 3. Waku Identity Setup
 1. Generate a new peer key for Waku using the CLI:
@@ -117,8 +102,7 @@ cd path/to/api && npm start
 
 To keep the app completely offline simply skip any additional services.
 If Waku is enabled the client will connect to public bootstrap peers by default.
-Set `VITE_WAKU_RELAY_URL` to point at your own node if you prefer to use a
-specific relay.
+Enter a custom relay address when prompted if you prefer to use a specific node.
 
 ### 5. Waku persistence
 No database setup is required. When the dev server starts it connects to Waku and caches data in memory. See `src/lib/wakuTopics.ts` for the list of topics.

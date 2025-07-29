@@ -7,18 +7,19 @@ import {
   DecodedMessage
 } from '@waku/sdk'
 import { wakuTopics, type WakuTopic } from './wakuTopics'
+import { getRuntimeConfig } from './runtimeConfig'
 
 
 const CONTENT_TOPIC = wakuTopics.chat
 
 let node: LightNode | null = null
-const { VITE_WAKU_RELAY_URL } = import.meta.env
 
 export async function connect(): Promise<LightNode> {
   if (node) return node
+  const { wakuRelayUrl } = getRuntimeConfig()
   node = await createLightNode(
-    VITE_WAKU_RELAY_URL
-      ? { bootstrapPeers: [VITE_WAKU_RELAY_URL] }
+    wakuRelayUrl
+      ? { bootstrapPeers: [wakuRelayUrl] }
       : { defaultBootstrap: true }
   )
   await node.start()
