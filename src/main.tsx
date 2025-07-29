@@ -14,7 +14,7 @@ async function initDatabase() {
     const module = await SQLiteFactory()
     const sqlite3 = SQLite.Factory(module)
     const db = await sqlite3.open_v2(':memory:')
-    await initSQLite(db)
+    await initSQLite(sqlite3, db)
     await sqlite3.close(db)
     if (import.meta.env.DEV) console.log('[Main] SQLite schema applied')
   } catch (err) {

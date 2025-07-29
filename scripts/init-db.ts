@@ -1,5 +1,5 @@
-// Database initialization using ElectricSQL migrations.
-// This script now uses an in-memory database so no file is created.
+// Local SQLite database initialisation.
+// Uses an in-memory database so no file is created.
 import './wa-sqlite.d.ts'
 
 async function run() {
@@ -13,7 +13,7 @@ async function run() {
     const module = await SQLiteFactory()
     const sqlite3 = SQLite.Factory(module)
     const db = await sqlite3.open_v2(':memory:')
-    await initSQLite(db)
+    await initSQLite(sqlite3, db)
     await sqlite3.close(db)
     console.log('Database initialized')
   } catch (err) {

@@ -168,6 +168,14 @@ Run ESLint using the shared configuration:
 npm run lint
 ```
 
+## Instagram Agent
+
+The `InstagramAgent` module in `src/agents/InstagramAgent.ts` provides a
+foundation for an autonomous Instagram assistant. It discovers fast-growing
+accounts in a chosen niche, analyses their content and stores daily content
+ideas in a local SQLite database. The agent runs entirely offline but is
+designed to be extended with features like Waku messaging or NFT mechanics.
+
 ## Brain prompt configuration
 
 The prompts and behaviour used by Aura are defined under `src/brain/`.  Each

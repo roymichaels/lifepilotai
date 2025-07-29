@@ -1,5 +1,3 @@
-import type { DbSchema } from 'electric-sql/client/model'
-
 export interface TableDefinition {
   columns: string[]
 }
@@ -10,9 +8,8 @@ export interface LocalDbSchema {
 }
 
 /**
- * ElectricSQL schema description used for local database initialisation.
- * Only the table structure is required here so the app can create the
- * IndexedDB/SQLite replica and sync it with the backend.
+ * Simple schema description for local SQLite initialisation.
+ * Each table lists the column definitions used to create tables.
  */
 export const schema: LocalDbSchema = {
   version: 1,
@@ -65,6 +62,23 @@ export const schema: LocalDbSchema = {
         'id text primary key',
         'projectId text not null',
         'tip text not null',
+        'createdAt text not null'
+      ]
+    },
+    ig_accounts: {
+      columns: [
+        'id text primary key',
+        'username text not null',
+        'followers integer not null',
+        'niche text',
+        'discoveredAt text not null'
+      ]
+    },
+    ig_content: {
+      columns: [
+        'id text primary key',
+        'accountId text not null',
+        'idea text not null',
         'createdAt text not null'
       ]
     }

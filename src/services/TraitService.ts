@@ -9,7 +9,7 @@ export interface Trait {
 
 /**
  * Simple storage for user traits discovered during onboarding or chat.
- * Traits are persisted in the ElectricSQL `settings` table under the `traits` key
+ * Traits are persisted in the local `settings` table under the `traits` key
  * as a JSON encoded array.
  */
 export class TraitService {
