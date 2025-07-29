@@ -25,10 +25,15 @@ This document outlines the autonomous agents present in the project, their archi
   - Waku messages to:
     - `/aura/instagram-agent/accounts/1/app` (discovered accounts)
     - `/aura/instagram-agent/ideas/1/app` (GPT-generated content hooks)
+
+
   - IPFS/Pinata integration:
     - Store GPT-generated media, transcripts, or idea packs as JSON
     - Publish IPFS hashes via Waku topics
     - Maintain a content vault for each user
+
+
+
 - **Technologies:**
   - Waku (LightNode, LightPush, LightSubscribe)
   - GPT-4 via OpenAI API
