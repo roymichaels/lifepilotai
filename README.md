@@ -99,13 +99,16 @@ client starts a light node and publishes chat messages on the `/lifepilot/1/chat
 content topic. If the variable is unset or the browser is offline, the app
 continues to function using only local storage.
 
-### 3. Firebase Console Setup
-1. Open the [Firebase console](https://console.firebase.google.com/) and navigate to **Authentication → Sign‑in method**.
-   Enable **Email/Password** or any other providers your app uses.
-2. Under **Authentication → Settings**, add your development and production
-   domains to the **Authorized domains** list (include `localhost` for local testing).
-3. Copy the Firebase project credentials into your `.env` file using the variable
-   names shown above.
+### 3. Waku Identity Setup
+1. Generate a new peer key for Waku using the CLI:
+   ```bash
+   npx waku-keygen > waku-key.json
+   ```
+   Keep this file safe&mdash;it acts as your login credential.
+2. Start the app and choose **Import Waku Key** to load the JSON file. The key is
+   stored locally and lets the client sign Waku messages.
+3. After the key is imported, your profile configuration is published on the
+   `/lifepilot/user-config/1/app` topic so it can be restored from any device.
 
 ### 4. Running the App
 
