@@ -37,6 +37,7 @@ This document outlines the autonomous agents present in the project, their archi
 - **Technologies:**
   - Waku (LightNode, LightPush, LightSubscribe)
   - GPT-4 via OpenAI API
+  - Shared helpers in `src/lib/wakuTopics.ts`
 - **Status:** Active. Migrating from SQLite to full Waku-based design.
 - **Planned Features:**
   - Real caption scraping
