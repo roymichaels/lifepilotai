@@ -20,6 +20,7 @@ vi.mock('../api/api', () => ({
   }
 }));
 
+
 import { generateWidgets, updateWidgets } from '../api/widgets'
 vi.mock('../services/ConfigService', () => ({
   loadConfig: vi.fn(async () => ({ apiBaseUrl: '', openaiApiKey: '' }))
@@ -30,6 +31,7 @@ globalThis.localStorage = {
   setItem: () => undefined,
   removeItem: () => undefined
 };
+
 
 describe('generateWidgets', () => {
   it('returns goal widget when context mentions goals', async () => {

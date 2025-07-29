@@ -34,7 +34,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     loadConfig().then(cfg => setEnableWaku(cfg?.enableWaku ?? false));
   }, []);
-
+  
   const activeWidgets = useMemo(() => activeProject?.widgets ?? [], [activeProject?.widgets]);
 
   // Connect to Waku and listen for incoming chat messages when enabled

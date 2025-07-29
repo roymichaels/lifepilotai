@@ -12,6 +12,7 @@ import { loadConfig } from '@/services/ConfigService'
 const CONTENT_TOPIC = '/lifepilot/1/chat'
 
 let node: LightNode | null = null
+
 let VITE_WAKU_RELAY_URL: string | undefined
 loadConfig().then(cfg => {
   VITE_WAKU_RELAY_URL = cfg?.wakuRelayUrl

@@ -99,6 +99,7 @@ export class InstagramAgent {
     if (captions.length === 0) {
       captions = await this.fetchMockCaptions(accountId)
     }
+
     const prompt = captions.join('\n')
     let hook = `Hook for ${accountId}`
 
