@@ -21,10 +21,12 @@ This document outlines the autonomous agents present in the project, their archi
 - **Inputs:**
   - Niche keyword (e.g. "freedom", "fitness")
   - Captions (mock or real)
+  - `getRecentCaptions(username)` now returns 3-5 mock captions used for idea generation
 - **Outputs:**
   - Waku messages to:
     - `/aura/instagram-agent/accounts/1/app` (discovered accounts)
     - `/aura/instagram-agent/ideas/1/app` (GPT-generated content hooks)
+  - Hook ideas are generated via the OpenAI client and each one is published individually
 
 
   - IPFS/Pinata integration:
