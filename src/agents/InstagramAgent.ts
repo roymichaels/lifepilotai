@@ -1,9 +1,11 @@
+import { disconnect, connect } from '../lib/waku'
 import {
-  LightNode,
-  createDecoder,
-  createEncoder,
-} from '@waku/sdk'
-import { connect } from '../lib/waku'
+  ACCOUNT_TOPIC,
+  IDEAS_TOPIC,
+  sendMessage,
+  subscribeToTopic,
+} from '../lib/wakuTopics'
+import OpenAI from 'openai'
 
 export interface Account {
   id: string
@@ -25,52 +27,38 @@ export interface ContentIdea {
  * Discovers accounts, analyses posts and stores daily content ideas.
  * Uses Waku peer-to-peer messaging with in-memory storage.
  */
-const ACCOUNTS_TOPIC = '/aura/instagram-agent/accounts/1/app'
-const IDEAS_TOPIC = '/aura/instagram-agent/ideas/1/app'
-
 export class InstagramAgent {
   private accounts: Account[] = []
   private ideas: ContentIdea[] = []
+  private subs: { unsubscribe: () => Promise<void> }[] = []
+  private openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
-  private constructor(private node: LightNode) {}
+  private constructor() {}
 
   static async create(): Promise<InstagramAgent> {
-    const node = await connect()
-    const agent = new InstagramAgent(node)
+    await connect()
+    const agent = new InstagramAgent()
     await agent.subscribe()
     return agent
   }
 
   private async publish(topic: string, data: object): Promise<void> {
-    const encoder = createEncoder({ contentTopic: topic })
-    const payload = new TextEncoder().encode(JSON.stringify(data))
-    await this.node.lightPush.send(encoder, { payload })
+    await sendMessage(topic, data)
   }
 
   private async subscribe() {
-    const accountDecoder = createDecoder(ACCOUNTS_TOPIC)
-    await this.node.filter.subscribe(accountDecoder, msg => {
-      if (!msg.payload) return
-      try {
-        const text = new TextDecoder().decode(msg.payload)
-        const data = JSON.parse(text) as Account
+    const accountSub = await subscribeToTopic<Account>(
+      ACCOUNT_TOPIC,
+      data => {
         this.accounts.push(data)
-      } catch (err) {
-        console.error('[InstagramAgent] failed to decode account', err)
       }
-    })
+    )
+    this.subs.push(accountSub)
 
-    const ideaDecoder = createDecoder(IDEAS_TOPIC)
-    await this.node.filter.subscribe(ideaDecoder, msg => {
-      if (!msg.payload) return
-      try {
-        const text = new TextDecoder().decode(msg.payload)
-        const data = JSON.parse(text) as ContentIdea
-        this.ideas.push(data)
-      } catch (err) {
-        console.error('[InstagramAgent] failed to decode idea', err)
-      }
+    const ideaSub = await subscribeToTopic<ContentIdea>(IDEAS_TOPIC, data => {
+      this.ideas.push(data)
     })
+    this.subs.push(ideaSub)
   }
 
   async discoverAccounts(niche: string): Promise<Account[]> {
@@ -79,14 +67,64 @@ export class InstagramAgent {
     const followers = Math.floor(Math.random() * 1000)
     const discoveredAt = new Date().toISOString()
     const account: Account = { id, username, followers, niche, discoveredAt }
-    await this.publish(ACCOUNTS_TOPIC, account)
+    await this.publish(ACCOUNT_TOPIC, account)
     this.accounts.push(account)
     return [account]
   }
 
-  async analyzeAccount(accountId: string): Promise<string> {
-    // Placeholder analysis implementation
-    const hook = `Hook for ${accountId}`
+  async runDailyCycle(niche: string): Promise<void> {
+    const count = Math.random() > 0.5 ? 2 : 1
+    const discovered: Account[] = []
+    for (let i = 0; i < count; i++) {
+      const [account] = await this.discoverAccounts(niche)
+      discovered.push(account)
+    }
+    for (const acc of discovered) {
+      const captions = await this.fetchMockCaptions(acc.username)
+      await this.analyzeAccount(acc.id, captions)
+    }
+    // This can later be scheduled with setInterval or cron
+  }
+
+  private async fetchMockCaptions(username: string): Promise<string[]> {
+    return [
+      `${username} just dropped a new tip!`,
+      `Learning about ${username} every day.`,
+      `Follow for more ${username} content.`,
+    ]
+  }
+
+  async analyzeAccount(accountId: string, captions: string[]): Promise<string> {
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY
+    const prompt = captions.join('\n')
+    let hook = `Hook for ${accountId}`
+
+    if (apiKey) {
+      try {
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            model: 'gpt-3.5-turbo',
+            messages: [
+              {
+                role: 'user',
+                content: `Analyze these captions and suggest a new content hook in one sentence:\n${prompt}`,
+              },
+            ],
+            max_tokens: 60,
+          }),
+        })
+        const data = await res.json()
+        hook = data.choices?.[0]?.message?.content?.trim() || hook
+      } catch (err) {
+        console.error('[InstagramAgent] OpenAI analysis failed', err)
+      }
+    }
+
     const ideaId = crypto.randomUUID()
     const createdAt = new Date().toISOString()
     const idea: ContentIdea = { id: ideaId, accountId, idea: hook, createdAt }
@@ -105,6 +143,10 @@ export class InstagramAgent {
   }
 
   async close() {
-    await this.node.stop()
+    for (const sub of this.subs) {
+      await sub.unsubscribe()
+    }
+    this.subs = []
+    await disconnect()
   }
 }
