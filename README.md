@@ -123,6 +123,14 @@ After installation, run the test suite with:
 npm test
 ```
 
+### Pinata Setup
+1. Sign up at [Pinata](https://www.pinata.cloud/) and create a JWT token.
+2. Add `VITE_PINATA_JWT=<your-token>` to a `.env` file (tests can use `PINATA_JWT`).
+3. Restart the dev server so agents can upload content to IPFS.
+
+### Tip Scheduler
+`AuraMemoryService` periodically reviews conversations and stores short tips. The scheduler starts automatically when a project is active but can also be managed manually with `startTipScheduler(projectId)` and `stopTipScheduler(projectId)`.
+
 ### Linting
 
 Run ESLint using the shared configuration:
@@ -131,24 +139,32 @@ Run ESLint using the shared configuration:
 npm run lint
 ```
 
-## Instagram Agent
+## Autonomous Agents
 
-The `InstagramAgent` module in `src/agents/InstagramAgent.ts` provides a foundation for an autonomous Instagram assistant. It discovers fast-growing accounts in a chosen niche, analyses their content, and persists accounts and ideas on Waku topics defined in `src/lib/wakuTopics.ts`. The agent is designed to be extended with features like Waku messaging or NFT mechanics.
+### InstagramAgent
+- **Purpose:** Discover trending accounts and generate new hooks from captions.
+- **Topics:** `/aura/instagram-agent/accounts/1/app`, `/aura/instagram-agent/captions/1/app`, `/aura/instagram-agent/ideas/1/app`, `/aura/instagram-agent/engagements/1/app`
+- **Status:** Active.
 
-The agent uses the following topics:
-- `/aura/instagram-agent/accounts/1/app`
-- `/aura/instagram-agent/ideas/1/app`
-- `/aura/instagram-agent/engagements/1/app`
+### YouTubeAgent
+- **Purpose:** Suggest better titles, thumbnails and scripts for videos.
+- **Topics:** `/aura/youtube-agent/titles/1/app`, `/aura/youtube-agent/thumbnails/1/app`, `/aura/youtube-agent/scripts/1/app`
+- **Status:** Active.
 
-## YouTube Agent
+### FiverrAgent
+- **Purpose:** Analyse top freelancers and keep your gigs updated.
+- **Topics:** `/aura/fiverr-agent/freelancers/1/app`, `/aura/fiverr-agent/gigs/1/app`
+- **Status:** Prototype.
 
-The `YouTubeAgent` module in `src/agents/YouTubeAgent.ts` publishes video
-analysis on dedicated Waku topics defined in `src/lib/wakuTopics.ts`.
+### IdeaMapper
+- **Purpose:** Map Instagram ideas to Fiverr and YouTube opportunities and pin the result to IPFS.
+- **Topic:** `/aura/idea-mapper/mappings/1/app`
+- **Status:** Active.
 
-The agent uses the following topics:
-- `/aura/youtube-agent/titles/1/app`
-- `/aura/youtube-agent/thumbnails/1/app`
-- `/aura/youtube-agent/scripts/1/app`
+### AuraGrowthAgent
+- **Purpose:** Orchestrate other agents and publish progress reports.
+- **Topic:** `/aura/growth-agent/progress/1/app`
+- **Status:** Experimental.
 
 ## Brain prompt configuration
 
