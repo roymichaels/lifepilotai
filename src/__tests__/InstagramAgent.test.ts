@@ -22,6 +22,10 @@ vi.mock('../lib/wakuTopics', () => ({
 vi.mock('../services/ConfigService', () => ({
   loadConfig: vi.fn(async () => ({ openaiApiKey: '' }))
 }))
+const uploadJson = vi.fn(async () => 'QmHash')
+vi.mock('../services/IpfsService', () => ({
+  IpfsService: { uploadJson }
+}))
 
 let InstagramAgent: any
 let ACCOUNT_TOPIC: string
@@ -58,10 +62,14 @@ describe('InstagramAgent', () => {
     const [acc] = await agent.discoverAccounts('art')
     const hook = await agent.analyzeAccount(acc.id)
     expect(hook).toContain(acc.id)
-    expect(sendMessage).toHaveBeenCalledWith(IDEAS_TOPIC, expect.objectContaining({ accountId: acc.id }))
+    expect(sendMessage).toHaveBeenCalledWith(
+      IDEAS_TOPIC,
+      expect.objectContaining({ accountId: acc.id, hash: 'QmHash' })
+    )
     const ideas = await agent.suggestDailyContent()
     expect(ideas.length).toBe(1)
     expect(ideas[0].accountId).toBe(acc.id)
+    expect(ideas[0].ipfsHash).toBe('QmHash')
   })
 
   it('cleans up subscriptions on close', async () => {
