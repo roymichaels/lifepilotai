@@ -51,12 +51,17 @@ This document outlines the autonomous agents present in the project, their archi
    Tests can use the variable `PINATA_JWT`.
 3. Restart the dev server so the Instagram agent can upload ideas to IPFS.
 
+### 2. `FiverrAgent`
+
+- **Purpose:** Optimize your Fiverr profile, analyze top freelancers and update gigs automatically.
+- **Outputs:**
+  - `/aura/fiverr-agent/freelancers/1/app` (top freelancer data)
+  - `/aura/fiverr-agent/gigs/1/app` (gig updates)
+- **Status:** Prototype. Listens on the topics above and publishes placeholder data.
+
 ---
 
 ## 🧪 Future Agent Ideas
-
-### 2. `FiverrAgent` (Coming Soon)
-- **Goal:** Optimize your Fiverr profile, update gigs automatically, scrape high-performing freelancers, and suggest profitable services.
 
 ### 3. `YouTubeAgent`
 - **Goal:** Analyze your or others' videos to optimize thumbnails, titles, and scripts.
