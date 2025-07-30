@@ -7,6 +7,9 @@ export const wakuTopics = {
   instagramIdeas: '/aura/instagram-agent/ideas/1/app',
   instagramEngagements: '/aura/instagram-agent/engagements/1/app',
   instagramCaptions: '/aura/instagram-agent/captions/1/app',
+  youtubeTitles: '/aura/youtube-agent/titles/1/app',
+  youtubeThumbnails: '/aura/youtube-agent/thumbnails/1/app',
+  youtubeScripts: '/aura/youtube-agent/scripts/1/app',
   growthProgress: '/aura/growth-agent/progress/1/app',
   fiverrFreelancers: '/aura/fiverr-agent/freelancers/1/app',
   fiverrGigs: '/aura/fiverr-agent/gigs/1/app',
@@ -18,6 +21,10 @@ export const wakuTopics = {
 export const ACCOUNT_TOPIC = wakuTopics.instagramAccounts;
 export const IDEAS_TOPIC = wakuTopics.instagramIdeas;
 export const CAPTIONS_TOPIC = wakuTopics.instagramCaptions;
+export const YT_TITLES_TOPIC = wakuTopics.youtubeTitles;
+export const YT_THUMBNAILS_TOPIC = wakuTopics.youtubeThumbnails;
+export const YT_SCRIPTS_TOPIC = wakuTopics.youtubeScripts;
+
 export const PROGRESS_TOPIC = wakuTopics.growthProgress;
 export const FIVERR_FREELANCERS_TOPIC = wakuTopics.fiverrFreelancers;
 export const FIVERR_GIGS_TOPIC = wakuTopics.fiverrGigs;
