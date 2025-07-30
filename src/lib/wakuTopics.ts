@@ -8,6 +8,8 @@ export const wakuTopics = {
   instagramEngagements: '/aura/instagram-agent/engagements/1/app',
   instagramCaptions: '/aura/instagram-agent/captions/1/app',
   growthProgress: '/aura/growth-agent/progress/1/app',
+  fiverrFreelancers: '/aura/fiverr-agent/freelancers/1/app',
+  fiverrGigs: '/aura/fiverr-agent/gigs/1/app',
   userProfile: (pubkey: string) => `/aura/users/${pubkey}/profile`,
   userConfig: (pubkey: string) => `/aura/users/${pubkey}/config`,
   userTraits: (pubkey: string) => `/aura/users/${pubkey}/traits`
@@ -17,6 +19,8 @@ export const ACCOUNT_TOPIC = wakuTopics.instagramAccounts;
 export const IDEAS_TOPIC = wakuTopics.instagramIdeas;
 export const CAPTIONS_TOPIC = wakuTopics.instagramCaptions;
 export const PROGRESS_TOPIC = wakuTopics.growthProgress;
+export const FIVERR_FREELANCERS_TOPIC = wakuTopics.fiverrFreelancers;
+export const FIVERR_GIGS_TOPIC = wakuTopics.fiverrGigs;
 
 export type WakuTopic = typeof wakuTopics[keyof typeof wakuTopics];
 

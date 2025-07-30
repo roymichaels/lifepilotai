@@ -54,6 +54,13 @@ This document outlines the autonomous agents present in the project, their archi
 ### 2. `AuraGrowthAgent`
 - **Purpose:** Coordinates platform agents like InstagramAgent, listens to their result topics, and publishes aggregated progress.
 - **Outputs:** `/aura/growth-agent/progress/1/app`
+### 2. `FiverrAgent`
+
+- **Purpose:** Optimize your Fiverr profile, analyze top freelancers and update gigs automatically.
+- **Outputs:**
+  - `/aura/fiverr-agent/freelancers/1/app` (top freelancer data)
+  - `/aura/fiverr-agent/gigs/1/app` (gig updates)
+- **Status:** Prototype. Listens on the topics above and publishes placeholder data.
 
 ---
 
