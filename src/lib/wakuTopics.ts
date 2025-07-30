@@ -6,10 +6,15 @@ export const wakuTopics = {
   instagramAccounts: '/aura/instagram-agent/accounts/1/app',
   instagramIdeas: '/aura/instagram-agent/ideas/1/app',
   instagramEngagements: '/aura/instagram-agent/engagements/1/app',
+  instagramCaptions: '/aura/instagram-agent/captions/1/app',
   userProfile: (pubkey: string) => `/aura/users/${pubkey}/profile`,
   userConfig: (pubkey: string) => `/aura/users/${pubkey}/config`,
   userTraits: (pubkey: string) => `/aura/users/${pubkey}/traits`
 } as const;
+
+export const ACCOUNT_TOPIC = wakuTopics.instagramAccounts;
+export const IDEAS_TOPIC = wakuTopics.instagramIdeas;
+export const CAPTIONS_TOPIC = wakuTopics.instagramCaptions;
 
 export type WakuTopic = typeof wakuTopics[keyof typeof wakuTopics];
 
