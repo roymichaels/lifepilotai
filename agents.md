@@ -21,7 +21,7 @@ This document outlines the autonomous agents present in the project, their archi
 - **Inputs:**
   - Niche keyword (e.g. "freedom", "fitness")
   - Captions (mock or real)
-  - `getRecentCaptions(username)` now returns 3-5 mock captions used for idea generation
+  - `getRecentCaptions(username)` fetches up to 5 recent captions via the Instagram Basic Display API and publishes them on `/aura/instagram-agent/captions/1/app`
 - **Outputs:**
   - Waku messages to:
     - `/aura/instagram-agent/accounts/1/app` (discovered accounts)
@@ -42,7 +42,6 @@ This document outlines the autonomous agents present in the project, their archi
 - **Status:** Active. Data is persisted exclusively via Waku topics (see `src/lib/wakuTopics.ts`).
 
 - **Planned Features:**
-  - Real caption scraping
   - Engagement simulations
   - Cross-platform idea mapping
 
@@ -76,6 +75,7 @@ These topics are listed in `src/lib/wakuTopics.ts`.
 |---------------------|--------------------------------------------------|
 | New account found   | `/aura/instagram-agent/accounts/1/app`           |
 | Content ideas       | `/aura/instagram-agent/ideas/1/app`              |
+| Scraped captions    | `/aura/instagram-agent/captions/1/app`           |
 | Engagement events   | `/aura/instagram-agent/engagements/1/app`        |
 | User profile        | `/aura/users/{pubkey}/profile`                   |
 | User config         | `/aura/users/{pubkey}/config`                    |
