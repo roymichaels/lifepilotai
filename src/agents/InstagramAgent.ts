@@ -8,6 +8,7 @@ import {
 } from '../lib/wakuTopics'
 import axios from 'axios'
 import { loadConfig } from '@/services/ConfigService'
+import { IpfsService } from '@/services/IpfsService'
 
 export interface Account {
   id: string
@@ -22,6 +23,7 @@ export interface ContentIdea {
   accountId: string
   idea: string
   createdAt: string
+  ipfsHash?: string
 }
 
 /**
@@ -152,8 +154,24 @@ export class InstagramAgent {
     const ideaId = crypto.randomUUID()
     const createdAt = new Date().toISOString()
     const idea: ContentIdea = { id: ideaId, accountId, idea: hook, createdAt }
-    await this.publish(IDEAS_TOPIC, idea)
-    this.ideas.push(idea)
+
+    let ipfsHash: string | null = null
+    try {
+      ipfsHash = await IpfsService.uploadJson(idea)
+    } catch (err) {
+      console.error('[InstagramAgent] IPFS upload failed', err)
+    }
+
+    if (ipfsHash) {
+      await this.publish(IDEAS_TOPIC, {
+        id: ideaId,
+        accountId,
+        hash: ipfsHash,
+        createdAt
+      })
+    }
+
+    this.ideas.push({ ...idea, ...(ipfsHash ? { ipfsHash } : {}) })
     return hook
   }
 

@@ -25,6 +25,10 @@ vi.mock('../services/ConfigService', () => ({
   loadConfig: vi.fn(async () => ({ openaiApiKey: '' }))
 }))
 vi.mock('axios', () => ({ default: { get: axiosGet } }))
+const uploadJson = vi.fn(async () => 'QmHash')
+vi.mock('../services/IpfsService', () => ({
+  IpfsService: { uploadJson }
+}))
 
 let InstagramAgent: any
 let ACCOUNT_TOPIC: string
@@ -80,6 +84,7 @@ describe('InstagramAgent', () => {
     const ideas = await agent.suggestDailyContent()
     expect(ideas.length).toBe(1)
     expect(ideas[0].accountId).toBe(acc.id)
+    expect(ideas[0].ipfsHash).toBe('QmHash')
   })
 
   it('cleans up subscriptions on close', async () => {

@@ -45,6 +45,12 @@ This document outlines the autonomous agents present in the project, their archi
   - Engagement simulations
   - Cross-platform idea mapping
 
+#### Pinata Setup
+1. Create an account on [Pinata](https://www.pinata.cloud/) and generate a JWT token.
+2. Add the token to a `.env` file as `VITE_PINATA_JWT=<your-token>`.
+   Tests can use the variable `PINATA_JWT`.
+3. Restart the dev server so the Instagram agent can upload ideas to IPFS.
+
 ---
 
 ## 🧪 Future Agent Ideas
