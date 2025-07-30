@@ -99,6 +99,23 @@ This document outlines the autonomous agents present in the project, their archi
 
 ---
 
+## ⏰ Scheduling Agents
+
+Periodic tasks for each agent are orchestrated by the `AgentScheduler` module. It
+uses **node-cron** to run agent methods on a schedule. Results are still
+pushed to the same Waku topics listed below. To start the scheduler:
+
+```ts
+import { AgentScheduler } from './src/agents/AgentScheduler'
+
+const scheduler = new AgentScheduler()
+await scheduler.start()
+```
+
+Call `scheduler.stop()` to gracefully halt all cron jobs and close the agents.
+
+---
+
 ## 🛠 Agent Communication Protocol
 
 All agents communicate via Waku using the following topics:
