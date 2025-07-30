@@ -2,6 +2,7 @@ import { disconnect, connect } from '../lib/waku'
 import {
   ACCOUNT_TOPIC,
   IDEAS_TOPIC,
+  ENGAGEMENT_TOPIC,
   CAPTIONS_TOPIC,
   sendMessage,
   subscribeToTopic,
@@ -26,6 +27,14 @@ export interface ContentIdea {
   ipfsHash?: string
 }
 
+export interface Engagement {
+  id: string
+  accountId: string
+  type: 'like' | 'comment'
+  message?: string
+  createdAt: string
+}
+
 /**
  * Basic autonomous Instagram agent.
  * Discovers accounts, analyses posts and stores daily content ideas.
@@ -34,6 +43,7 @@ export interface ContentIdea {
 export class InstagramAgent {
   private accounts: Account[] = []
   private ideas: ContentIdea[] = []
+  private engagements: Engagement[] = []
   private subs: { unsubscribe: () => Promise<void> }[] = []
 
   private constructor() {}
@@ -62,6 +72,14 @@ export class InstagramAgent {
       this.ideas.push(data)
     })
     this.subs.push(ideaSub)
+
+    const engagementSub = await subscribeToTopic<Engagement>(
+      ENGAGEMENT_TOPIC,
+      data => {
+        this.engagements.push(data)
+      }
+    )
+    this.subs.push(engagementSub)
   }
 
   async discoverAccounts(niche: string): Promise<Account[]> {
@@ -180,7 +198,15 @@ export class InstagramAgent {
   }
 
   async engage(accountId: string, message: string) {
-    // Placeholder for future engagement features
+    const engagement: Engagement = {
+      id: crypto.randomUUID(),
+      accountId,
+      type: message ? 'comment' : 'like',
+      message,
+      createdAt: new Date().toISOString(),
+    }
+    await this.publish(ENGAGEMENT_TOPIC, engagement)
+    this.engagements.push(engagement)
     console.log(`[InstagramAgent] engage ${accountId}: ${message}`)
   }
 

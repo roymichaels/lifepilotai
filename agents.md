@@ -26,6 +26,7 @@ This document outlines the autonomous agents present in the project, their archi
   - Waku messages to:
     - `/aura/instagram-agent/accounts/1/app` (discovered accounts)
     - `/aura/instagram-agent/ideas/1/app` (GPT-generated content hooks)
+    - `/aura/instagram-agent/engagements/1/app` (like/comment events)
   - Hook ideas are generated via the OpenAI client and each one is published individually
 
 
@@ -42,8 +43,10 @@ This document outlines the autonomous agents present in the project, their archi
 - **Status:** Active. Data is persisted exclusively via Waku topics (see `src/lib/wakuTopics.ts`).
 
 - **Planned Features:**
+  - Real caption scraping
   - Engagement simulations
   - Cross-platform idea mapping
+  - Basic engagement events published on `/aura/instagram-agent/engagements/1/app`
 
 #### Pinata Setup
 1. Create an account on [Pinata](https://www.pinata.cloud/) and generate a JWT token.

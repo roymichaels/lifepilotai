@@ -20,6 +20,7 @@ export const wakuTopics = {
 
 export const ACCOUNT_TOPIC = wakuTopics.instagramAccounts;
 export const IDEAS_TOPIC = wakuTopics.instagramIdeas;
+export const ENGAGEMENT_TOPIC = wakuTopics.instagramEngagements;
 export const CAPTIONS_TOPIC = wakuTopics.instagramCaptions;
 export const YT_TITLES_TOPIC = wakuTopics.youtubeTitles;
 export const YT_THUMBNAILS_TOPIC = wakuTopics.youtubeThumbnails;
