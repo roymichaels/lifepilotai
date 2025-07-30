@@ -3,10 +3,13 @@ import {
   ACCOUNT_TOPIC,
   IDEAS_TOPIC,
   ENGAGEMENT_TOPIC,
+  CAPTIONS_TOPIC,
   sendMessage,
   subscribeToTopic,
 } from '../lib/wakuTopics'
+import axios from 'axios'
 import { loadConfig } from '@/services/ConfigService'
+import { IpfsService } from '@/services/IpfsService'
 
 export interface Account {
   id: string
@@ -21,6 +24,7 @@ export interface ContentIdea {
   accountId: string
   idea: string
   createdAt: string
+  ipfsHash?: string
 }
 
 export interface Engagement {
@@ -97,25 +101,43 @@ export class InstagramAgent {
       discovered.push(account)
     }
     for (const acc of discovered) {
-      const captions = await this.fetchMockCaptions(acc.username)
+      const captions = await this.fetchRecentCaptions(acc.username)
       await this.analyzeAccount(acc.id, captions)
     }
     // This can later be scheduled with setInterval or cron
   }
 
-  private async fetchMockCaptions(username: string): Promise<string[]> {
-    return [
-      `${username} just dropped a new tip!`,
-      `Learning about ${username} every day.`,
-      `Follow for more ${username} content.`,
-    ]
+  private async fetchRecentCaptions(username: string): Promise<string[]> {
+    try {
+      const url = `https://www.instagram.com/${username}/?__a=1&__d=dis`
+      const res = await axios.get(url)
+      const edges =
+        res.data?.graphql?.user?.edge_owner_to_timeline_media?.edges ?? []
+      const captions: string[] = []
+      for (const edge of edges.slice(0, 5)) {
+        const text =
+          edge?.node?.edge_media_to_caption?.edges?.[0]?.node?.text?.trim()
+        if (text) {
+          captions.push(text)
+          await this.publish(CAPTIONS_TOPIC, {
+            accountId: username,
+            text,
+            scrapedAt: new Date().toISOString(),
+          })
+        }
+      }
+      return captions
+    } catch (err) {
+      console.error('[InstagramAgent] Failed to fetch captions', err)
+      return []
+    }
   }
 
   async analyzeAccount(accountId: string, captions: string[] = []): Promise<string> {
     const cfg = await loadConfig()
     const apiKey = cfg?.openaiApiKey
     if (captions.length === 0) {
-      captions = await this.fetchMockCaptions(accountId)
+      captions = await this.fetchRecentCaptions(accountId)
     }
 
     const prompt = captions.join('\n')
@@ -150,8 +172,24 @@ export class InstagramAgent {
     const ideaId = crypto.randomUUID()
     const createdAt = new Date().toISOString()
     const idea: ContentIdea = { id: ideaId, accountId, idea: hook, createdAt }
-    await this.publish(IDEAS_TOPIC, idea)
-    this.ideas.push(idea)
+
+    let ipfsHash: string | null = null
+    try {
+      ipfsHash = await IpfsService.uploadJson(idea)
+    } catch (err) {
+      console.error('[InstagramAgent] IPFS upload failed', err)
+    }
+
+    if (ipfsHash) {
+      await this.publish(IDEAS_TOPIC, {
+        id: ideaId,
+        accountId,
+        hash: ipfsHash,
+        createdAt
+      })
+    }
+
+    this.ideas.push({ ...idea, ...(ipfsHash ? { ipfsHash } : {}) })
     return hook
   }
 

@@ -11,23 +11,31 @@ const subscribeToTopic = vi.fn(async (topic: string, handler: any) => {
   handlers[topic] = handler
   return { unsubscribe: vi.fn() }
 })
+const axiosGet = vi.fn()
 
 vi.mock('../lib/waku', () => ({ connect, disconnect }))
 vi.mock('../lib/wakuTopics', () => ({
   ACCOUNT_TOPIC: '/account',
   IDEAS_TOPIC: '/ideas',
   ENGAGEMENT_TOPIC: '/engagements',
+  CAPTIONS_TOPIC: '/captions',
   sendMessage,
   subscribeToTopic
 }))
 vi.mock('../services/ConfigService', () => ({
   loadConfig: vi.fn(async () => ({ openaiApiKey: '' }))
 }))
+vi.mock('axios', () => ({ default: { get: axiosGet } }))
+const uploadJson = vi.fn(async () => 'QmHash')
+vi.mock('../services/IpfsService', () => ({
+  IpfsService: { uploadJson }
+}))
 
 let InstagramAgent: any
 let ACCOUNT_TOPIC: string
 let IDEAS_TOPIC: string
 let ENGAGEMENT_TOPIC: string
+let CAPTIONS_TOPIC: string
 
 beforeEach(async () => {
   const mod = await import('../agents/InstagramAgent')
@@ -59,12 +67,27 @@ describe('InstagramAgent', () => {
   it('analyzes account and suggests ideas', async () => {
     const agent = await InstagramAgent.create()
     const [acc] = await agent.discoverAccounts('art')
+    axiosGet.mockResolvedValueOnce({
+      data: {
+        graphql: {
+          user: {
+            edge_owner_to_timeline_media: {
+              edges: [
+                { node: { edge_media_to_caption: { edges: [{ node: { text: 'hi' } }] } } },
+              ],
+            },
+          },
+        },
+      },
+    })
     const hook = await agent.analyzeAccount(acc.id)
     expect(hook).toContain(acc.id)
     expect(sendMessage).toHaveBeenCalledWith(IDEAS_TOPIC, expect.objectContaining({ accountId: acc.id }))
+    expect(sendMessage).toHaveBeenCalledWith(CAPTIONS_TOPIC, expect.objectContaining({ accountId: acc.id }))
     const ideas = await agent.suggestDailyContent()
     expect(ideas.length).toBe(1)
     expect(ideas[0].accountId).toBe(acc.id)
+    expect(ideas[0].ipfsHash).toBe('QmHash')
   })
 
   it('publishes engagement events', async () => {

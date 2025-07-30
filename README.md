@@ -140,6 +140,16 @@ The agent uses the following topics:
 - `/aura/instagram-agent/ideas/1/app`
 - `/aura/instagram-agent/engagements/1/app`
 
+## YouTube Agent
+
+The `YouTubeAgent` module in `src/agents/YouTubeAgent.ts` publishes video
+analysis on dedicated Waku topics defined in `src/lib/wakuTopics.ts`.
+
+The agent uses the following topics:
+- `/aura/youtube-agent/titles/1/app`
+- `/aura/youtube-agent/thumbnails/1/app`
+- `/aura/youtube-agent/scripts/1/app`
+
 ## Brain prompt configuration
 
 The prompts and behaviour used by Aura are defined under `src/brain/`.  Each
