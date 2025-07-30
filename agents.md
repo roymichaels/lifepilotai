@@ -61,6 +61,16 @@ This document outlines the autonomous agents present in the project, their archi
   - `/aura/youtube-agent/titles/1/app` (published titles)
   - `/aura/youtube-agent/thumbnails/1/app` (thumbnail data)
   - `/aura/youtube-agent/scripts/1/app` (scripts or transcripts)
+### 2. `AuraGrowthAgent`
+- **Purpose:** Coordinates platform agents like InstagramAgent, listens to their result topics, and publishes aggregated progress.
+- **Outputs:** `/aura/growth-agent/progress/1/app`
+### 2. `FiverrAgent`
+
+- **Purpose:** Optimize your Fiverr profile, analyze top freelancers and update gigs automatically.
+- **Outputs:**
+  - `/aura/fiverr-agent/freelancers/1/app` (top freelancer data)
+  - `/aura/fiverr-agent/gigs/1/app` (gig updates)
+- **Status:** Prototype. Listens on the topics above and publishes placeholder data.
 
 ---
 
@@ -71,6 +81,12 @@ This document outlines the autonomous agents present in the project, their archi
 
 ### 4. `AuraGrowthAgent`
 - **Meta-agent** that coordinates other platform-specific agents, tracks goal completion, and adapts based on feedback.
+=======
+### 1. `FiverrAgent` (Coming Soon)
+- **Goal:** Optimize your Fiverr profile, update gigs automatically, scrape high-performing freelancers, and suggest profitable services.
+
+### 3. `YouTubeAgent`
+- **Goal:** Analyze your or others' videos to optimize thumbnails, titles, and scripts.
 
 ---
 
@@ -88,6 +104,7 @@ These topics are listed in `src/lib/wakuTopics.ts`.
 | Video titles        | `/aura/youtube-agent/titles/1/app`               |
 | Video thumbnails    | `/aura/youtube-agent/thumbnails/1/app`           |
 | Video scripts       | `/aura/youtube-agent/scripts/1/app`              |
+| Progress updates    | `/aura/growth-agent/progress/1/app`              |
 | User profile        | `/aura/users/{pubkey}/profile`                   |
 | User config         | `/aura/users/{pubkey}/config`                    |
 | User traits         | `/aura/users/{pubkey}/traits`                    |
