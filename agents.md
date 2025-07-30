@@ -51,18 +51,19 @@ This document outlines the autonomous agents present in the project, their archi
    Tests can use the variable `PINATA_JWT`.
 3. Restart the dev server so the Instagram agent can upload ideas to IPFS.
 
+### 2. `AuraGrowthAgent`
+- **Purpose:** Coordinates platform agents like InstagramAgent, listens to their result topics, and publishes aggregated progress.
+- **Outputs:** `/aura/growth-agent/progress/1/app`
+
 ---
 
 ## 🧪 Future Agent Ideas
 
-### 2. `FiverrAgent` (Coming Soon)
+### 1. `FiverrAgent` (Coming Soon)
 - **Goal:** Optimize your Fiverr profile, update gigs automatically, scrape high-performing freelancers, and suggest profitable services.
 
 ### 3. `YouTubeAgent`
 - **Goal:** Analyze your or others' videos to optimize thumbnails, titles, and scripts.
-
-### 4. `AuraGrowthAgent`
-- **Meta-agent** that coordinates other platform-specific agents, tracks goal completion, and adapts based on feedback.
 
 ---
 
@@ -77,6 +78,7 @@ These topics are listed in `src/lib/wakuTopics.ts`.
 | Content ideas       | `/aura/instagram-agent/ideas/1/app`              |
 | Scraped captions    | `/aura/instagram-agent/captions/1/app`           |
 | Engagement events   | `/aura/instagram-agent/engagements/1/app`        |
+| Progress updates    | `/aura/growth-agent/progress/1/app`              |
 | User profile        | `/aura/users/{pubkey}/profile`                   |
 | User config         | `/aura/users/{pubkey}/config`                    |
 | User traits         | `/aura/users/{pubkey}/traits`                    |
