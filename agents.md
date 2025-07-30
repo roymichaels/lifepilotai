@@ -51,15 +51,23 @@ This document outlines the autonomous agents present in the project, their archi
    Tests can use the variable `PINATA_JWT`.
 3. Restart the dev server so the Instagram agent can upload ideas to IPFS.
 
+### 2. `YouTubeAgent`
+- **Purpose:** Analyze YouTube videos for better titles, thumbnails, and scripts.
+- **Inputs:**
+  - Video ID and metadata
+  - Thumbnail URL
+  - Transcript or script text
+- **Outputs:**
+  - `/aura/youtube-agent/titles/1/app` (published titles)
+  - `/aura/youtube-agent/thumbnails/1/app` (thumbnail data)
+  - `/aura/youtube-agent/scripts/1/app` (scripts or transcripts)
+
 ---
 
 ## 🧪 Future Agent Ideas
 
-### 2. `FiverrAgent` (Coming Soon)
+### 3. `FiverrAgent` (Coming Soon)
 - **Goal:** Optimize your Fiverr profile, update gigs automatically, scrape high-performing freelancers, and suggest profitable services.
-
-### 3. `YouTubeAgent`
-- **Goal:** Analyze your or others' videos to optimize thumbnails, titles, and scripts.
 
 ### 4. `AuraGrowthAgent`
 - **Meta-agent** that coordinates other platform-specific agents, tracks goal completion, and adapts based on feedback.
@@ -77,6 +85,9 @@ These topics are listed in `src/lib/wakuTopics.ts`.
 | Content ideas       | `/aura/instagram-agent/ideas/1/app`              |
 | Scraped captions    | `/aura/instagram-agent/captions/1/app`           |
 | Engagement events   | `/aura/instagram-agent/engagements/1/app`        |
+| Video titles        | `/aura/youtube-agent/titles/1/app`               |
+| Video thumbnails    | `/aura/youtube-agent/thumbnails/1/app`           |
+| Video scripts       | `/aura/youtube-agent/scripts/1/app`              |
 | User profile        | `/aura/users/{pubkey}/profile`                   |
 | User config         | `/aura/users/{pubkey}/config`                    |
 | User traits         | `/aura/users/{pubkey}/traits`                    |
