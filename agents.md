@@ -75,6 +75,12 @@ This document outlines the autonomous agents present in the project, their archi
   - `/aura/fiverr-agent/gigs/1/app` (gig updates)
 - **Status:** Prototype. Listens on the topics above and publishes placeholder data.
 
+### 3. `IdeaMapper`
+- **Purpose:** Listens for Instagram content ideas and maps them to related Fiverr and YouTube ideas.
+- **Outputs:**
+  - `/aura/idea-mapper/mappings/1/app` (IPFS hash of the idea mapping)
+- **Technologies:** Waku messaging and IPFS via Pinata
+
 ---
 
 ## 🧪 Future Agent Ideas
@@ -108,6 +114,7 @@ These topics are listed in `src/lib/wakuTopics.ts`.
 | Video thumbnails    | `/aura/youtube-agent/thumbnails/1/app`           |
 | Video scripts       | `/aura/youtube-agent/scripts/1/app`              |
 | Progress updates    | `/aura/growth-agent/progress/1/app`              |
+| Idea mappings       | `/aura/idea-mapper/mappings/1/app`               |
 | User profile        | `/aura/users/{pubkey}/profile`                   |
 | User config         | `/aura/users/{pubkey}/config`                    |
 | User traits         | `/aura/users/{pubkey}/traits`                    |
