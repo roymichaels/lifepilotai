@@ -11,6 +11,10 @@ export const wakuTopics = {
   userTraits: (pubkey: string) => `/aura/users/${pubkey}/traits`
 } as const;
 
+export const ACCOUNT_TOPIC = wakuTopics.instagramAccounts;
+export const IDEAS_TOPIC = wakuTopics.instagramIdeas;
+export const ENGAGEMENT_TOPIC = wakuTopics.instagramEngagements;
+
 export type WakuTopic = typeof wakuTopics[keyof typeof wakuTopics];
 
 export async function sendMessage(topic: string, data: any) {

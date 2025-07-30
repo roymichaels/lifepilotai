@@ -16,6 +16,7 @@ vi.mock('../lib/waku', () => ({ connect, disconnect }))
 vi.mock('../lib/wakuTopics', () => ({
   ACCOUNT_TOPIC: '/account',
   IDEAS_TOPIC: '/ideas',
+  ENGAGEMENT_TOPIC: '/engagements',
   sendMessage,
   subscribeToTopic
 }))
@@ -26,11 +27,12 @@ vi.mock('../services/ConfigService', () => ({
 let InstagramAgent: any
 let ACCOUNT_TOPIC: string
 let IDEAS_TOPIC: string
+let ENGAGEMENT_TOPIC: string
 
 beforeEach(async () => {
   const mod = await import('../agents/InstagramAgent')
   InstagramAgent = mod.InstagramAgent
-  ;({ ACCOUNT_TOPIC, IDEAS_TOPIC } = await import('../lib/wakuTopics'))
+  ;({ ACCOUNT_TOPIC, IDEAS_TOPIC, ENGAGEMENT_TOPIC } = await import('../lib/wakuTopics'))
   connect.mockClear()
   disconnect.mockClear()
   sendMessage.mockClear()
@@ -44,6 +46,7 @@ describe('InstagramAgent', () => {
     expect(connect).toHaveBeenCalled()
     expect(subscribeToTopic).toHaveBeenCalledWith(ACCOUNT_TOPIC, expect.any(Function))
     expect(subscribeToTopic).toHaveBeenCalledWith(IDEAS_TOPIC, expect.any(Function))
+    expect(subscribeToTopic).toHaveBeenCalledWith(ENGAGEMENT_TOPIC, expect.any(Function))
   })
 
   it('discovers accounts and publishes them', async () => {
@@ -62,6 +65,15 @@ describe('InstagramAgent', () => {
     const ideas = await agent.suggestDailyContent()
     expect(ideas.length).toBe(1)
     expect(ideas[0].accountId).toBe(acc.id)
+  })
+
+  it('publishes engagement events', async () => {
+    const agent = await InstagramAgent.create()
+    await agent.engage('acc1', 'Great!')
+    expect(sendMessage).toHaveBeenCalledWith(
+      ENGAGEMENT_TOPIC,
+      expect.objectContaining({ accountId: 'acc1', message: 'Great!' })
+    )
   })
 
   it('cleans up subscriptions on close', async () => {
