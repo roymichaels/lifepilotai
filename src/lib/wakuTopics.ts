@@ -7,6 +7,7 @@ export const wakuTopics = {
   instagramIdeas: '/aura/instagram-agent/ideas/1/app',
   instagramEngagements: '/aura/instagram-agent/engagements/1/app',
   instagramCaptions: '/aura/instagram-agent/captions/1/app',
+  growthProgress: '/aura/growth-agent/progress/1/app',
   fiverrFreelancers: '/aura/fiverr-agent/freelancers/1/app',
   fiverrGigs: '/aura/fiverr-agent/gigs/1/app',
   userProfile: (pubkey: string) => `/aura/users/${pubkey}/profile`,
@@ -17,6 +18,7 @@ export const wakuTopics = {
 export const ACCOUNT_TOPIC = wakuTopics.instagramAccounts;
 export const IDEAS_TOPIC = wakuTopics.instagramIdeas;
 export const CAPTIONS_TOPIC = wakuTopics.instagramCaptions;
+export const PROGRESS_TOPIC = wakuTopics.growthProgress;
 export const FIVERR_FREELANCERS_TOPIC = wakuTopics.fiverrFreelancers;
 export const FIVERR_GIGS_TOPIC = wakuTopics.fiverrGigs;
 
