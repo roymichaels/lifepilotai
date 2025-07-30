@@ -40,7 +40,7 @@ let CAPTIONS_TOPIC: string
 beforeEach(async () => {
   const mod = await import('../agents/InstagramAgent')
   InstagramAgent = mod.InstagramAgent
-  ;({ ACCOUNT_TOPIC, IDEAS_TOPIC, ENGAGEMENT_TOPIC } = await import('../lib/wakuTopics'))
+  ;({ ACCOUNT_TOPIC, IDEAS_TOPIC, ENGAGEMENT_TOPIC, CAPTIONS_TOPIC } = await import('../lib/wakuTopics'))
   connect.mockClear()
   disconnect.mockClear()
   sendMessage.mockClear()
@@ -83,7 +83,10 @@ describe('InstagramAgent', () => {
     const hook = await agent.analyzeAccount(acc.id)
     expect(hook).toContain(acc.id)
     expect(sendMessage).toHaveBeenCalledWith(IDEAS_TOPIC, expect.objectContaining({ accountId: acc.id }))
-    expect(sendMessage).toHaveBeenCalledWith(CAPTIONS_TOPIC, expect.objectContaining({ accountId: acc.id }))
+    expect(sendMessage).toHaveBeenCalledWith(
+      CAPTIONS_TOPIC,
+      expect.objectContaining({ accountId: acc.id })
+    )
     const ideas = await agent.suggestDailyContent()
     expect(ideas.length).toBe(1)
     expect(ideas[0].accountId).toBe(acc.id)
