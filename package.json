@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "predev": "ts-node scripts/init-db.ts",
     "dev": "vite",
     "dev:client": "vite",
     "build": "vite build",

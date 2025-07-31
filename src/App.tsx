@@ -13,6 +13,7 @@ import { Onboarding } from "./pages/Onboarding"
 import { SettingsPage } from "./pages/Settings"
 import { ConfigSetup } from "./pages/ConfigSetup"
 
+
 function App() {
   if (import.meta.env.DEV) console.log("App component is rendering");
   
@@ -67,6 +68,7 @@ function App() {
             (() => {
               if (import.meta.env.DEV) console.log("Rendering ConfigSetup for route /setup");
               return <ProtectedRoute> <ConfigSetup /> </ProtectedRoute>;
+
             })()
           } />
           <Route path="/settings" element={
