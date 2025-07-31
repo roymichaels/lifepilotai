@@ -29,6 +29,7 @@ import { useCharacter } from '@/hooks/useCharacter';
 import { SkillTree } from '@/components/rpg/SkillTree';
 import { useNavigate } from 'react-router-dom';
 import { AuraMemoryService } from '@/services/AuraMemoryService';
+import { GameWorld } from '@/game/GameWorld';
 
 const jobIcons = {
   'Strategist': Crown,
@@ -53,6 +54,7 @@ function AuraLayoutContent() {
   const [showPlanModal, setShowPlanModal] = useState(false);
   const [planType, setPlanType] = useState<'life' | 'project'>('project');
   const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [showGameWorld, setShowGameWorld] = useState(false);
 
   const { handleWidgetAction } = useChatContext();
   const { character, isLoading, xpAnimation, levelUpAnimation } = useCharacter();
@@ -285,6 +287,8 @@ function AuraLayoutContent() {
           <FloatingActionButtons
             onOpenRoadmap={() => setShowRoadmapModal(true)}
             onOpenQuestLog={() => setShowQuestLog(true)}
+            onToggleGameWorld={() => setShowGameWorld(!showGameWorld)}
+            gameActive={showGameWorld}
           />
         )}
 
@@ -293,6 +297,8 @@ function AuraLayoutContent() {
           <FloatingActionButtons
             onOpenRoadmap={() => setShowRoadmapModal(true)}
             onOpenQuestLog={() => setShowQuestLog(true)}
+            onToggleGameWorld={() => setShowGameWorld(!showGameWorld)}
+            gameActive={showGameWorld}
           />
         )}
 
@@ -505,6 +511,18 @@ function AuraLayoutContent() {
             <RewardsModal />
           </DialogContent>
         </Dialog>
+
+        {showGameWorld && (
+          <div className="fixed inset-0 z-50">
+            <GameWorld />
+            <button
+              onClick={() => setShowGameWorld(false)}
+              className="absolute top-4 right-4 bg-white/80 text-black px-3 py-1 rounded"
+            >
+              Close
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
