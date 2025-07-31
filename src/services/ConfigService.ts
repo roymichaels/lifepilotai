@@ -56,7 +56,7 @@ export async function loadConfig(): Promise<AppConfig | null> {
   const row = await electric.settings.get(STORAGE_KEY)
   if (!row?.value) return null
   try {
-    const json = await decrypt(row.value, identity.id)
+    const json = await decrypt(row.value, identity.pubKey)
     return JSON.parse(json) as AppConfig
   } catch {
     return null
@@ -67,11 +67,11 @@ export async function saveConfig(config: AppConfig): Promise<void> {
   const identity = await WakuIdentityService.getIdentity()
   if (!identity) throw new Error('Missing identity')
   const json = JSON.stringify(config)
-  const encrypted = await encrypt(json, identity.id)
+  const encrypted = await encrypt(json, identity.pubKey)
   await electric.settings.put({ key: STORAGE_KEY, value: encrypted })
   try {
     await connect()
-    await sendOnTopic(`/aura/users/${identity.id}/config`, { data: encrypted })
+    await sendOnTopic(`/aura/users/${identity.pubKey}/config`, { data: encrypted })
   } catch (err) {
     console.warn('[Config] Failed to publish config to Waku', err)
   }
