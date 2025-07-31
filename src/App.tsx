@@ -11,6 +11,7 @@ import { SubscriptionManager } from "./components/subscription/SubscriptionManag
 import { ProtectedRoute } from "./components/ProtectedRoute"
 import { Onboarding } from "./pages/Onboarding"
 import { SettingsPage } from "./pages/Settings"
+import { SetupPage } from "./components/SetupPage"
 
 function App() {
   if (import.meta.env.DEV) console.log("App component is rendering");
@@ -60,6 +61,12 @@ function App() {
             (() => {
               if (import.meta.env.DEV) console.log("Rendering Onboarding for route /onboarding");
               return <ProtectedRoute> <Onboarding /> </ProtectedRoute>;
+            })()
+          } />
+          <Route path="/setup" element={
+            (() => {
+              if (import.meta.env.DEV) console.log("Rendering SetupPage for route /setup");
+              return <SetupPage />;
             })()
           } />
           <Route path="/settings" element={
