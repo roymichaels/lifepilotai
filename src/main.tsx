@@ -5,6 +5,7 @@ import './index.css'
 import { loadBrainSettings } from './services/BrainSettingsService'
 import { loadConfig } from './services/ConfigService'
 import { setBaseURL } from './api/api'
+import { setRelayUrl } from './lib/waku'
 
 // Suppress console.log statements in production builds
 if (import.meta.env.PROD) {
@@ -47,6 +48,7 @@ async function start() {
     const cfg = await loadConfig()
     if (cfg) {
       setBaseURL(cfg.apiBaseUrl)
+      setRelayUrl(cfg.wakuRelayUrl)
       if (import.meta.env.DEV) console.log('[Main] Loaded config', cfg)
     } else if (import.meta.env.DEV) {
       console.log('[Main] No configuration found')
