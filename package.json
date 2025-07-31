@@ -76,7 +76,6 @@
     "three": "^0.165.0",
     "uuid": "^11.1.0",
     "vaul": "^1.1.1",
-    "wa-sqlite": "github:rhashimoto/wa-sqlite#v0.9.14",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -87,7 +86,6 @@
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.1",
     "autoprefixer": "^10.4.20",
-    "better-sqlite3": "^12.2.0",
     "eslint": "^9.13.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
