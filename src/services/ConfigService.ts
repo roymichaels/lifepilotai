@@ -90,8 +90,8 @@ export async function importConfig(json: string): Promise<void> {
 export async function ensureConfig(): Promise<AppConfig> {
   const cfg = await loadConfig()
   if (!cfg) {
-    if (!window.location.pathname.startsWith('/setup')) {
-      window.location.assign('/setup')
+    if (!window.location.pathname.startsWith('/config')) {
+      window.location.assign('/config')
     }
     throw new Error('Missing configuration')
   }

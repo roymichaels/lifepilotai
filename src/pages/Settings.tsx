@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,6 +15,7 @@ import {
 } from '@/services/BrainSettingsService';
 
 export function SettingsPage() {
+  const navigate = useNavigate();
   const [voiceEnabled, setVoiceEnabled] = useState<boolean>(false);
   const [voiceLanguage, setVoiceLanguage] = useState('en-US');
   const [apiKey, setApiKey] = useState('');
@@ -133,6 +135,9 @@ export function SettingsPage() {
             }} />
           </div>
           <Button onClick={saveSettings}>Save</Button>
+          <Button variant="secondary" onClick={() => navigate('/config')}>
+            Configure App
+          </Button>
         </CardContent>
       </Card>
     </div>

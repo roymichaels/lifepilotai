@@ -11,7 +11,7 @@ import { SubscriptionManager } from "./components/subscription/SubscriptionManag
 import { ProtectedRoute } from "./components/ProtectedRoute"
 import { Onboarding } from "./pages/Onboarding"
 import { SettingsPage } from "./pages/Settings"
-import { ConfigSetup } from "./pages/ConfigSetup"
+import { ConfigSetup } from "./components/ConfigSetup"
 
 
 function App() {
@@ -64,10 +64,10 @@ function App() {
               return <ProtectedRoute> <Onboarding /> </ProtectedRoute>;
             })()
           } />
-          <Route path="/setup" element={
+          <Route path="/config" element={
             (() => {
-              if (import.meta.env.DEV) console.log("Rendering ConfigSetup for route /setup");
-              return <ProtectedRoute> <ConfigSetup /> </ProtectedRoute>;
+              if (import.meta.env.DEV) console.log("Rendering ConfigSetup for route /config");
+              return <ConfigSetup />;
 
             })()
           } />
