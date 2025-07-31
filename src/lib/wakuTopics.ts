@@ -15,6 +15,10 @@ export const wakuTopics = {
   fiverrGigs: '/aura/fiverr-agent/gigs/1/app',
   ideaMappings: '/aura/idea-mapper/mappings/1/app',
   playerState: '/aura/game/player-state/1/app',
+  ecommerceData: '/aura/business/ecommerce/1/app',
+  splashPageData: '/aura/business/splash/1/app',
+  leadGenData: '/aura/business/leadgen/1/app',
+  businessMarketing: '/aura/business/marketing/1/app',
   userProfile: (pubkey: string) => `/aura/users/${pubkey}/profile`,
   userConfig: (pubkey: string) => `/aura/users/${pubkey}/config`,
   userTraits: (pubkey: string) => `/aura/users/${pubkey}/traits`
@@ -33,6 +37,10 @@ export const FIVERR_FREELANCERS_TOPIC = wakuTopics.fiverrFreelancers;
 export const FIVERR_GIGS_TOPIC = wakuTopics.fiverrGigs;
 export const IDEA_MAPPINGS_TOPIC = wakuTopics.ideaMappings;
 export const PLAYER_STATE_TOPIC = wakuTopics.playerState;
+export const ECOMMERCE_TOPIC = wakuTopics.ecommerceData;
+export const SPLASH_PAGE_TOPIC = wakuTopics.splashPageData;
+export const LEAD_GEN_TOPIC = wakuTopics.leadGenData;
+export const BUSINESS_MARKETING_TOPIC = wakuTopics.businessMarketing;
 
 export type WakuTopic = typeof wakuTopics[keyof typeof wakuTopics];
 
