@@ -14,6 +14,7 @@ export const wakuTopics = {
   fiverrFreelancers: '/aura/fiverr-agent/freelancers/1/app',
   fiverrGigs: '/aura/fiverr-agent/gigs/1/app',
   ideaMappings: '/aura/idea-mapper/mappings/1/app',
+  playerState: '/aura/game/player-state/1/app',
   userProfile: (pubkey: string) => `/aura/users/${pubkey}/profile`,
   userConfig: (pubkey: string) => `/aura/users/${pubkey}/config`,
   userTraits: (pubkey: string) => `/aura/users/${pubkey}/traits`
@@ -31,6 +32,7 @@ export const PROGRESS_TOPIC = wakuTopics.growthProgress;
 export const FIVERR_FREELANCERS_TOPIC = wakuTopics.fiverrFreelancers;
 export const FIVERR_GIGS_TOPIC = wakuTopics.fiverrGigs;
 export const IDEA_MAPPINGS_TOPIC = wakuTopics.ideaMappings;
+export const PLAYER_STATE_TOPIC = wakuTopics.playerState;
 
 export type WakuTopic = typeof wakuTopics[keyof typeof wakuTopics];
 
