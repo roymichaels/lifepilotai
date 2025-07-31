@@ -8,6 +8,7 @@ describe('wakuTopics', () => {
     expect(wakuTopics.userProfile(key)).toBe(`/aura/users/${key}/profile`)
     expect(wakuTopics.userConfig(key)).toBe(`/aura/users/${key}/config`)
     expect(wakuTopics.userTraits(key)).toBe(`/aura/users/${key}/traits`)
+    expect(wakuTopics.gamePlayerState('p1')).toBe('/game/players/p1/state')
     expect(wakuTopics.playerState).toBe('/aura/game/player-state/1/app')
     expect(wakuTopics.ecommerceData).toBe('/aura/business/ecommerce/1/app')
     expect(wakuTopics.splashPageData).toBe('/aura/business/splash/1/app')

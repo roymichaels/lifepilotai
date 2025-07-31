@@ -14,6 +14,7 @@ export const wakuTopics = {
   fiverrFreelancers: '/aura/fiverr-agent/freelancers/1/app',
   fiverrGigs: '/aura/fiverr-agent/gigs/1/app',
   ideaMappings: '/aura/idea-mapper/mappings/1/app',
+  gamePlayerState: (playerId: string) => `/game/players/${playerId}/state`,
   playerState: '/aura/game/player-state/1/app',
   ecommerceData: '/aura/business/ecommerce/1/app',
   splashPageData: '/aura/business/splash/1/app',
