@@ -51,7 +51,7 @@ async function decrypt(data: string, secret: string): Promise<string> {
 }
 
 export async function loadConfig(): Promise<AppConfig | null> {
-  const identity = await WakuIdentityService.getIdentity()
+  const identity = WakuIdentityService.getIdentity()
   if (!identity) return null
   const row = await electric.settings.get(STORAGE_KEY)
   if (!row?.value) return null
@@ -64,7 +64,7 @@ export async function loadConfig(): Promise<AppConfig | null> {
 }
 
 export async function saveConfig(config: AppConfig): Promise<void> {
-  const identity = await WakuIdentityService.getIdentity()
+  const identity = WakuIdentityService.getIdentity()
   if (!identity) throw new Error('Missing identity')
   const json = JSON.stringify(config)
   const encrypted = await encrypt(json, identity.id)

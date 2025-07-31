@@ -31,12 +31,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [user])
 
   useEffect(() => {
-    WakuIdentityService.getIdentity().then(identity => {
-      if (identity) {
-        setUser(identity)
-        setIsAuthenticated(true)
-      }
-    })
+    const identity = WakuIdentityService.getIdentity()
+    if (identity) {
+      setUser(identity)
+      setIsAuthenticated(true)
+    }
   }, [])
   const login = async () => {
     const identity = await WakuIdentityService.createIdentity()
