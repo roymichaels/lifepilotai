@@ -1,6 +1,7 @@
 // Local SQLite database initialisation.
 // Uses an in-memory database so no file is created.
-import './wa-sqlite.d.ts'
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference path="./wa-sqlite.d.ts" />
 
 async function run() {
   try {
