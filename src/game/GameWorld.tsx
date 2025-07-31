@@ -1,4 +1,5 @@
 import React, { Suspense, useEffect, useRef, useState } from 'react'
+import GrowthNPC from './components/GrowthNPC'
 
 export function GameWorld() {
   const [ready, setReady] = useState(false)
@@ -51,18 +52,21 @@ export function GameWorld() {
   }
 
   return (
-    <Canvas
-      className="w-full h-full"
-      camera={{ position: [0, 0, 5], fov: 60 }}
-    >
-      {/* @ts-expect-error -- three types not guaranteed */}
-      <ambientLight intensity={0.5} />
-      {/* @ts-expect-error -- three types not guaranteed */}
-      <directionalLight position={[5, 5, 5]} />
-      <Suspense fallback={null}>
-        <SpinningBox />
-      </Suspense>
-    </Canvas>
+    <div className="relative w-full h-full">
+      <Canvas
+        className="w-full h-full"
+        camera={{ position: [0, 0, 5], fov: 60 }}
+      >
+        {/* @ts-expect-error -- three types not guaranteed */}
+        <ambientLight intensity={0.5} />
+        {/* @ts-expect-error -- three types not guaranteed */}
+        <directionalLight position={[5, 5, 5]} />
+        <Suspense fallback={null}>
+          <SpinningBox />
+        </Suspense>
+      </Canvas>
+      <GrowthNPC />
+    </div>
   )
 }
 
