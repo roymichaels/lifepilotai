@@ -14,6 +14,7 @@ export const wakuTopics = {
   fiverrFreelancers: '/aura/fiverr-agent/freelancers/1/app',
   fiverrGigs: '/aura/fiverr-agent/gigs/1/app',
   ideaMappings: '/aura/idea-mapper/mappings/1/app',
+  gamePlayerState: (playerId: string) => `/game/players/${playerId}/state`,
   userProfile: (pubkey: string) => `/aura/users/${pubkey}/profile`,
   userConfig: (pubkey: string) => `/aura/users/${pubkey}/config`,
   userTraits: (pubkey: string) => `/aura/users/${pubkey}/traits`

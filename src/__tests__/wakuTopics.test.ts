@@ -8,5 +8,6 @@ describe('wakuTopics', () => {
     expect(wakuTopics.userProfile(key)).toBe(`/aura/users/${key}/profile`)
     expect(wakuTopics.userConfig(key)).toBe(`/aura/users/${key}/config`)
     expect(wakuTopics.userTraits(key)).toBe(`/aura/users/${key}/traits`)
+    expect(wakuTopics.gamePlayerState('p1')).toBe('/game/players/p1/state')
   })
 })
