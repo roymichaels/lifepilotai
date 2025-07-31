@@ -12,6 +12,8 @@ import {
 import { useToast } from '@/hooks/useToast'
 import { LogIn } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { loadConfig } from '@/services/ConfigService'
+import { setBaseURL } from '@/api/api'
 
 export function Login() {
   const [loading, setLoading] = useState(false)
@@ -23,7 +25,13 @@ export function Login() {
       setLoading(true)
       await login()
       toast({ title: 'Success', description: 'Identity created' })
-      navigate('/dashboard')
+      const cfg = await loadConfig()
+      if (cfg) {
+        setBaseURL(cfg.apiBaseUrl)
+        navigate('/dashboard')
+      } else {
+        navigate('/setup')
+      }
     } catch (error) {
       console.error('Login error:', error)
       toast({ variant: 'destructive', title: 'Error', description: String(error) })
