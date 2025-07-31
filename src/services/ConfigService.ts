@@ -88,15 +88,12 @@ export async function importConfig(json: string): Promise<void> {
 }
 
 export async function ensureConfig(): Promise<AppConfig> {
-  let cfg = await loadConfig()
+  const cfg = await loadConfig()
   if (!cfg) {
-    const apiBaseUrl = window.prompt('API base URL (e.g. http://localhost:3000)') || ''
-    const openaiApiKey = window.prompt('OpenAI API key') || ''
-    const elevenLabsApiKey = window.prompt('ElevenLabs API key (optional)') || undefined
-    const enableWaku = window.confirm('Enable Waku messaging?')
-    const wakuRelayUrl = window.prompt('Waku relay multiaddress (optional)') || undefined
-    cfg = { apiBaseUrl, openaiApiKey, elevenLabsApiKey, enableWaku, wakuRelayUrl }
-    await saveConfig(cfg)
+    if (!window.location.pathname.startsWith('/setup')) {
+      window.location.assign('/setup')
+    }
+    throw new Error('Missing configuration')
   }
   return cfg
 }
