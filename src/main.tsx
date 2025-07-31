@@ -6,24 +6,6 @@ import { loadBrainSettings } from './services/BrainSettingsService'
 import { ensureConfig } from './services/ConfigService'
 import { setBaseURL } from './api/api'
 
-async function initDatabase() {
-  try {
-    const SQLiteModule = await import('wa-sqlite/dist/wa-sqlite.mjs') as any
-    const SQLiteFactory = SQLiteModule.default as (config?: object) => Promise<any>
-
-    const SQLite = await import('wa-sqlite')
-    const { initSQLite } = await import('./lib/sqlite')
-    const module = await SQLiteFactory()
-    const sqlite3 = SQLite.Factory(module)
-    const db = await sqlite3.open_v2(':memory:')
-    await initSQLite(sqlite3, db)
-    await sqlite3.close(db)
-    if (import.meta.env.DEV) console.log('[Main] SQLite schema applied')
-  } catch (err) {
-    console.error('[Main] Failed to initialise SQLite', err)
-  }
-}
-
 // Suppress console.log statements in production builds
 if (import.meta.env.PROD) {
   console.log = () => {};
@@ -61,7 +43,6 @@ window.addEventListener('unhandledrejection', (event) => {
 
 async function start() {
   try {
-    await initDatabase()
     const cfg = await ensureConfig()
     setBaseURL(cfg.apiBaseUrl)
     await loadBrainSettings()
