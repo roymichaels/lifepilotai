@@ -7,22 +7,22 @@ import {
   DecodedMessage
 } from '@waku/sdk'
 import type { WakuTopic } from './wakuTopics'
-import { loadConfig } from '@/services/ConfigService'
 
 const CONTENT_TOPIC = '/lifepilot/1/chat'
 
 let node: LightNode | null = null
 
-let VITE_WAKU_RELAY_URL: string | undefined
-loadConfig().then(cfg => {
-  VITE_WAKU_RELAY_URL = cfg?.wakuRelayUrl
-})
+let wakuRelayUrl: string | undefined
+
+export function setRelayUrl(url?: string) {
+  wakuRelayUrl = url
+}
 
 export async function connect(): Promise<LightNode> {
   if (node) return node
   node = await createLightNode(
-    VITE_WAKU_RELAY_URL
-      ? { bootstrapPeers: [VITE_WAKU_RELAY_URL] }
+    wakuRelayUrl
+      ? { bootstrapPeers: [wakuRelayUrl] }
       : { defaultBootstrap: true }
   )
   await node.start()
