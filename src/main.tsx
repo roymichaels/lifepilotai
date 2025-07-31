@@ -43,7 +43,6 @@ window.addEventListener('unhandledrejection', (event) => {
 
 async function start() {
   try {
-    await initDatabase()
     const cfg = await loadConfig()
     if (cfg) {
       setBaseURL(cfg.apiBaseUrl)
