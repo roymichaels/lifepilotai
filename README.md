@@ -46,7 +46,7 @@ Create the following products and prices in your Stripe dashboard:
 
 ### 2. Runtime Configuration
 
-When the client starts it checks local storage for a configuration object. If none is found you will be prompted in the browser for the API URL, OpenAI key, ElevenLabs key and Waku settings. These values are stored locally and can also be published on the `/aura/users/{pubkey}/config` topic so other devices can restore them.
+When the client starts it checks local storage for a configuration object. If none is found you will be redirected to a setup screen where you can enter the API URL, OpenAI key, ElevenLabs key and Waku options. The values are stored locally and can also be published on the `/aura/users/{pubkey}/config` topic so other devices can restore them.
 
 The backend API should still run on port **3000** (or update the prompted URL accordingly). During development the Vite dev server will proxy requests such as `/projects` or `/users` to this URL.
 

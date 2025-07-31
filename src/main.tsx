@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 import { loadBrainSettings } from './services/BrainSettingsService'
-import { ensureConfig } from './services/ConfigService'
+import { loadConfig } from './services/ConfigService'
 import { setBaseURL } from './api/api'
 
 async function initDatabase() {
@@ -62,10 +62,14 @@ window.addEventListener('unhandledrejection', (event) => {
 async function start() {
   try {
     await initDatabase()
-    const cfg = await ensureConfig()
-    setBaseURL(cfg.apiBaseUrl)
+    const cfg = await loadConfig()
+    if (cfg) {
+      setBaseURL(cfg.apiBaseUrl)
+      if (import.meta.env.DEV) console.log('[Main] Loaded config', cfg)
+    } else if (import.meta.env.DEV) {
+      console.log('[Main] No configuration found')
+    }
     await loadBrainSettings()
-    if (import.meta.env.DEV) console.log('[Main] Loaded config', cfg)
     if (import.meta.env.DEV) console.log('[Main] Creating React root...')
     const root = ReactDOM.createRoot(document.getElementById('root')!)
     if (import.meta.env.DEV) console.log('[Main] Root created successfully')
