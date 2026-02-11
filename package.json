@@ -45,7 +45,7 @@
     "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^7.5.0",
     "@waku/sdk": "^0.0.33",
-    "axios": "^1.10.0",
+    "axios": "^1.13.5",
     "chart.js": "^4.4.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
